@@ -3,6 +3,7 @@ from Data_types.Course import Course
 from Data_types.Sections import Section
 from Data_types.Lecture import Lecture
 from Data_types.Other_class_sessions import Other_class_session
+from Convert_time_to_number import time_to_index
 
 class Course_file_extractor:
     def __make_course_obj(self, course_jsons: list[dict[str, Any]]) -> list[Course]:
@@ -48,7 +49,7 @@ class Course_file_extractor:
         
         for lecture_timeslot in lecture_timeslots:
             lecture_weekdays.append( lecture_timeslot.get("weekday") )
-            lecture_start_times.append( lecture_timeslot.get("time") )
+            lecture_start_times.append( time_to_index(lecture_timeslot.get("time")) )
             lecture_durations.append(int( lecture_timeslot.get("duration") ))
             lecture_campus.append( lecture_timeslot.get("campus") )
         
@@ -76,7 +77,7 @@ class Course_file_extractor:
         for class_session_timeslot_json in class_session_timeslot_jsons:
             session_names.append( class_session_timeslot_json.get("name"))
             class_session_weekdays.append( class_session_timeslot_json.get("weekday") )
-            class_session_start_times.append( class_session_timeslot_json.get("time") )
+            class_session_start_times.append( time_to_index(class_session_timeslot_json.get("time")) )
             class_session_durations.append(int( class_session_timeslot_json.get("duration") ))
         
         return Other_class_session(session_names, class_session_weekdays, class_session_start_times, class_session_durations)

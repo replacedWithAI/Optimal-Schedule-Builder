@@ -8,6 +8,37 @@ Each lecture, lab, tutorial is an interval variable. These variables have:
 - is_present variables
 - name variables; what they're called (string)
 
+# 1. Discrete variables for your "Human Logic" constraints
+day_var = model.NewIntVar(0, 4, 'day_cs101')
+time_of_day_var = model.NewIntVar(480, 1200, 'time_cs101') # e.g., 8am to 8pm
+duration = 90
+
+# 2. The Bridge Variable for the "Solver Logic"
+global_start = model.NewIntVar(0, 7200, 'global_start_cs101')
+global_end = model.NewIntVar(0, 7200, 'global_end_cs101')
+
+# 3. Link them together
+model.Add(global_start == day_var * 1440 + time_of_day_var)
+model.Add(global_end == global_start + duration)
+
+# 4. Create the actual interval
+# (Use NewOptionalIntervalVar if this is one of your XOR choices)
+interval = model.NewIntervalVar(global_start, duration, global_end, 'interval_cs101')
+
+# 5. Add to the global clash check
+model.AddNoOverlap([interval, other_interval_1, other_interval_2])
+
+## Functions/classes
+
+### Make_is_present_variables
+Idea:
+Each class (the whole thing) of each section has unique timeslots
+Each class has timeslots on multiple days
+Therefore, each class's timeslots need to be toggeable
+However, classes share days (finite). Otherwise, they can happen independently each day
+So, each timeslot must be its own bool variable
+Keep in mind: is_present makes intervals toggleable. To decide how they'll be toggled, decide later
+
 ## Relevance/importance
 You see me using a bunch of loops and dictionaries when defining these variables
 These don't really matter; the interval variables only care:
