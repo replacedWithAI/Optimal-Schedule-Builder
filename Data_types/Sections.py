@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 # from LabsOrTutorials import LabsOrTutorials
-from Lecture import Lecture
+from Data_types.Lecture import Lecture
 
 @dataclass
 class Section:
