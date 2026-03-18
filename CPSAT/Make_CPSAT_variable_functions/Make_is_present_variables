@@ -1,0 +1,56 @@
+from Data_types.Course import Course
+from Data_types.Lecture import Lecture
+from Data_types.Sections import Section
+from typing import Any
+from ortools.sat.python import cp_model
+from Make_is_present_variables_fuctions.get_section_terms import num_terms_in_this_section
+
+class Is_present_variable_maker:
+    def __init__(self, courses):
+        self.is_present_variables = __create_is_present_variables(courses)
+
+def __create_is_present_variables(self, courses: list[Course]) -> list[dict[str, dict[dict, Any]]]:
+    # will need to check session for SU or FW
+
+    is_present_variables = {
+        course: {
+            section: self.__classes_is_present(section, 
+                                               course.department + " " + course.code, 
+                                               section.section_letter)
+            for section in course.sections
+        }
+        for course in courses
+    }
+    return is_present_variables
+
+def __classes_is_present(self, section: Section, course_name: str, section_letter: str) -> list[dict[dict, Any]]:
+    model = cp_model.CpModel
+    classes = []
+    lecture = section.lectures
+
+    terms = num_terms_in_this_section(section.term)
+
+    curr_class_is_present_variable = {term: 
+                                        {weekday: 
+                                            model.new_bool_var(f"{course_name}_section_{section_letter}_lecture")
+                                        for weekday in lecture.days
+                                        }
+                                    for term in terms
+                                    }
+    classes.append(curr_class_is_present_variable)
+
+    other_class_sessions = lecture.other_class_sessions
+    for this_class_session in other_class_sessions:
+        curr_class_is_present_variable = {term:
+                                            {weekday: 
+                                                model.new_bool_var(f"{course_name}_section_{section_letter}" +
+                                                                f"_{this_class_session.activitiy_name}")
+                                            for weekday in this_class_session.days
+                                            }
+                                        for term in terms
+                                        }
+        classes.append(curr_class_is_present_variable)
+    return classes
+    
+
+    
