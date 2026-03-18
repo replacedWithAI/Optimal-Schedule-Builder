@@ -5,8 +5,7 @@ from Data_types.Other_class_sessions import Other_class_session
 class Lecture:
     activity_name: str
     days: list[str]
-    start_times: list[str]
+    start_times: list[int]
     durations: list[int]
-    durations.setdefault([0])
     campus: list[str]
     other_class_sessions: list[Other_class_session]

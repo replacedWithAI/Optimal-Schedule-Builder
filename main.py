@@ -1,18 +1,8 @@
-import json
-from pathlib import Path
-from typing import Any
-from dataclasses import dataclass
-import uploading_department_json_files.Json_departments_to_server_writer as Json_departments_to_server_writer
+from uploading_department_json_files.Json_departments_to_server_writer import get_files
 from Downloading_and_processing_json_files.Course_json_string_retriever import Course_json_retriever
 from Downloading_and_processing_json_files.Extract_course_data import Course_file_extractor
-from Data_types.Other_class_sessions import Other_class_session
-from Data_types.Lecture import Lecture
-from Data_types.Sections import Section
-from Data_types.Course import Course
 
-json_departments_to_server_writer = Json_departments_to_server_writer
-department_json_path = json_departments_to_server_writer.get_files()
-del json_departments_to_server_writer
+department_json_path = get_files()
 print(department_json_path)
 
 requested_courses = [input("Ok nice, now give your course names and type '-1' to leave")]
