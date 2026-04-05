@@ -12,15 +12,17 @@ class Course_json_retriever:
         
     def __get_department_codes(self, requested_course_names: list[str]) -> list[str]: # needs to methodology later
         department_codes = []
-        for course_name in requested_course_names:
-            department_codes.append(course_name[0:4])
+        for curr_course_name in requested_course_names:
+            space_index = curr_course_name.find(' ')
+            department_codes.append(curr_course_name[0:space_index])
         return department_codes
 
 
     def __get_course_codes(self, requested_course_names: list[str]) -> list[str]:
         course_codes = []
-        for course_code in requested_course_names:
-            course_codes.append(course_code[5:9])
+        for curr_course_name in requested_course_names:
+            space_index = curr_course_name.find(' ')
+            course_codes.append(curr_course_name[space_index+1:])
         return course_codes
 
 

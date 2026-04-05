@@ -6,10 +6,10 @@ from typing import Any
 # might want to put this in lib, but that's for a while later
 class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully you learnt HTML?
     def __init__(self, courses, model):
-        self.start_time_variables = self.__create_start_time_variables(courses)
-        self.is_present_variables = self.__create_is_present_variables(courses, model)
-        self.interval_variables = self.__create_interval_variables(self.start_time_variables,
-                                                                   self.is_present_variables,
+        start_time_variables = self.__create_start_time_variables(courses)
+        is_present_variables = self.__create_is_present_variables(courses, model)
+        self.interval_variables = self.__create_interval_variables(start_time_variables,
+                                                                   is_present_variables,
                                                                    courses,
                                                                    model)
         
@@ -72,13 +72,17 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
                                                 f"{section_letter}_" + \
                                                 f"taken")
         section_presence = {}
-        fixed_section_classes = self.__non_chooseable_classes_is_present(classes)
+        num_each_section_class_type = self.__get_num_section_classes_by_type(classes)
 
-        for curr_class in classes:
+        for i in range(len(classes)):
+            curr_class = classes[i]
             curr_class_presence = {curr_class.activity_name: {}}
 
-            if curr_class.activity_name in fixed_section_classes or \
-               curr_class == classes[0]:
+            space_index = curr_class.activity_name.find(' ')
+            curr_class_type = curr_class.activity_name[:space_index]
+            num_curr_class_type = num_each_section_class_type[curr_class_type]
+
+            if num_curr_class_type == 1:
                 CPSAT_bool = section_is_present
             else:
                 CPSAT_bool = model.new_bool_var(f"{course_name}_section_" + \
@@ -86,25 +90,25 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
                                                 f"{curr_class.activity_name}" + \
                                                 f"_taken")
             
-            for i in range(len(curr_class.start_times)):
-                curr_class_presence[curr_class.activity_name][i] = CPSAT_bool
+            for j in range(len(curr_class.start_times)):
+                curr_class_presence[curr_class.activity_name][j] = CPSAT_bool
             section_presence.update(curr_class_presence)
 
         return section_presence
     
 
-    def __non_chooseable_classes_is_present(self,
+    def __get_num_section_classes_by_type(self,
                                             classes: list[Class_session]
                                             ) -> list[str]:
-        fixed_section_classes = []
-        for i in range(1, len(classes)):
+        section_classes = {}
+        for curr_class in classes:
 
-            if (i+1 != len(classes) and "01" in classes[i].activity_name
-                and "01" in classes[i+1].activity_name):
-                fixed_section_classes.append(classes[i].activity_name)
+            curr_class_type = curr_class.activity_name[:4] # lect, blen, tutr...
+            section_classes.setdefault(curr_class_type, 0)
+            section_classes[curr_class_type] += 1
 
-        print(fixed_section_classes)
-        return fixed_section_classes
+        #print(f"section classes: {section_classes}")
+        return section_classes
 
 
     def __create_interval_variables(self,
@@ -185,7 +189,7 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
                                                                 [section.section_letter]
                                                                 [curr_class.activity_name]
                                                                 [i])
-        print(intervals_by_days)
+        #print(intervals_by_days)
         return intervals_by_days 
 
 
