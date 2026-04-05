@@ -1,6 +1,5 @@
 # Small tasks
 - [ ] Make a test to verify return values
-- [ ] Modify how the code identifies a lecture/mandatory class. Test case: ENG 1102
 - [ ] Modify the assert_correct_number_CPSAT_variables; Im gonna not return 
 start_time and is_presents variables into the CPSAT class
 - [ ] Clean up variable names

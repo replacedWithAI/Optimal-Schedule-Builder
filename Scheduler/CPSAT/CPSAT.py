@@ -15,7 +15,8 @@ class Schedule_maker:
         model = cp_model.CpModel()
         solver = cp_model.CpSolver()
 
-        (interval_variables, intervals_by_day,
+        (start_time_variables, is_present_variables,
+         interval_variables, intervals_by_day,
          days_present) = self.__add_courses_to_CPSAT(courses, model)
         
         self.__add_constraints(unavailable_hours, intervals_by_day,
@@ -39,11 +40,14 @@ class Schedule_maker:
     def __add_courses_to_CPSAT(self, courses: list[Course], model: cp_model
                                ) -> tuple:
         CPSAT_variables = CPSAT_variable_maker(courses, model)
+        start_time_variables = CPSAT_variables.start_time_variables
+        is_present_variables = CPSAT_variables.is_present_variables
         interval_variables = CPSAT_variables.interval_variables
 
         intervals_by_day = CPSAT_variables.intervals_by_day
         days_present = CPSAT_variables.days_present
-        return (interval_variables, intervals_by_day, days_present)
+        return (start_time_variables, is_present_variables, interval_variables, 
+               intervals_by_day, days_present)
     
 
     def __add_constraints(self,
