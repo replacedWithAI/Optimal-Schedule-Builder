@@ -50,10 +50,10 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
         is_present_variables = {
             course.course_name: {
                 section.section_letter: self.__classes_is_present(section.classes, \
-                                                   (course.department + " "
-                                                     + course.course_code), \
-                                                    section.section_letter, 
-                                                    model)
+                                                                 (course.department + " "
+                                                                  + course.course_code), \
+                                                                 section.section_letter, 
+                                                                 model)
                 for section in course.sections
             }
             for course in courses
@@ -102,8 +102,9 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
                                             ) -> list[str]:
         section_classes = {}
         for curr_class in classes:
-
-            curr_class_type = curr_class.activity_name[:4] # lect, blen, tutr...
+            
+            space_index = curr_class.activity_name.find(" ")
+            curr_class_type = curr_class.activity_name[:space_index] # lect, blen, tutr...
             section_classes.setdefault(curr_class_type, 0)
             section_classes[curr_class_type] += 1
 
@@ -158,7 +159,7 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
                             size = curr_class.duration[i], \
                             is_present = is_present_variables[curr_class.activity_name][i], \
                             name = f"{course_name}_section_{section_letter}_" \
-                                 + f"{curr_class.activity_name}_interval" \
+                                 + f"{curr_class.activity_name}" \
                             )
                 for i in range(len(curr_class.start_times))
             }

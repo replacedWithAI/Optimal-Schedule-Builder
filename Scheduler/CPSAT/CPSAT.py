@@ -25,7 +25,6 @@ class Schedule_maker:
         status = self.__solve_for_objectives(intervals_by_day, days_present,
                                              model, solver, commute_times)
         
-        del start_time_variables
         del intervals_by_day
         del days_present
         

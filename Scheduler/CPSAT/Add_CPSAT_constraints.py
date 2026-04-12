@@ -30,16 +30,25 @@ class Constraint_adder:
 
                 section_letter = section.section_letter
                 classes = section.classes
+ 
+                for curr_class in classes:
+                    curr_class_is_present_var = interval_variables[course_name] \
+                                                                  [section_letter] \
+                                                                  [curr_class.activity_name] \
+                                                                  [0].presence_literals()[0]
+                    
+                    is_present_var_name = curr_class_is_present_var.Name()
+                    fixed_to_section_class = (f"{section_letter}_taken" in 
+                                              is_present_var_name)
+                    
+                    if fixed_to_section_class:
+                        section_is_present_var = curr_class_is_present_var
+                        break
 
-                lecture_intervals = interval_variables[course_name] \
-                                                      [section_letter] \
-                                                      [classes[0].activity_name]
-                lecture_is_present = lecture_intervals[0].presence_literals()[0]
-                curr_section_presence = lecture_is_present
-                sections_available.append(curr_section_presence)
+                sections_available.append(section_is_present_var)
                 
                 self.__add_one_lab_tutorial_per_section(interval_variables,
-                                                        curr_section_presence, 
+                                                        section_is_present_var, 
                                                         course_name, 
                                                         section_letter, 
                                                         classes, 
@@ -60,26 +69,31 @@ class Constraint_adder:
                                            model: cp_model):
         chooseable_classes = [[]]
         unique_chooseable_class_idx = 0 # suppose can choose from 5 labs, 3 tutorials
+        prev_unique_chooseable_class_type = ""
 
         for i in range(len(classes)):
-            for j in range(len(classes[i].start_times)):
-
-                curr_is_present_variable = interval_variables[course_name] \
-                                                             [section_letter] \
-                                                             [classes[i].activity_name] \
-                                                             [j] \
-                                                             .presence_literals()[0]
+            
+            curr_class_name = classes[i].activity_name
+            curr_class_interval = interval_variables[course_name] \
+                                           [section_letter] \
+                                           [curr_class_name] \
+                                           [0]
+            curr_is_present_variable = curr_class_interval.presence_literals()[0]
                 
-                is_chooseable_class = (curr_section_presence != curr_is_present_variable)
-                if (is_chooseable_class):
-                    chooseable_classes[unique_chooseable_class_idx].append(
-                                                        curr_is_present_variable)
-                    
-                    next_chooseable_class_is_unique = (i+1 != len(classes) and \
-                                                      "01" in classes[i+1].activity_name)
-                    if (next_chooseable_class_is_unique):
-                        num_unique_chooseable_classes += 1
-                        chooseable_classes.append([])
+            is_chooseable_class = (curr_section_presence != curr_is_present_variable)
+            if (is_chooseable_class):
+                chooseable_classes[unique_chooseable_class_idx].append(
+                                                    curr_is_present_variable)
+                
+                space_index =  curr_class_name.find(' ')
+                curr_class_type = curr_class_name[:space_index]
+                prev_unique_chooseable_class_type = curr_class_type
+                
+                curr_chooseable_class_type_is_unique = (curr_class_type != 
+                                                   prev_unique_chooseable_class_type)
+                if (curr_chooseable_class_type_is_unique):
+                    unique_chooseable_class_idx += 1
+                    chooseable_classes.append([])
 
         print(chooseable_classes)
         for unique_chooseable_class in chooseable_classes:

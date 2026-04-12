@@ -61,7 +61,7 @@ class Course_file_extractor:
 
         # each class session has its list of timeslots
         for class_session_json in class_session_jsons:
-            session_name =  class_session_json.get("name")
+            session_name = class_session_json.get("name")
             if ("99") in session_name: # no one likes lab 99. Im sorry
                 continue
 
