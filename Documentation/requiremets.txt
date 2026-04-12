@@ -10,7 +10,6 @@ ortools==9.15.6755
 packaging==26.0
 pandas==3.0.2
 pillow==12.2.0
-pip==24.0
 protobuf==6.33.6
 pyparsing==3.3.2
 PySide6==6.11.0
