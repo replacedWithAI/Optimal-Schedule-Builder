@@ -1,0 +1,74 @@
+.tipdiv {
+	background-color: #FBF7C9;
+	border: 1px solid #EADFAC;
+	margin: 0px auto 0px auto;
+	padding: 1px;
+	text-align: left;
+	position: relative;
+	border-radius: 4px;
+}
+
+.slider_left {
+	width: 30px;
+	height: 40px;
+	top: 30%;
+	left: 0px;
+	position: absolute;
+	cursor: pointer;
+	background: url('../images/slider2.png') no-repeat;
+	background-position: -16px -40px;
+	opacity: 0.5;
+	border-radius: 0px 5px 5px 0px;
+}
+.slider_left:hover {
+	background-position: -256px -40px;
+}
+
+.slider_right {
+	width: 30px;
+	height: 40px;
+	top: 30%;
+	right: 0px;
+	position: absolute;
+	cursor: pointer;
+	background: url('../images/slider2.png') no-repeat;
+	background-position: -75px -40px;
+	opacity: 0.5;
+	border-radius: 5px 0px 0px 5px;
+}
+.slider_right:hover {
+	background-position: -315px -40px;
+}
+.slider_close {
+	width: 30px;
+	height: 27px;
+	top: 0px;
+	right: 0px;
+	position: absolute;
+	cursor: pointer;
+	background: url('../images/close2.png') no-repeat;
+	background-position: -15px -45px;
+	border-radius: 0px 4px 0px 5px;
+	opacity: 0.7;
+}
+.slider_close:hover {
+	background-position: -73px -45px;
+}
+.slider_tip {
+	margin: 2px 34px 2px 36px;
+	position: relative;
+	font-size: 109%;
+	color: #333333;
+	min-height:80px;
+}
+.slider_tip_title {
+	float: left;
+	margin-top:6px;
+	font-weight:bold;
+}
+.slider_tip_image {
+	float: right;
+	margin: 0px 4px 0px 4px;
+}
+.slider_tip_text {
+}

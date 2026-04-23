@@ -1,0 +1,39 @@
+.header_lang {
+	display:none;
+}
+#collegeSelector {
+	display:none;
+}
+#campusSelector{
+	
+}
+#locationSelector {
+	display:none;
+}
+#timezoneSelector {
+	display:none;
+}
+.crn_label {
+	display:none;
+}
+.userDiv {
+	display:block;
+}
+#accessibilityOption {
+	
+}
+.legend_waitlist {
+	
+}
+.myPlannerImport {
+	display:none;
+}
+#guidance_wrapper {
+	
+}
+#linkViewMyClassSchedule {
+	
+}
+.credits_block {
+	display: none;
+}

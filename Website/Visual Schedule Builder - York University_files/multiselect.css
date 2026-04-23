@@ -1,0 +1,114 @@
+.msItemR {
+	/*font-size: 13px;*/
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+	padding: 1px;
+	vertical-align: text-top;
+	height: 22px;
+}
+
+.msItemN {
+	background-color: #f5f5f5;
+	border: 1px solid #d9d9d9;
+	cursor: default;
+	display: block;
+	height: 20px;
+	white-space: nowrap;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	margin-right: 4px;
+	margin-bottom: 4px;
+}
+
+.msItemNb {
+	cursor: default;
+	display: block;
+	height: 22px;
+	white-space: nowrap;
+}
+
+.msItemT {
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+	color: #222;
+	margin: 2px 5px;
+	max-width: 325px;
+	max-height: 17px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	direction: ltr;
+}
+
+.msItemTb {
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+	margin: 3px 5px;
+	direction: ltr;
+}
+
+.msItemM {
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+	width: 14px;
+	height: 20px;
+	background: no-repeat url('../images/sprite.gif') -4px 0;
+	opacity: .6;
+	vertical-align: top;
+	cursor: pointer;
+}
+div.msulwrapper {
+  padding: 0px;
+}
+
+div.msulwrapper ul {
+	list-style: none;
+	padding: 0px;
+	margin: 0px;
+	/*min-height: 20px;*/
+}
+
+div.msulwrapper ul li {
+  display: block;
+  text-decoration: none;
+}
+
+.msbox {
+	background-color: #e5e5e5;
+	border:1px solid #d5d5d5;
+	padding:4px;
+	position: relative;
+	display:block;
+	min-height: 50px;
+	margin:0px;
+}
+
+.msboxtitle {
+	float:left;
+}
+
+div.msAll {
+	display:inline-block;
+	*display: inline; zoom: 1;
+}
+.msSelectAllDiv {
+	text-align: right;
+	width: 100%;
+}
+.msBoxClose {
+	position:absolute;
+	bottom:4px;
+	right:4px;
+}
+.textnonevisible {
+	display:none;
+}
+.msitem input {
+	margin: 2px;
+}
+.disableClick {
+	cursor: default !important;
+}

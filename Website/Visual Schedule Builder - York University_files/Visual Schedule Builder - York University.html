@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Visual Schedule Builder - York University</title>
+        <link href="Visual%20Schedule%20Builder%20-%20York%20University_files/multiselect.css" rel="stylesheet" type="text/css">
+        <link href="Visual%20Schedule%20Builder%20-%20York%20University_files/weekslider.css" rel="stylesheet" type="text/css">
+        <link href="Visual%20Schedule%20Builder%20-%20York%20University_files/results.css" rel="stylesheet" type="text/css">
+        <link href="Visual%20Schedule%20Builder%20-%20York%20University_files/slider.css" rel="stylesheet" type="text/css">
+        <link href="Visual%20Schedule%20Builder%20-%20York%20University_files/dategrid.css" rel="stylesheet" type="text/css">
+        <link href="Visual%20Schedule%20Builder%20-%20York%20University_files/mobilesort.css" rel="stylesheet" type="text/css">
+        <link href="Visual%20Schedule%20Builder%20-%20York%20University_files/timetable.css" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+
+
+		<meta name="robots" content="noindex">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+        <link href="Visual%20Schedule%20Builder%20-%20York%20University_files/lookmain.css" rel="stylesheet" type="text/css">
+        <link href="Visual%20Schedule%20Builder%20-%20York%20University_files/features.css" rel="stylesheet" type="text/css">
+
+
+
+		<link href="Visual%20Schedule%20Builder%20-%20York%20University_files/template_york.css" rel="stylesheet" type="text/css">
+        <link href="Visual%20Schedule%20Builder%20-%20York%20University_files/css.css" rel="stylesheet" type="text/css">
+        <!-- <link href='https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'> -->
+        <link rel="shortcut icon" href="https://schedulebuilder.yorku.ca/vsb/cust/york/favicon.ico">
+
+
+
+		<script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/jquery-1.11.1.min.js"></script>
+		<script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/unity.js"></script>
+		<script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/render.js"></script>
+		<script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/engine.js"></script>
+		<script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/legend.js"></script>
+		<script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/schedule.js"></script>
+		<!-- <script type="text/javascript" charset="UTF-8" src="js/dragcode.js?v=1366"></script> -->
+		<!-- <script type="text/javascript" charset="UTF-8" src="js/gencode.js?v=1366"></script> -->
+        <script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/common.js"></script>
+
+       
+        
+
+		<script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/i8n.js"></script>
+		
+				<script type="text/javascript" src="Visual%20Schedule%20Builder%20-%20York%20University_files/Loader.js"></script>
+				<script type="text/javascript">
+						Loader.init("1366", [
+							"js/controllers/ShareLinkController.js",
+							"js/views/ShareLinkView.js"
+						], function() {
+								// Called we done loading
+						});
+			        	var createShareLinkActivated = false;
+				</script><script src="Visual%20Schedule%20Builder%20-%20York%20University_files/ShareLinkController.js"></script>
+
+		<script src="Visual%20Schedule%20Builder%20-%20York%20University_files/popup.js"></script>
+		<!-- <script type="text/javascript" charset="UTF-8" src="js/results.js?v=1366"></script> -->
+		<script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/slider.js"></script>
+		<script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/dragging.js"></script>
+        <!-- <script type="text/javascript" charset="UTF-8" src="js/criteria.js?v=1366"></script> -->
+        <script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/guidance.js"></script>
+        <script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/auto_suggest.js"></script>
+        <script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/profiler.js"></script>
+        <script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/multiselect.js"></script>
+        <script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/timetable.js"></script>
+        <script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/selectordie.js"></script>
+        <script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/jquery-ui.js"></script>
+        <script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/accessibility.js"></script>
+        <script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/multiselectdata.js"></script>
+        <script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/thumbnail.js"></script>
+        <!-- Support for Push Course IDs from PeopleSoft -->
+        <script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/peoplesoftpushedcourses.js"></script>
+        
+		<script type="text/javascript" charset="UTF-8" src="Visual%20Schedule%20Builder%20-%20York%20University_files/suggest.js"></script>
+        
+
+        <script type="text/javascript">
+
+        	// Criteria
+        	var locations=new Array();
+        	var showOnlineDropdown = false;
+        	var feeReportButton = false;
+        	var template = "york";
+        	var preopenCampusSelector = false;
+        	var baseUri = "";
+        	if (baseUri.length>0 && baseUri.charAt(baseUri.length-1)!='/') baseUri+="/";
+        	var defaultCollege = "null";
+        	var minLengthOfCrn = 9;
+        	var autoCompleteSize = 20;
+        	var defaultCams = "0_1_2_3_4_5_6_";
+			var gtimezone = "America/New_York";
+        	var otimezone = "America/New_York";
+        	var oredirect = "http://localhost:8080/vsb/outlook.jsp";
+        	var oclient_id = "7f6eed1c-a826-4d4b-807a-f2107af92e31";
+        	var gclient_id = "447488977917-s5i2anhjqeu33j713df42v12tta13anh.apps.googleusercontent.com";
+        	var isAuthenticated= false;
+        	// Results
+        	var minDuration = 0;
+        	var crnHelpText = "Use these Catalog Numbers when you register to get the schedule shown.";
+        	var minCampusSwitchTime = 60;
+        	var enrollType = "";
+        	var resetCurrentResult=false;
+        	var showFullCampusInLegend=true;
+        	var enableCohort = false;
+        	var timesheetHourHeight = 0;
+        	var showSeatNumbers = true;
+        	var weekSliderDisplay = false;
+        	var minFullTimeCredits = 0.0;
+        	var maxFullTimeCredits = 0.0;
+        	var positiveWaitlistFillsClass = false;
+        	var noSwapSupport = false;
+        	var inspecificSeats = true;
+        	var disableRel12Parenthesis = false;
+        	var institution = "";
+
+        	// Shared Auth
+        	var authenticated = false;
+        	var isAuthenticatedWithSso = false;
+        	var isAdvisor = false;
+        	
+        	var advisee = null;
+        	var analyticsAccess = false; 
+        	
+        	// Shared
+        	var switchNameAndCode = false;
+        	var template = "york";
+        	var guestMode = true;
+        	var todayCode = 6688;
+        	var preventOutOfEnrollmentWindow = false;
+        	var useLeafCartItemId = true;
+        	var disableHotkeys = false;
+        	var vsbDatabase = true;
+        	var displayLocationOption = true;
+        	var username = "null";
+        	var disableCart = false; // default only
+        	var disableEnroll = false; // default only
+        	var waitlistableFilter = false;
+        	var showFavorites = false;
+
+        	var terms=new Array();
+        	terms.push("2025115117");terms.push("2026102119");
+
+
+        	
+
+        	var visibleCampuses = "";
+
+            // Called by body onload
+            function init() {
+        		initCriteria();
+        		if (displayLocationOption) {
+        			initMultiselectors();
+        		}
+        		
+            	UU.caseF5();
+            	vsbTimer=new VsbTimer(0,110*1000,120000,false,isAuthenticatedWithSso);            	//urlToPageState();
+				guidanceInit(username,terms,"#guidance");
+				
+				Profiler.addDuration("filterOutFull", BB.activeState.filters.hideFull);
+				Profiler.addDuration("filterOutWaitlistable", BB.activeState.filters.hideWaitlistable);
+				Profiler.addDuration("filterOutOnline", BB.activeState.filters.hideOnline);
+				Profiler.addDuration("filterOutOnCampus", BB.activeState.filters.hideOnCampus);
+				Profiler.setParameterState(translateSortToParameter(BB.activeState.sort), true);
+				
+            }
+            
+			$(window).bind('storage', function (e) {
+			    //alert('storage changed');
+			});
+            
+        </script>
+		
+    <script src="Visual%20Schedule%20Builder%20-%20York%20University_files/ShareLinkView.js"></script></head>
+    <body onload="init()" id="bodyNode">
+    <p id="alertJAWS" role="alert" style="display:none;"></p>
+    <div id="bodyContent">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="reg_header noprint">
+<div class="div_york_logo"><a href="http://yorku.ca/"><img src="Visual%20Schedule%20Builder%20-%20York%20University_files/yorku-logo.jpg"></a></div>
+
+
+	<div class="header_lang" style="position:absolute;right:6px;bottom:6px;"> 
+	
+		<a class="userlang" data-lang="en" href="javascript:void(0);" onclick="UU.caseChangeLanguage('en');">English</a>
+	 | 
+		<a class="userlang" data-lang="fr" href="javascript:void(0);" onclick="UU.caseChangeLanguage('fr');">Français</a>
+	
+	</div>
+
+
+</div>
+
+
+<div class="name-and-slogan" id="name-and-slogan">
+	<div class="region region-redbar">
+		<div id="block-block-203" class="block block-block first last odd">
+			
+				<h1 class="site-name" id="site-name">Visual Schedule Builder</h1>
+			
+		</div>
+	</div>
+</div>
+
+
+
+
+<div class="mainframe courses_bg">
+
+<div class="header_invader">
+	<img class="main_menu_button" src="Visual%20Schedule%20Builder%20-%20York%20University_files/menu.gif" style="display: none;">
+	<input class="big_button sign_in_button" type="button" value="Sign In" onclick="window.location.href='login.jsp';" style="display: inline-block;">
+	<div class="sq_full_name ">
+		<span class="text">
+		Guest
+		
+		</span>
+	</div>
+	<div class="main_menu" style="display: none;">
+		<a href="https://schedulebuilder.yorku.ca/vsb/analytics/" class="mi_analytics analytics_link" style="display: none;">VSB Analytics</a>
+		<!--<a href="javascript:void(0)" class="mi_cart">View My Cart</a> -->
+		<!--<a href="javascript:void(0)" class="mi_schedule">View My Class Schedule</a> -->
+		<a href="javascript:void(0)" class="mi_behalf" style="display: none;">Advise a Student...</a>
+		<div class="menu_item mi_message_box" style="display:none">
+		</div>
+		<div class="menu_item mi_behalf_start" style="display:none">
+			<input type="text" style="width:100%" class="behalf_userid" placeholder="Student ID"><br>
+			<input style="margin-top:5px;margin-right:3px" class="big_button behalf_start_button" type="button" value="Start Advising">
+			<input style="margin-left:3px;" class="big_button behalf_cancel_button" type="button" value="Cancel">
+		</div>
+		<div class="menu_item mi_behalf_change" style="display: none;">
+			Advising for: <span class="behalf_student">null</span><br>
+			<input style="margin-top:5px;margin-right:3px" class="big_button switch_student_button" type="button" value="Switch Student">
+			<input style="margin-left:3px;" class="big_button stop_advising_button" type="button" value="Stop Advising"></div>
+		<div class="menu_item mi_sign_out"><input style="width:100%" class="big_button" type="button" value="Sign Out" onclick="vsbTimer.doLogout('link');"></div>
+	</div>
+</div>
+
+<!-- 
+
+ -->
+
+
+<div class="navigation noprint"><div class="navigation_buttons">
+
+<div style="float:left">
+<ul>
+<li><a href="javascript:void(0)" class="accessible ak_c nav_link link_criteria title_font" onclick="UU.caseViewCriteria();" title="You are currently on the Add Courses Page">Select Courses</a></li>
+<li><a href="javascript:void(0)" class="accessible ak_r nav_link link_results title_font navselected" onclick="UU.caseViewResults();" title="Go to the Add Courses page" style="cursor: pointer;"><span class="akl">R</span>esults</a></li>
+
+</ul>
+
+</div></div>
+
+<!-- 
+
+ -->
+
+<div style="clear:both;"></div>
+</div>
+
+<div style="clear:both;"></div>
+
+
+
+<div id="under_header_wrapper">
+<div id="under_header">
+
+
+
+
+
+<table class="pages_table" style="min-height: 833px;">
+<tbody><tr>
+
+<td id="page_criteria" class="vsb_page printable" style="width: 34.7301%;">
+<div class="page_fader" style="opacity: 0; display: none;"></div>
+<div class="full_page_title title_font first">
+<span class="pusher" style="display:none">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>Select Courses
+</div>
+<div class="expander chevron_left"></div>
+<div class="full_page_content" style="opacity: 1; width: auto;">
+
+<div class="subnavigation noprint">
+
+	<div id="subnavlogo"></div>
+
+	<div id="term_region_pri"><div class="term_region">
+		<select class="phoneOnly" id="phone_term_select" onchange="updateTerm();">
+			<option value="0" id="empty_term">Select Term...</option>
+			
+			<option value="2025115117" selected="selected">
+				Session Summer 2026
+			</option>
+			
+			<option value="2026102119">
+				Session Fall/Winter 2026-2027
+			</option>
+			
+
+		</select>
+	</div><div class="term_region notPhone">
+	 
+		<div class="term_radio_title">
+			Session:
+		</div>
+		
+		  <div class="term_radio_item">
+          	<input name="radterm" data-term="2025115117" id="term_2025115117" class="termRadio" data-termlabel="Summer 2026" type="radio" onclick="UU.caseChangeTerm(2025115117);" data-start="6696" data-end="6818" data-dcart="false" data-denroll="false" checked="checked">
+	      	<label class="termRadioLabel" for="term_2025115117"><span></span>Summer 2026</label>
+		  </div>
+		
+		  <div class="term_radio_item">
+          	<input name="radterm" data-term="2026102119" id="term_2026102119" class="termRadio" data-termlabel="Fall/Winter 2026-2027" type="radio" onclick="UU.caseChangeTerm(2026102119);" data-start="6819" data-end="7060" data-dcart="false" data-denroll="false">
+	      	<label class="termRadioLabel" for="term_2026102119"><span></span>Fall/Winter 2026-2027</label>
+		  </div>
+		
+		  <div style="clear:both"></div>
+	
+	</div>
+		<script>
+			function updateTerm() {
+				var select = $("#phone_term_select");
+				var term = select.val();
+
+				$("#term_"+term).attr("checked", "true");
+				$("#empty_term").remove();
+				UU.caseChangeTerm(term);
+			}
+		</script>
+	
+	
+	<div class="bubble bubble_arrow" id="step1bubble">
+	    <img src="Visual%20Schedule%20Builder%20-%20York%20University_files/tiptop.gif" class="tiptop" alt="Arrow for step instructions">
+	
+	    <img src="Visual%20Schedule%20Builder%20-%20York%20University_files/step_arrow.gif" alt="Arrow for step instructions" class="pull-right phone">
+	
+	    <div class="bubbletitle">Step <span class="bubbleNb1">1</span></div>
+	    <div>
+	    Choose a session.
+	    </div>
+	</div>
+	
+
+	
+	</div>
+
+	<div class="tz_region" style="display:none;">
+	 	<div style="float:right;position:relative;" id="timezoneSelector">
+	 		<label for="mytimezone">
+	 		Display Time<span class="akl">z</span>one:
+	 		<select class="accessible ak_z" id="mytimezone" onkeydown="return avoidChange(event);" onkeypress="return avoidChange(event);" onkeyup="return avoidChange(event);"><option value="1">Hawaii</option><option value="2">Alaska</option><option value="3">Pacific  (US &amp; Canada)</option><option value="4">Mountain Time (US &amp; Canada)</option><option value="5">Arizona</option><option value="6">Central Time (US &amp; Canada)</option><option value="7" selected="selected">Eastern Time (US &amp; Canada)</option><option value="8">Atlantic (Canada)</option><option value="9">Newfoundland (Canada)</option></select>
+	 		</label>
+	 	</div>
+ 	</div>
+
+	<div style="clear:both;"></div>
+
+
+</div>
+
+
+<h2 class="accessOnly">Select Courses</h2>
+<p class="accessOnly" style="margin-bottom:15px" id="page_add_courses_desc">
+Welcome to the Schedule Builder. This is the Add Courses Page. To use 
+this software, follow the steps described below. Add courses to the list
+ of courses, then click the generate schedules button. This will open 
+the Results page to show you a list of possible schedules.
+</p>
+
+	<div class="mobileRoom" style="display: none;"></div>
+	<div class="accessOnly accessTermDisp"><h3>Step <span class="bubbleNb1">1</span>: Select Term</h3><div>Choose a session.</div></div>
+	<div id="term_region_alt" style="display: none;"></div>
+
+	<div class="accessOnly"><h3>Step <span class="bubbleNb2a">2</span>: Select Campuses</h3>Select your desired course locations.</div>
+	<div id="locationRegion">
+	
+		<div class="bubble" id="step2abubble">
+		    <img src="Visual%20Schedule%20Builder%20-%20York%20University_files/step_arrow_south.gif" alt="Arrow down for step instructions" class="pull-right phone">
+		    <div class="bubbletitle">Step <span class="bubbleNb2a">2</span></div>
+		    <div>
+		    Select your desired course locations.
+		    </div>
+		    <div class="tip_left"></div>
+		    <div class="tip_bottom weakhide"></div>
+		</div>
+		<div id="collegeSelector"><div class="mstitle"><div class="msItemR mslistitemstart"><div class="msItemNb li"><div class="msItemTb">Colleges:</div></div></div><div class="msItemR msitem hidden" style=""><div class="msItemN"><div class="msItemT">York University</div><div class="msItemM" id="collegeSelectorList0" onclick='msSelect("collegeSelector",0,false);'></div></div></div><div class="msAll" style="display: inline-block;"><div class="msItemR"><div class="msItemNb li"><div class="msItemTb"><span class="textAll" style="display: none;">(0/1)</span><span class="textNone" style="display: inline;">None</span></div></div></div></div><div class="msItemR msSelectDot"><div class="msItemNb li"><a href="javascript:void(0)" class="msItemTb a msActBoxShow ms_select_link" title="Toggle selector">Select...</a></div></div></div><fieldset class="msbox" style="display: none;"><legend style="display:none">Colleges:</legend><div class="msboxtitle"></div><div class="msSelectAllDiv"><a href="javascript:void(0)" class="a msActSelectAll" onclick='msSelect("collegeSelector",undefined,true);'>Select All</a> / <a href="javascript:void(0)" class="a msActSelectNone" onclick='msSelect("collegeSelector",undefined,false);'>Select None</a></div><div class="msBoxCont"><div class="msulwrapper wcol2"><ul class="boxcol col0"><li class="msitem"><input type="checkbox" class="mobile" id="collegeSelectorBox0" onchange='msSelect("collegeSelector",0,this.checked);'><label for="collegeSelectorBox0"><span></span>York University</label></li></ul></div><div class="msulwrapper wcol2"><ul class="boxcol col1"></ul></div><div class="msulwrapper wcol2 textnonevisible" style="display: none;"><ul><li>None Visible</li></ul></div><div style="clear:both;"></div></div><div class="msBoxClose accessOffOnly"><input class="big_button msActBoxClose" type="button" value="Close" title="Hide selector"></div></fieldset></div>
+		<div id="campusSelector"><div class="mstitle"><div class="msItemR mslistitemstart"><div class="msItemNb li"><div class="msItemTb">Campuses:</div></div></div><div class="msItemR msitem hidden" style=""><div class="msItemN"><div class="msItemT">Keele</div><div class="msItemM" id="campusSelectorList0" onclick='msSelect("campusSelector",0,false);'></div></div></div><div class="msItemR msitem hidden" style=""><div class="msItemN"><div class="msItemT">Glendon</div><div class="msItemM" id="campusSelectorList1" onclick='msSelect("campusSelector",1,false);'></div></div></div><div class="msItemR msitem hidden" style=""><div class="msItemN"><div class="msItemT">Markham</div><div class="msItemM" id="campusSelectorList2" onclick='msSelect("campusSelector",2,false);'></div></div></div><div class="msItemR msitem hidden" style=""><div class="msItemN"><div class="msItemT">Off Campus</div><div class="msItemM" id="campusSelectorList3" onclick='msSelect("campusSelector",3,false);'></div></div></div><div class="msItemR msitem hidden" style=""><div class="msItemN"><div class="msItemT">Toronto Metropolitan Univ</div><div class="msItemM" id="campusSelectorList4" onclick='msSelect("campusSelector",4,false);'></div></div></div><div class="msItemR msitem hidden" style=""><div class="msItemN"><div class="msItemT">Catholic Education Centre</div><div class="msItemM" id="campusSelectorList5" onclick='msSelect("campusSelector",5,false);'></div></div></div><div class="msItemR msitem hidden" style=""><div class="msItemN"><div class="msItemT">Seneca at York</div><div class="msItemM" id="campusSelectorList6" onclick='msSelect("campusSelector",6,false);'></div></div></div><div class="msAll" style="display: inline-block;"><div class="msItemR"><div class="msItemNb li"><div class="msItemTb"><span class="textAll">All (7)</span><span class="textNone" style="display: none;">None</span></div></div></div></div><div class="msItemR msSelectDot"><div class="msItemNb li"><a href="javascript:void(0)" class="msItemTb a msActBoxShow ms_select_link" title="Toggle selector"><span class="accessOffOnly">Select...</span><span class="accessOnly">Show campus selector</span></a></div></div></div><fieldset class="msbox" style="display: none;"><legend style="display:none">Campuses:</legend><div class="msboxtitle"></div><div class="msSelectAllDiv"><a href="javascript:void(0)" class="a msActSelectAll" onclick='msSelect("campusSelector",undefined,true);'><span class="accessOffOnly">Select All</span><span class="accessOnly">Select All Campuses</span></a> / <a href="javascript:void(0)" class="a msActSelectNone" onclick='msSelect("campusSelector",undefined,false);'><span class="accessOffOnly">Select None</span><span class="accessOnly">Deselect All Campuses</span></a></div><div class="msBoxCont"><div class="msulwrapper wcol2"><ul class="boxcol col0"><li class="msitem"><input type="checkbox" class="mobile" id="campusSelectorBox0" checked="checked" onchange='msSelect("campusSelector",0,this.checked);'><label for="campusSelectorBox0"><span></span>Keele</label></li><li class="msitem"><input type="checkbox" class="mobile" id="campusSelectorBox1" checked="checked" onchange='msSelect("campusSelector",1,this.checked);'><label for="campusSelectorBox1"><span></span>Glendon</label></li><li class="msitem"><input type="checkbox" class="mobile" id="campusSelectorBox2" checked="checked" onchange='msSelect("campusSelector",2,this.checked);'><label for="campusSelectorBox2"><span></span>Markham</label></li><li class="msitem"><input type="checkbox" class="mobile" id="campusSelectorBox3" checked="checked" onchange='msSelect("campusSelector",3,this.checked);'><label for="campusSelectorBox3"><span></span>Off Campus</label></li></ul></div><div class="msulwrapper wcol2"><ul class="boxcol col1"><li class="msitem"><input type="checkbox" class="mobile" id="campusSelectorBox4" checked="checked" onchange='msSelect("campusSelector",4,this.checked);'><label for="campusSelectorBox4"><span></span>Toronto Metropolitan Univ</label></li><li class="msitem"><input type="checkbox" class="mobile" id="campusSelectorBox5" checked="checked" onchange='msSelect("campusSelector",5,this.checked);'><label for="campusSelectorBox5"><span></span>Catholic Education Centre</label></li><li class="msitem"><input type="checkbox" class="mobile" id="campusSelectorBox6" checked="checked" onchange='msSelect("campusSelector",6,this.checked);'><label for="campusSelectorBox6"><span></span>Seneca at York</label></li></ul></div><div class="msulwrapper wcol2 textnonevisible" style="display: none;"><ul><li>A college must be selected first.</li></ul></div><div style="clear:both;"></div></div><div class="msBoxClose accessOffOnly"><input class="big_button msActBoxClose" type="button" value="Close" title="Hide campus selector"></div></fieldset></div>
+		<div id="locationSelector"><div class="mstitle"><div class="msItemR mslistitemstart"><div class="msItemNb li"><div class="msItemTb">Locations:</div></div></div><div class="msAll" style="display: inline-block;"><div class="msItemR"><div class="msItemNb li"><div class="msItemTb"><span class="textAll" style="display: none;">All 0 within selected campuses</span><span class="textNone" style="display: none;">None</span></div></div></div></div><div class="msItemR msSelectDot"><div class="msItemNb li"><a href="javascript:void(0)" class="msItemTb a msActBoxShow ms_select_link" title="Toggle selector">Select...</a></div></div></div><fieldset class="msbox" style="display: none;"><legend style="display:none">Locations:</legend><div class="msboxtitle"></div><div class="msSelectAllDiv"><a href="javascript:void(0)" class="a msActSelectAll" onclick='msSelect("locationSelector",undefined,true);'>Select All</a> / <a href="javascript:void(0)" class="a msActSelectNone" onclick='msSelect("locationSelector",undefined,false);'>Select None</a></div><div class="msBoxCont"><div class="msulwrapper wcol3"><ul class="boxcol col0"></ul></div><div class="msulwrapper wcol3"><ul class="boxcol col1"></ul></div><div class="msulwrapper wcol3"><ul class="boxcol col2"></ul></div><div class="msulwrapper wcol3 textnonevisible" style="display: block;"><ul><li>A campus must be selected first.</li></ul></div><div style="clear:both;"></div></div><div class="msBoxClose accessOffOnly"><input class="big_button msActBoxClose" type="button" value="Close" title="Hide selector"></div></fieldset></div>
+	</div>
+
+
+<div class="accessOnly">
+<h3>Step <span class="bubbleNb2">3</span>: Add a Course</h3>
+<div>
+Begin typing a course code or name that you would like to take, then click 'Select'.
+<br><br><b>Example:</b> CHEM 1001
+</div>
+</div>
+<div>
+
+	<div id="message_area">
+	</div>
+
+	<div class="bubble" id="step2bubble">
+	    <div class="bubbletitle">Step <span class="bubbleNb2">3</span></div>
+		Begin typing a course code or name that you would like to take, then click 'Select'.
+    	<img src="Visual%20Schedule%20Builder%20-%20York%20University_files/step_arrow_south.gif" style="margin-top: 17px;" alt="Arrow down for step instructions" class="pull-right phone">
+		<br><br><b>Example:</b> CHEM 1001
+		<div class="tip_bottom"></div>
+    	<div class="clearfix"></div>
+	</div>
+
+</div>
+
+<div class="plusBox">
+
+<div class="plusBoxSelect">Enter Course</div>
+<div style="width:1px;height:1px;overflow:hidden;"><label for="code_number">Course Code. For example, E N space 1 1 9 and press enter</label></div>
+<div class="plusBoxInput">
+	<input class="accessible ak_o" type="text" name="code_number" id="code_number" autocomplete="off" placeholder="Course Number, Title, Instructor..." role="combobox">
+	<input id="addCourseButton" name="add_course" type="button" value="Select" title="Add the entered course to the list of courses used to generate schedules">
+	
+</div>
+<div style="clear:both"></div>
+
+<div class="crnListWarning tooManyResults" style="display: none;">
+	There are too many schedule possibilities. You must reduce the number 
+of enabled classes or pin down some class(es) before adding more 
+courses.
+</div>
+
+</div>
+
+<h2 class="accessOnly">List of Courses:</h2>
+
+<div id="requirements">
+
+	<div class="loadingDiv flap_loading" id="flap_loading" style="display: none;">Retrieving current schedule...</div>
+
+	<div class="requirementDiv requirementMargin" id="templateCourse" style="display:none;">
+	<div class="requirementHeader">
+		<span class="requirementTitle">ABC</span>
+		<div class="reqInfo">One course from the following list:</div>
+	</div>
+	<div class="courseDiv">
+		<input type="hidden" class="inputCourse">
+		<input type="hidden" class="inputClasses">
+		<input type="hidden" class="inputCampusAmmendments">
+
+		<div style="position: absolute; top: 5px; right: 5px;"></div>
+
+		<div style="float: right; padding-top: 1px; text-align: right;">
+			
+			<span class="campus" title="Campus"></span> <span class="accessOffOnly">&nbsp;<a href="javascript:void(0)" class="selectMore a" onclick="selectMore(this);">Select...</a></span>
+			&nbsp;&nbsp;
+			<a href="javascript:void(0);" onclick="UU.caseRemoveCourse($(this).parents('.requirementDiv').data('id'));" title="Remove this course from the Search">
+				<span class="accessOnly">Remove course <span class="courseCode">ABC 123</span> from list</span>
+				<img class="removeButton" alt="Remove icon" src="Visual%20Schedule%20Builder%20-%20York%20University_files/close_thin.png" style="padding-bottom: 4px;">
+			</a>
+		</div>
+
+		<div style="float: left; position: relative; height: 20px; line-height: 20px">
+			<label title="Toggle this course on or off temporarily to explore your options">
+			<input type="checkbox" class="ignore_check">
+			<span class="class_code">ACC 202</span>&nbsp;&nbsp;
+			</label>
+		</div>
+		
+
+		<div class="course_status_cont">
+			<span class="course_status"></span>
+		</div>
+
+		<div style="float: left; position: relative" class="warningMessageDiv">
+			<div style="display: table-cell; vertical-align: middle; height: 23px">
+				<img class="warningIcon" src="Visual%20Schedule%20Builder%20-%20York%20University_files/exclamation.gif" width="20" height="20" alt="exclamation mark"><span class="warningMessage">---</span><br>
+			</div>
+		</div>
+
+		<div style="clear:left;width:100%"></div>
+
+		<div style="float:left;position:relative;margin-bottom:5px;width:100%" class="stopMessageDiv">
+			<div style="display: table-cell; vertical-align: middle; height: 23px">
+				<img class="stopIcon" src="Visual%20Schedule%20Builder%20-%20York%20University_files/exclamation.gif" width="20" height="20" alt="No entry icon"><span class="stopMessage">---</span>
+			</div>
+			<ul class="checkbox-grid stopMessageList">
+
+			</ul>
+
+		</div>
+
+		<div style="float:left;clear:left;position:relative;">
+			<span class="class_name">asdf Managerial Accounting</span>
+		</div>
+
+		<div class="course_dropdown">
+			<select class="select_period" onkeydown="return avoidChange(event);" onkeypress="return avoidChange(event);" onkeyup="return avoidChange(event);">
+			</select>
+		</div>
+		<div class="course_dropdown">
+			<select class="select_usn" onkeydown="return avoidChange(event);" onkeypress="return avoidChange(event);" onkeyup="return avoidChange(event);">
+			</select>		
+		</div>
+		<div class="course_dropdown" onkeydown="return avoidChange(event);" onkeypress="return avoidChange(event);" onkeyup="return avoidChange(event);">
+			<img src="Visual%20Schedule%20Builder%20-%20York%20University_files/pin.png" style="vertical-align:middle;" class="dropdownPinImg" alt="Push Pin">
+			<select class="dropdownSelect" title="Select your intentions with this course">
+				<option value="al" selected="selected">Try all classes</option>
+				<!-- <option value="ig">Ignore this course</option>  -->
+				<option value="ss">Try specific classes...</option>
+			</select>
+
+		</div>
+
+		<!--
+		<div style="float:left;clear:left;position: relative;margin-bottom:2px" class="course_status_label">
+			<strong>Status:</strong> <span class="course_status"></span>
+		</div>
+		 -->
+
+		<div style="clear: both;"></div>
+
+		<div class="dropDownText" style="visibility:visible;display:none;">
+			<strong class="spec_sec_title">Classes:</strong>
+
+			<span class="class_checkboxes">
+
+			<!--
+			<span class="spec_sec" onclick="selCheck(0,0,0,!$e('csi0_0_0').checked);return true;" onselectstart="return false;" onmousedown="return false;" style="background-image: none;">
+				<input type="checkbox" onclick="selCheck(0,0,0,!this.checked);" checked="" id="csiX_0_0"/>
+				<span style="cursor: default;"><span>LEC 41H1</span></span>
+				<span style="color: #CC0000" title="Section is full"> (Full)</span> &nbsp;&nbsp;
+			</span>
+			 -->
+
+			 </span>
+
+			<div style="clear: both;"></div>
+		</div>
+
+		<div class="descText">
+			<div class="rdescDiv_cont"><div class="rdescDiv">
+				<strong>Requirement</strong><span class="rdesctitle"></span><strong>:</strong> <span class="rdesc">asdf</span>
+			</div></div>
+			<div class="cldescDiv_cont"><div class="cldescDiv">
+				<strong>Cross Listed Courses:</strong> <span class="cldesc">asdf</span>
+			</div></div>
+			<div class="descDiv" style="display:none;">
+				<strong>Description:</strong> <span class="desc">asdf</span>
+			</div>
+			<div class="remDiv" style="margin-top:4px;display:none;"><strong>Class Remarks:</strong>
+				<br><span class="rem">asdf</span>
+			</div>
+
+			<span class="accessOffOnly">
+				<a href="javascript:void(0)" class="morelink a" title="Show more detail about this course">
+				&nbsp;...Show More&nbsp;
+				</a>
+			</span>
+
+			<span class="accessOnly">
+				<a href="javascript:void(0)" class="morelink a">
+				&nbsp;...Show more detail about <span class="courseCode">ABC 123</span>&nbsp;
+				</a>
+			</span>
+
+			<span class="accessOffOnly">
+				<a href="javascript:void(0)" class="lesslink a" title="Show less detail about this course">
+				Show less
+				</a>
+			</span>
+
+			<span class="accessOnly">
+				<a href="javascript:void(0)" class="lesslink a">
+				Show less detail about <span class="courseCode">ABC 123</span>
+				</a>
+			</span>
+
+		</div>
+
+	</div>
+	</div>
+
+
+<div class="requirementDiv requirementMargin" style="">
+	<div class="requirementHeader" style="display: none;">
+		<span class="requirementTitle">ABC</span>
+		<div class="reqInfo">One course from the following list:</div>
+	</div>
+	<div class="courseDiv bc1 bd1">
+		<input type="hidden" class="inputCourse" value="SC-MATH-2015-3.00-EN-">
+		<input type="hidden" class="inputClasses">
+		<input type="hidden" class="inputCampusAmmendments" value="[object Object]">
+
+		<div style="position: absolute; top: 5px; right: 5px;"></div>
+
+		<div style="float: right; padding-top: 1px; text-align: right;">
+			
+			<span class="campus" title="Campus">Keele</span> <span class="accessOffOnly">&nbsp;<a href="javascript:void(0)" class="selectMore a" onclick="selectMore(this);" style="display: inline;">Select...</a></span>
+			&nbsp;&nbsp;
+			<a href="javascript:void(0);" onclick="UU.caseRemoveCourse($(this).parents('.requirementDiv').data('id'));" title="Remove this course from the Search">
+				<span class="accessOnly">Remove course <span class="courseCode">SC-MATH-2015-3.00-EN </span> from list</span>
+				<img class="removeButton" alt="Remove icon" src="Visual%20Schedule%20Builder%20-%20York%20University_files/close_thin.png" style="padding-bottom: 4px;">
+			</a>
+		</div>
+
+		<div style="float: left; position: relative; height: 20px; line-height: 20px">
+			<label title="Toggle this course on or off temporarily to explore your options">
+			<input type="checkbox" class="ignore_check" checked="checked">
+			<span class="class_code">SC-MATH-2015-3.00-EN </span>&nbsp;&nbsp;
+			</label>
+		</div>
+		
+
+		<div class="course_status_cont" style="display: none;">
+			<span class="course_status"></span>
+		</div>
+
+		<div style="float: left; position: relative; display: none;" class="warningMessageDiv">
+			<div style="display: table-cell; vertical-align: middle; height: 23px">
+				<img class="warningIcon" src="Visual%20Schedule%20Builder%20-%20York%20University_files/exclamation.gif" width="20" height="20" alt="exclamation mark"><span class="warningMessage">LE-ENG-2003-3.00-EN  has no classes with open seats that do not conflict with this course</span><br>
+			</div>
+		</div>
+
+		<div style="clear:left;width:100%"></div>
+
+		<div style="float: left; position: relative; margin-bottom: 5px; width: 100%; display: none;" class="stopMessageDiv">
+			<div style="display: table-cell; vertical-align: middle; height: 23px">
+				<img class="stopIcon" src="Visual%20Schedule%20Builder%20-%20York%20University_files/exclamation.gif" width="20" height="20" alt="No entry icon" style="display: none;"><span class="stopMessage">Select additional campuses where you wish to take this course:<span class="selAddCam"></span></span>
+			</div>
+			<ul class="checkbox-grid stopMessageList"><li><label><input class="class_cam_chk" data-cam="3" type="checkbox" checked="checked" disabled="disabled">Keele</label></li></ul>
+
+		</div>
+
+		<div style="float:left;clear:left;position:relative;">
+			<span class="class_name">Applied Multivariate and Vector Calculus</span>
+		</div>
+
+		<div class="course_dropdown">
+			<select class="select_period" onkeydown="return avoidChange(event);" onkeypress="return avoidChange(event);" onkeyup="return avoidChange(event);"><option value="" selected="selected">All Terms (1)</option><option value="S1">Term S1</option></select>
+		</div>
+		<div class="course_dropdown">
+			<select class="select_usn" onkeydown="return avoidChange(event);" onkeypress="return avoidChange(event);" onkeyup="return avoidChange(event);"><option value="" selected="selected">All Sections (1)</option><option value="A">Section A</option></select>		
+		</div>
+		<div class="course_dropdown" onkeydown="return avoidChange(event);" onkeypress="return avoidChange(event);" onkeyup="return avoidChange(event);">
+			<img src="Visual%20Schedule%20Builder%20-%20York%20University_files/pin.png" style="vertical-align: middle; display: none;" class="dropdownPinImg" alt="Push Pin">
+			<select class="dropdownSelect" title="Select your intentions with this course">
+				<option value="al">Try all classes (1)</option>
+				<!-- <option value="ig">Ignore this course</option>  -->
+				<option value="ss" selected="selected">Try specific classes...</option><option value="us_--20250831_T59W01--">Section A: Term S1: Lect 01</option>
+			</select>
+
+		</div>
+
+		<!--
+		<div style="float:left;clear:left;position: relative;margin-bottom:2px" class="course_status_label">
+			<strong>Status:</strong> <span class="course_status"></span>
+		</div>
+		 -->
+
+		<div style="clear: both;"></div>
+
+		<div class="dropDownText" style="visibility: visible;">
+			<strong class="spec_sec_title" style="display: inline;">Classes:</strong>
+
+			<span class="class_checkboxes"><label for="0-05528823656092965"><span class="spec_sec" onselectstart="return false;"><input id="0-05528823656092965" class="class_chk" type="checkbox" checked="checked" data-cfsi="0"><span style="cursor:default;">Term S1: Section A: Lect 01</span>&nbsp;&nbsp;</span></label></span>
+
+			<div style="clear: both;"></div>
+		</div>
+
+		<div class="descText">
+			<div class="rdescDiv_cont no_reqs"><div class="rdescDiv" style="display: block;">
+				<strong>Requirement</strong><span class="rdesctitle"></span><strong>:</strong> <span class="rdesc">None</span>
+			</div></div>
+			<div class="cldescDiv_cont"><div class="cldescDiv" style="display: none;">
+				<strong>Cross Listed Courses:</strong> <span class="cldesc">asdf</span>
+			</div></div>
+			<div class="descDiv" style="display: block;">
+				<strong>Description:</strong> <span class="desc">Topics covered 
+include partial derivatives; grad, div, curl and Laplacian operators; 
+line and surface integrals; theorems of Gauss and Stokes; double and 
+triple integrals in various coordinate systems; extrema and Taylor 
+series for multivariate functions. Prerequisite: One of SC/MATH 1021 
+3.00 or SC/MATH 1025 3.00 and one of SC/MATH 1010 3.00, SC/MATH 1014 
+3.00, SC/MATH 1310 3.00; or SC/MATH 1505 6.00 plus permission of the 
+course coordinator. Course credit exclusions: SC/MATH 2010 3.00, SC/MATH
+ 2310 3.00, GL/MATH 2670 3.00, GL/MODR 2670 3.00, GL/MATH 3200 3.00.</span>
+			</div>
+			<div class="remDiv" style="margin-top:4px;display:none;"><strong>Class Remarks:</strong>
+				<br><span class="rem">asdf</span>
+			</div>
+
+			<span class="accessOffOnly">
+				<a href="javascript:void(0)" class="morelink a bc1" title="Show more detail about this course">
+				&nbsp;...Show More&nbsp;
+				</a>
+			</span>
+
+			<span class="accessOnly">
+				<a href="javascript:void(0)" class="morelink a bc1">
+				&nbsp;...Show more detail about <span class="courseCode">SC-MATH-2015-3.00-EN </span>&nbsp;
+				</a>
+			</span>
+
+			<span class="accessOffOnly">
+				<a href="javascript:void(0)" class="lesslink a" title="Show less detail about this course">
+				Show less
+				</a>
+			</span>
+
+			<span class="accessOnly">
+				<a href="javascript:void(0)" class="lesslink a">
+				Show less detail about <span class="courseCode">SC-MATH-2015-3.00-EN </span>
+				</a>
+			</span>
+
+		</div>
+
+	</div>
+	</div></div>
+
+    <div class="reg_generate">
+
+      <input title="Click this to generate all the possible schedule results for the listed courses. This will send you to the Results Page" class="big_button" type="button" name="do_search" value="Generate Schedules" onclick="UU.caseViewResults();" id="do_search">
+
+
+<div style="margin-top:-1px;position:relative">
+<div class="bubble" id="step3bubble" style="">
+    <img src="Visual%20Schedule%20Builder%20-%20York%20University_files/step_arrow.gif" alt="Arrow down for step instructions" class="pull-right phone">
+    <img src="Visual%20Schedule%20Builder%20-%20York%20University_files/tiptop.gif" class="tiptop" alt="arrow for step instructions">
+    <div class="bubbletitle">Step <span class="bubbleNb3">4</span></div>
+    Once the desired courses are listed, click the 'Generate Schedules' button.
+    <div class="clearfix"></div>
+</div>
+</div>
+
+
+    </div>
+
+
+
+
+<div class="bottomLinks noprint">
+
+      <a href="javascript:void(0)" onclick="clearSearch();" title="Reset the contents on this page">
+      	<img src="Visual%20Schedule%20Builder%20-%20York%20University_files/broom.png" style="vertical-align:middle" height="18" width="18" alt="Clear search icon"> Clear this Search
+      </a>
+      
+    
+
+      <a href="javascript:void(0)" onclick="toggleAccess();" title="Turn on accessibility features" id="accessibilityOption">
+          <img id="wheelchair_icon" src="Visual%20Schedule%20Builder%20-%20York%20University_files/access.png" style="vertical-align:middle" alt="Wheelchair icon"> <span id="access_link_text">Increase Accessibility</span>
+      </a>
+
+    
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+      <a href="http://registrar.yorku.ca/enrol/guide/vsb" target="_blank" title="Click to view the Visual Schedule Builder documentation for additional information">
+          <img src="Visual%20Schedule%20Builder%20-%20York%20University_files/question.png" style="vertical-align:middle"> View Help Documentation
+      </a>
+
+
+</div>
+
+
+
+</div>
+<div class="page_whiteout"></div>
+</td> <!-- end of page_criteria -->
+
+
+
+
+
+
+<td id="page_results" class="vsb_page active_vsb_page" style="width: 63.7136%;">
+
+<div class="left_gradient nomobile">
+</div>
+<div class="right_gradient nomobile">
+</div>
+<div class="page_fader" style="opacity: 0; display: none;"></div>
+
+<div class="full_page_title title_font">
+	<div class="left_gradient left_gradient_stronger">
+	</div>
+	<div class="right_gradient right_gradient_stronger">
+	</div>
+<span class="akl">R</span>esults
+</div>
+<div class="full_page_content" style="opacity: 1; width: auto;">
+
+<div class="mobile_sort_filter mobileonly">
+	<!-- 
+	<div class="reg_links mobileonly">
+			<div class="leftnclear" style="text-align:center;width:100%;"><a href="#" onclick="SLIDER.showTip();return false;" class="tip_link"><img style="vertical-align: middle" src="images/lightbulb_bl.gif" alt="show tips icon"/>&nbsp;Display helpful tips</a></div>
+	</div>
+	 -->
+	 
+	<button type="button" id="fortips" class="btn btn-mid tip_link" onclick="SLIDER.showTip();return false;" title="Display helpful tips" style="display: none;">Tips</button>
+	
+
+	<button type="button" id="forsort" class="btn btn-mid">Sort</button>
+	<button type="button" id="forfilter" class="btn btn-mid">Filter</button>
+</div>
+
+<p id="alertJAWSresult" role="alert" style="display:none;"></p>
+
+<div id="flap_loading2" class="flap_loading" style="display: none;">
+	&nbsp;
+	<span id="procStatus">Found 1 results...</span>
+</div>
+
+<div class="reg_parent" style="">
+
+<p class="accessOnly" id="page_results_desc">
+This is the Results Page. Showing result <span class="resultIndex">1</span> of <span class="resultMax">1</span>.
+ This shows you a list of all the possible schedules using your list of 
+courses. Navigate through the results. You may sort and filter the 
+results using the tools on this page. When you have found your preferred
+ schedule, use the provided CRN numbers to enroll for the classes. You 
+may also return to the Add Courses page to change the list of courses.
+</p>
+
+<div class="reg_tips noprint">
+
+	<div id="tip_div" class="tipdiv" style="display: block;">
+		<a href="javascript:void(0)" class="slider_close" onclick="SLIDER.hideTip();return false;" title="Hide the helpful tips"></a>
+		<a href="javascript:void(0)" class="slider_left" onclick="SLIDER.sliderChange(false);" title="Show the previous helpful tip"></a>
+		<div class="slider_tip">
+			<div class="slider_tip_title"><img src="Visual%20Schedule%20Builder%20-%20York%20University_files/lightbulb.gif" style="vertical-align:text-top;margin-right:6px" alt="Lightbulb icon">TIP #<span id="slider_tip_nb">1</span>/4</div>
+			<div class="slider_tip_image nomobile"><img id="slider_tip_img" src="Visual%20Schedule%20Builder%20-%20York%20University_files/tip_image1.png" alt="Tiny screenshot to accompany tip text"></div>
+			<br><br>
+			<span class="slider_tip_text"><div class="nomobile">In the schedule grid, <strong>click and drag</strong>
+ Personal Times to indicate when you do not want to have classes. You 
+can also manually enter Personal Times in  Increase Accessibility mode. 
+ Schedules that avoid these times will be prioritized.</div><div class="phoneOnly"><strong>Touch, hold for a second, and drag</strong> to indicate when you do not want to have classes. Schedules that avoid these times will be prioritized.</div></span>
+		</div>
+		<a href="javascript:void(0)" class="slider_right" onclick="SLIDER.sliderChange(true);" title="Show the next helpful tip"></a>
+	</div>
+</div>
+<div class="reg_row1_enroll noprint" style="display:none;">
+	<h2 class="reg_title noprint">Getting Schedule</h2>
+</div>
+
+<div class="reg_row1 noprint noselect">
+
+	<div class="reg_flip">
+		<h2 class="reg_title noprint nomobile" id="pagetitle">Generated Results</h2>
+		<h3 class="accessOnly">Navigate Schedules</h3>
+		<table style="width:100%;border-spacing: 4px;">
+		<tbody><tr>
+        <td style="width:15%;text-align:center;vertical-align:middle;white-space:nowrap;">
+        	<a href="javascript:void(0)" class="goFirst goButton" onclick="UU.caseFirstResult();" title="First Result"></a>
+        </td>
+        <td style="width:15%;text-align:center;vertical-align:middle;white-space:nowrap;">
+			<a href="javascript:void(0)" class="goLeft goButton" onclick="UU.casePrevResult();" title="Previous Result"></a>
+        </td>
+        <td style="width:40%;text-align:center;vertical-align: middle;white-space:nowrap;">
+        	<!-- <a href="javascript:void(0)" onclick="UU.caseFavoriteResult();">Star</a>-->
+        	<span style="font-size:18px;" class="resultNbDisplay">
+        	<span class="resultIndex">1</span>
+        	of
+        	<span class="resultMax">1</span>
+        	</span>
+        </td>
+        <td style="width:15%;text-align:center;vertical-align:middle;white-space:nowrap;">
+			<a href="javascript:void(0)" class="goRight goButton" onclick="UU.caseNextResult();" title="Next Result"></a>
+		</td>
+		<td style="width:15%;text-align:center;vertical-align:middle;white-space:nowrap;">
+			<a href="javascript:void(0)" class="goLast goButton" onclick="UU.caseLastResult();" title="Last Result"></a>
+        </td>
+        </tr>
+        <tr id="result_page_message" style="display:none;">
+        	<td colspan="5" style="font-weight:bold;color:#00BB00;">Saved to Favorites</td>
+        </tr>
+        </tbody></table>
+	</div>
+
+	<div class="reg_links nomobile">
+
+			<div class="leftnclear backToSearchLink"><a href="javascript:void(0)" onclick="UU.caseViewCriteria();" title="Back to search"><img style="vertical-align: middle" src="Visual%20Schedule%20Builder%20-%20York%20University_files/search.gif" alt="Back to search icon">&nbsp;Back to search</a></div>
+			<div class="leftnclear"><a class="printLink" href="#" title="Print printer-friendly schedule" onclick="clickPrint()"><img style="vertical-align: middle" src="Visual%20Schedule%20Builder%20-%20York%20University_files/print.png" alt="Print Schedule icon">&nbsp;Print schedule</a></div>
+			
+			
+			
+				
+			
+			
+			 		
+			<!--<div class="leftnclear"><a href="javascript:void(0)" id="testThumb">Test Thumbnail</a></div> -->
+			<div class="leftnclear"><a href="#" onclick="SLIDER.showTip();return false;" class="tip_link" style="display: none;"><img style="vertical-align: middle" src="Visual%20Schedule%20Builder%20-%20York%20University_files/lightbulb_bl.gif" alt="show tips icon">&nbsp;Display helpful tips</a></div>
+	</div>
+
+
+	<div class="reg_sort nonmobilesort">
+
+		<h3 class="accessOnly">Sorting</h3>
+
+		
+
+		
+		<label for="sort_by">Sort preference: </label>
+		<select id="sort_by" name="sort_by" onchange="UU.caseChangeSort(this.value);" onkeydown="return avoidChange(event);" onkeypress="return avoidChange(event);" onkeyup="return avoidChange(event);">
+		<option value="none">None</option>
+		<option value="daysoff">Most days off</option>
+		<option value="morning">Morning classes</option>
+		<option value="midday">Mid-day classes</option>
+		<option value="evening">Evening classes</option>
+		<option value="timeatschool">Time off campus</option>
+		<option value="timeinclass" selected="selected">Most on-campus</option>
+		</select>
+		
+
+	</div>
+
+
+							<div class="reg_filters">
+
+								<h3 class="accessOnly">Filtering</h3>
+
+								<table id="filterPref">
+									<tbody><tr>
+										<td id="schedule_filter" style="text-align: left;">
+											<div style="margin-bottom: 4px;">Show me schedules containing:</div>
+											<div style="margin-left: 9px;">
+												
+												<label for="hide_full"><input class="ak_u" type="checkbox" id="hide_full" value="hide" onclick="UU.caseChangeHideFull(this);" style="vertical-align: middle;" checked="checked">F<span class="akl">u</span>ll classes</label>
+												(<span class="fullText" style="font-weight: bold;">•</span>)
+												
+												
+												
+												<br> <label for="hide_online"><input class="ak_o" type="checkbox" id="hide_online" value="hide" onclick="UU.caseChangeHideOnline(this);" style="vertical-align: middle;" checked="checked"><span class="akl">O</span>nline classes</label>
+												(<img src="Visual%20Schedule%20Builder%20-%20York%20University_files/online.gif" style="vertical-align: middle;" width="20" height="20" alt="Online icon">) <span id="hideOnCampus"><br>
+													<label for="hide_on_campus"><input class="ak_m" type="checkbox" id="hide_on_campus" value="hide" onclick="UU.caseChangeHideOnCampus(this);" style="vertical-align:middle;" checked="checked">On-ca<span class="akl">m</span>pus classes</label>
+												</span>
+												
+												
+												
+											</div>
+										</td>
+									</tr>
+
+									<tr>
+										<td>
+											 
+										</td>
+									</tr>
+
+								</tbody></table>
+
+							</div>
+
+
+
+
+				<!-- Added by prakash start for mobile sort -->
+					<div class="centerparent">
+							<div id="popup" class="popup-wrapper center hide" style="width: 250px; height: auto; z-index: 999;">
+								<div class="popup-content">
+									<div class="popup-title">
+										<button type="button" class="popup-close">X</button>
+										<!-- <button type="button" class="popup-close filteconfrim closefitler">Close</button>-->
+										<h3>Sort preference</h3>
+									</div>
+									<div class="popup-body">
+
+										<input type="radio" id="nonemobile" onclick="UU.caseChangeSort(this.value);" name="sb" value="none"><label for="nonemobile">None</label>
+										
+										<input type="radio" id="daysoffmobile" onclick="UU.caseChangeSort(this.value);" name="sb" value="daysoff"><label for="daysoffmobile">Most days off</label>
+										
+										<input type="radio" id="morningmobile" onclick="UU.caseChangeSort(this.value);" name="sb" value="morning"><label for="morningmobile">Morning classes</label>
+										
+										<input type="radio" id="middaymobile" onclick="UU.caseChangeSort(this.value);" name="sb" value="midday"><label for="middaymobile">Mid-day classes</label>
+										
+										<input type="radio" id="eveningmobile" onclick="UU.caseChangeSort(this.value);" name="sb" value="evening"><label for="eveningmobile">Evening classes</label>
+										
+										<input type="radio" id="timeatschoolmobile" onclick="UU.caseChangeSort(this.value);" name="sb" value="timeatschool"><label for="timeatschoolmobile">Time off campus</label>
+										
+										<input type="radio" id="timeinclassmobile" onclick="UU.caseChangeSort(this.value);" name="sb" value="timeinclass" checked="checked"><label for="timeinclassmobile">Most on-campus</label>
+										
+										
+
+									</div>
+								</div>
+							</div>
+
+
+
+							<div id="popupfilter" class="popup-wrapper center hide" style="width: 250px; height: auto; z-index: 999;">
+								<div class="popup-content">
+									<div class="popup-title">
+										<button type="button" class="filteconfrim closefitler">X</button>
+										<h3>Filters</h3>
+									</div>
+									<div class="popup-body">
+
+										Show me schedules containing:
+
+										<div class="rowfilter">
+											<div class="filteroption">
+												F<span class="akl">u</span>ll classes
+												(<span class="fullText" style="font-weight: bold;">•</span>)
+											</div>
+											<div class="switch">
+												<input id="hide_fullmobile" class="cmn-toggle cmn-toggle-round" type="checkbox" value="hide" onclick="UU.caseChangeHideFull(this);" checked="checked">
+												<label for="hide_fullmobile"></label>
+											</div>
+										</div>
+										
+
+										
+
+										<div class="rowfilter">
+											<div class="filteroption">
+												<span class="akl">O</span>nline classes
+												 	(<img src="Visual%20Schedule%20Builder%20-%20York%20University_files/online.gif" style="vertical-align: middle;" width="20" height="20" alt="Online icon">)
+											</div>
+											<div class="switch">
+												<input id="hide_onlinemobile" class="cmn-toggle cmn-toggle-round" type="checkbox" value="hide" onclick="UU.caseChangeHideOnline(this);" checked="checked">
+												<label for="hide_onlinemobile"></label>
+											</div>
+										</div>
+
+
+
+										<div class="rowfilter">
+											<div class="filteroption">
+												On-ca<span class="akl">m</span>pus classes
+											</div>
+											<div class="switch">
+												<input id="hide_on_campusmobile" class="cmn-toggle cmn-toggle-round" type="checkbox" value="hide" onclick="UU.caseChangeHideOnCampus(this);" checked="checked">
+												<label for="hide_on_campusmobile"></label>
+											</div>
+										</div>
+
+										
+
+
+										
+
+										
+										
+
+
+									</div>
+								</div>
+							</div>
+							<div style="clear:both"></div>
+				</div>
+</div>
+<div class="reg_row2 printable" id="flip_area" style="display: block;">
+	<div class="reg_schedule">
+		<div class="reg_schedule1 noselect"><h3 class="accessOnly test123" style="padding-left: 62px">Schedule</h3><div style="width: 1px; height: 1px; overflow: hidden;">If
+ you are	using a screen reader, the contents of this heading will not be
+ useful	to you. Visual content here is repeated textually under the 
+Legend	heading.</div><div style="position: relative;">	<div class="weekName">		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="timetable_title">&nbsp;</span>	</div>	<div class="timezoneAbbr">&nbsp;</div>	<div class="timetable table_container">		<div style="position: relative">			<div class="weekArea"><table cellpadding="0" cellspacing="0"><tbody><tr class="header"><td>Mon<span class="day_2_date"></span></td><td>Tue<span class="day_3_date"></span></td><td>Wed<span class="day_4_date"></span></td><td>Thu<span class="day_5_date"></span></td><td>Fri<span class="day_6_date"></span></td></tr><tr class="even"><td>&nbsp;<div class="left_fade"><div class="hour_marker">8</div><div class="min_marker">00</div></div></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="odd"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="even"><td>&nbsp;<div class="left_fade"><div class="hour_marker">9</div><div class="min_marker">00</div></div></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="odd"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="even"><td>&nbsp;<div class="left_fade"><div class="hour_marker">10</div><div class="min_marker">00</div></div></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="odd"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="even"><td>&nbsp;<div class="left_fade"><div class="hour_marker">11</div><div class="min_marker">00</div></div></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="odd"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="even"><td>&nbsp;<div class="left_fade"><div class="hour_marker">12</div><div class="min_marker">pm</div></div></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="odd"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="even"><td>&nbsp;<div class="left_fade"><div class="hour_marker">1</div><div class="min_marker">00</div></div></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="odd"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="even"><td>&nbsp;<div class="left_fade"><div class="hour_marker">2</div><div class="min_marker">00</div></div></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="odd"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="even"><td>&nbsp;<div class="left_fade"><div class="hour_marker">3</div><div class="min_marker">00</div></div></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="odd"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="even"><td>&nbsp;<div class="left_fade"><div class="hour_marker">4</div><div class="min_marker">00</div></div></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="odd"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="even"><td>&nbsp;<div class="left_fade"><div class="hour_marker">5</div><div class="min_marker">00</div></div></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="odd"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="even"><td>&nbsp;<div class="left_fade"><div class="hour_marker">6</div><div class="min_marker">00</div></div></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr class="odd"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></div>			<div class="currentBusyBlocks" style="position: absolute; display: block; top: 0px; left: 0px; width: 100%; height: 100%">				&nbsp;</div>			<div class="weekTimes" style="position: absolute; display: block; top: 0px; left: 0px; width: 100%; height: 100%" title="Click and drag to choose where you don't want classes">			<div class="time_block bc1 bd1 bh1" classname="time_block bc1 bd1 bh1" title="Click to pin down course" onmouseover="RR.highlightClass(1,true)" onmouseout="RR.highlightClass(1,false)" style="left: 20.1898%; top: 177px; width: 19.4307%; height: 68px; padding-top: 19px;"><span class="mobile_nb">1</span><span class="nonmobile">SC-<wbr>MATH-<wbr>2015<br>Lect  Sec.A<br>ACW  109</span></div><div class="time_block bc1 bd1 bh1" classname="time_block bc1 bd1 bh1" title="Click to pin down course" onmouseover="RR.highlightClass(1,true)" onmouseout="RR.highlightClass(1,false)" style="left: 60.1898%; top: 177px; width: 19.4307%; height: 68px; padding-top: 19px;"><span class="mobile_nb">1</span><span class="nonmobile">SC-<wbr>MATH-<wbr>2015<br>Lect  Sec.A<br>ACW  109</span></div></div>		</div>	</div></div><div class="monthscalc">	<div class="dateGridHolder" style="position: relative;">		<div class="dateGridTable"><table class="dateGrid" cellpadding="0" cellspacing="0"><tbody><tr><td style="width:50%;" class="mo">May</td><td style="width:50%;" class="mo">Jun</td></tr><tr><td style="width:50%;">&nbsp;</td><td style="width:50%;">&nbsp;</td></tr></tbody></table></div>		<div class="dateGridBlocks"><div class="dateBlock bc1 bd1 bh1" classname="dateBlock bc1 bd1 bh1" onmouseover="RR.highlightClass(1,true)" onmouseout="RR.highlightClass(1,false)" onclick="addPin(event,'--20250831_T59W01--',true,'no');" title="Click to pin down course" style="left: 6.45161%; top: 18px; width: 67.7419%; height: 11px;">&nbsp;<span class="mobileNUmber">1-</span>Applied Multivariate and Vector Calculus&nbsp;</div></div>		<div class="scheduleWarning"></div>	</div></div></div>
+		<div class="reg_schedule2 noselect" style="display: none;">
+			<!-- Filled by schedule.js -->
+		</div>
+	</div>
+	<div class="reg_legend">
+
+		<h3 class="accessOnly">Legend</h3>
+
+		<div class="legend_box" id="legend_box"><div class="course_box be0" style=""><div class="legend_table table computer-only" border="0" cellpadding="0" cellspacing="0"><div class="tr"><div class="td course_cell_legend one_col"><div class="course_header bc1 bh1" title="Click to pin down course" onclick="addPin(event,'--20250831_T59W01--',true,'no');" onmouseout="RR.highlightClass(1,false);" onmouseover="RR.highlightClass(1,true);"><div class="header_cell"><h4 style="float:left;" class="course_title">SC-MATH-2015-3.00-EN </h4><div style="float:right;">May 4 - Jun 15</div><div style="float:right;clear:right;" class="session_label"></div><div style="float:left;clear:left;"><span class="mobileNUmber">1-</span><span>Applied Multivariate and Vector Calculus</span></div><div style="clear:both"></div></div></div><label class="vsbselectionnew"><div class="selection_row" data-selkey="--20250831_T59W01--"><div class="selection_table"><table class="inner_legend_table" cellpadding="1" cellspacing="0" width="100%"><tbody><tr><td rowspan="2" valign="middle" align="center" width="25" class="legendSelect bg_green empty"><span class="sel_radio" data-selkey="--20250831_T59W01--" data-crns="T59W01" data-color="green"></span></td><td><strong class="leftnclear">Term S1: Section A: Lect 01</strong><label for="rad_--20250831_T59W01--"><span class="leftnclear"><span class="crn_label">Cat #:</span></span><span class="crn_value" style="float:left">T59W01</span></label><span class="leftnclear seats_available">Seats: <span class="seatText">Available</span></span></td><td align="right"><div title="Campus: Keele" class="campus_block rightnclear">Keele</div><div class="credits_block rightnclear" data-credits="3.0" data-classtitle="" data-coursetitle="SC-MATH-2015-3.00-EN ">3.0 Credits</div><div class="rightnclear"><span title="Building and Room Number">ACW  109<br></span></div><div class="rightnclear" title="Instructor(s)">Alexey Kuznetsov</div></td></tr><tr><td colspan="2" class="notes"></td></tr></tbody></table></div><div style="clear:both;"></div></div></label></div></div></div></div><div id="crnListInfos"><div class="crnListInfo credits_block">Total Credits: 3.0</div></div><div id="crnListWarnings"></div><div id="crnList"><img src="Visual%20Schedule%20Builder%20-%20York%20University_files/cart.gif" id="cart_icon" style="vertical-align:middle;" alt="cart icon"> <span class="crn_label accessOffOnly">Cat #s:</span><span class="class_label">Classes:</span><label for="cartCrns"><h3 class="accessOnly">Schedule Cat #s</h3></label><textarea rows="4" style="width:80%" id="cartCrns" autocomplete="off">T59W01</textarea></div><div class="bubble" style="width:88%"><img src="Visual%20Schedule%20Builder%20-%20York%20University_files/tiptop.gif" class="tiptop" alt="">Copy these Catalog Numbers and go to <a href="https://wrem.sis.yorku.ca/Apps/WebObjects/REM.woa/wa/DirectAction/rem" target="_blank"><span>Registration and Enrolment Module</span></a> (REM) to enrol.</div></div>
+
+		<div id="legend_headers">
+		
+			<div class="course_legend_header">
+				Class
+			</div>
+			<div class="course_action_header">
+				Action
+			</div>
+			<div class="course_option_header">
+				Options
+			</div>
+			<div class="course_result_header">
+				Result
+			</div>
+		
+			<!-- 
+			<table>
+				<tr>
+					<td class="course_legend_header">
+						Class
+					</td>
+					<td class="course_action_header">
+						Action
+					</td>
+					<td class="course_option_header">
+						Options
+					</td>
+					<td class="course_result_header">
+						Result
+					</td>
+				</tr>
+			</table> -->
+		</div>
+
+	</div>
+	<div class="reg_final_bubble" style="display:none;">
+		<div style="margin-top:-32px;position:relative;float:right;">
+			<div class="bubble">
+			    <img src="Visual%20Schedule%20Builder%20-%20York%20University_files/tiptop.gif" class="tiptop" alt="arrow for step instructions">
+			    Click this button to view the latest state of your courses.
+			</div>
+		</div>
+	</div>
+
+
+	<div style="clear:both"></div>
+
+</div>
+
+<div class="reg_row3" id="message_div" style="display: none;" role="alert">
+	<br>
+	<span role="alert" style="font-size:20px;color:#CC3333;">No Results</span><br>
+	<br>There are no conflict-free schedule combinations with the selected courses. 
+	<br><br>
+	<div class="noResultsIdea" style="display: none;">
+		<img src="Visual%20Schedule%20Builder%20-%20York%20University_files/bulb.png" height="48" width="48" alt="Light bulb icon" style="float: left;vertical-align: top;">
+		<strong>Tip:</strong> <span class="noResultsIdeaText"></span>
+		<div style="clear:both"></div>
+	</div>
+</div>
+
+
+</div>
+
+
+
+<div class="reg_no_courses" style="display: none;">
+	<div class="welcome_title">
+	Welcome
+	</div>
+	<p class="welcome_subtext">
+	
+	This software will help you find your optimal schedule, but will <span style="color:red;">NOT</span> enrol you in your courses.<br>To enrol, please go to Registration and Enrolment Module.
+	<br><br>
+	To begin, choose a Session and add courses on the left.
+	</p>
+	<p class="welcome_subtext courseCount" id="recommendedShow" style="display:none;">Your advisor has <span id="recommendedCount">a</span> recommendation for you:</p>
+	<div id="suggestedResult"></div>
+</div>
+
+</div>
+</td> <!-- end of page_results -->
+
+
+
+
+
+
+
+
+
+</tr>
+</tbody></table>
+
+
+<div id="guidance_wrapper">
+<div id="guidance">
+	<span class="guidanceText"></span>
+</div>
+</div>
+
+
+<div style="clear:both"></div>
+
+
+
+
+
+
+</div> <!-- end of under_header -->
+</div> <!-- end of under_header_wrapper -->
+
+
+<!--<div>
+<canvas id="thumbtest" width="100" height="100" style="border:0px solid #000000;display:none;">
+</canvas>
+</div> -->
+
+<iframe id="remote_refresh" src="Visual%20Schedule%20Builder%20-%20York%20University_files/realtime.html" style="visibility:hidden;display:none"></iframe>
+
+
+</div> <!-- mainframe. Opened in the header -->
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+<div class="footer-bar"></div>
+
+<footer id="footer" class="region region-footer">
+    <div id="block-block-99" class="block block-block first odd">
+
+      
+   <div id="fineprint"><a href="http://www.yorku.ca/web/site-index.html" title="Link to Site Index page">Site Index</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="https://registrar.yorku.ca/privacy" title="Link to Privacy and Legal page">Privacy &amp; Legal</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="https://registrar.yorku.ca/registrarial-services" title="Link to Contact page">Contact</a></div>
+ 
+	</div>
+</footer>
+	
+
+
+
+<!-- Active sessions: 133 -->
+</div>
+
+
+<div id="noticePopup" class="popup-wrapper center hide" style="position: absolute; z-index: 999; width: 250px; height: auto;">
+	<div class="popup-content">
+		<div class="popup-title">
+			<button type="button" class="filteconfrim closefitler">X</button>
+		<h3>Notice</h3>
+		</div>
+		<div class="popup-body">
+			<div style="padding: 0px 5px 5px 5px;">
+				<div id="popupNoticeText">---</div>
+				<div id="popupNoticeButtons"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div id="sharePopup" class="popup-wrapper center hide" style="position:absolute;z-index:999">
+	<div class="popup-content">
+		<div class="popup-title">
+			<button type="button" class="filteconfrim closefitler">X</button>
+		<h3>Send to Calendar</h3>
+		</div>
+		<div class="popup-body">
+			<div style="padding: 0px 5px 5px 5px;">This will send all the events of the schedule your are currently viewing to your Calendar.<br> Warning: If you need to change or remove these events you will need to do it manually using your Calendar</div>
+			<div id="notificationCal" style="display:none;">Your schedule has been saved to the calendar.</div>
+			<div id="calenderbutton">
+			<label><a href="javascript:void(0)" id="googleShare">Google Calendar</a></label>
+			<label><a href="javascript:void(0)" id="outLookShare">Outlook Calendar</a></label>
+			<label><a href="javascript:void(0)" id="iCal">iCal</a></label>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div style="position:absolute;top:0px;left:0px;color:black;background-color:white;display:none;" id="console">Hello</div>
+<div style="position:absolute;top:40px;left:0px;color:black;background-color:white;display:none;" id="console2">Hello</div>
+
+
+    <!-- SUGGESTION CONTAINER IE8 COMPATIBILITY -->
+    	<div id="suggestion_box" class="accessible ak_o" role="listbox" style="top: 328px; left: 0px; min-width: 228px;">
+    		<div id="suggestion_container"></div>
+    		<div id="suggestion_pointer"></div>
+    	</div>
+    <!-- END SUGGESTION CONTAINER -->
+
+<div class="popupl-overlay"></div>
+<div class="check_media" style=""></div>
+<!-- <canvas id="thumbtest" width="100" height="100" style="border:0px solid #000000;"> -->
+
+
+</body></html>

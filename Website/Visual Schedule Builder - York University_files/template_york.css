@@ -1,0 +1,338 @@
+
+
+/********************************************************************************************************
+	VSB Overrides
+/*******************************************************************************************************/
+
+body {
+	font-size: 100%;
+	font-family: 'Source Sans Pro', Arial, Helvetica, sans-serif;
+	/*background-image: url(bg.gif);*/
+	/*background-color: #eeeee1;*/
+	background-image: none;
+	background-color: #FFFFFF;
+	/*background-image: url(bg2.gif);
+	background-color: #DDDDD1;*/
+}
+
+.timetable table tr td {
+	/*height: 21px;*/
+}
+
+.header_invader {
+	display: none;
+}
+.title_font {
+	text-transform: none;
+}
+.full_page_title {
+  padding: 6px 20px;
+  font-size: 15px;
+  line-height: 1;
+  text-decoration: none;
+  border: none;
+  color: #141412;
+  background-color: #EEEEEE;
+}
+.no_reqs {
+	display: none !important;
+}
+.seats_available {
+	/*display: none;*/
+}
+.analytics_link {
+	display: none !important;
+}
+#page_results .full_page_title {
+	border: none;
+}
+.page_fader {
+	background-color: #EEEEEE;
+}
+.rotate_90d {
+	padding: 14px 15px;
+}
+
+.form_wrapper {
+	
+}
+.crn_label {
+	display: block;
+}
+
+#under_header_wrapper {
+    max-width: 2500px;
+    margin: 0px auto;
+}
+
+.navigation {
+	background-color: #EEEEEE;
+	border-top: none;
+	border-right: none;
+	border-bottom: none;
+	box-shadow: inset #999999 0 0 2px;
+}
+
+.mainframe {
+	margin: 0 auto;
+	/*background-color: #FFFFFF;*/
+	padding: 0px;
+	max-width: none;
+}
+
+.content-bg {
+	background:#FFFFFF;
+}
+
+.reg_header {
+	height: 81px;
+	margin: 0 auto;
+	
+}
+
+.header_lang {
+    display: block;
+    right: 25px !important;
+}
+
+.navigation_buttons {
+	margin: 0px auto;
+	max-width: 1200px;
+}
+
+.navigation li {
+	border-right: none;
+	text-align: center;
+    min-width: 140px;
+}
+
+.navigation li a {
+  display: block;
+  font-weight: normal;
+  padding: 14px 20px;
+  font-size: 15px;
+  line-height: 1;
+  text-decoration: none;
+  border: none;
+  color: #555;
+}
+
+.navigation li a.navselected {
+  background-color: #d5d5d5;
+  /*font-weight: 900;*/
+}
+
+.navigation li a:hover {
+  text-decoration: none;
+  background-color: #E1E1E1;
+  color: #000000;
+}
+
+
+/* This overrides the "inherit" font size just for VSB page contents.
+change it to 14px when GoogleApi fonts enabled. */
+.subnavigation, #under_header, .reg_parent, .bottomLinks, #criteriaForm {
+	font-size: 14px;
+}
+
+.plusBox {
+	max-width: 393px;
+}
+
+.dateBlock {
+	/*font-size: 65%;*/
+}
+
+.term_radio_title {
+  padding-right: 8px;
+}
+
+.legend_waitlist {
+	display: none;	
+}
+
+.courseDiv {
+	border:0px;
+	box-shadow: 1px 1px 5px #888888;
+}
+.requirementMargin {
+	margin-bottom: 9px;
+}
+
+
+/********************************************************************************************************
+	YorkU Template
+/*******************************************************************************************************/
+
+.div_york_logo {
+	position:absolute;
+	top:15px;
+	left:20px
+}
+
+a:hover {
+/*text-decoration: underline;*/
+}
+
+#name-and-slogan {
+	line-height: 25.6px;
+  width: 100%;
+  background: #e31837;
+  float: none;
+}
+
+a:visited {
+  color: #cc2030;
+}
+
+a {
+  color: #e31837;
+  text-decoration: none;
+  /*border-bottom: 1px dotted #ee7d88;*/
+}
+
+h1 {
+  display: block;
+  font-size: 2em;
+  -webkit-margin-before: 0.67em;
+  -webkit-margin-after: 0.67em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+  font-weight: bold;
+}
+
+h1, h2, h3 {
+  clear: both;
+  font-family: 'Lato',arial,sans-serif;
+  line-height: 1.3em;
+  margin: .6em 0 .2em;
+}
+
+#name-and-slogan h1#site-name {
+  margin: 0 auto;
+  padding: 20px;
+	font-size: 1.5em;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 1px 1px #9a0100;
+  letter-spacing: .1em;
+  line-height: 1em;
+}
+
+
+
+.footer-bar {
+  padding: 20px;
+  background-color: #eee;
+  -webkit-box-shadow: inset #999999 0 0 2px;
+  -moz-box-shadow: inset #999999 0 0 2px;
+  box-shadow: inset #999999 0 0 2px;
+}
+
+@media (min-width: 800px) {
+	.footer-bar {
+	  padding: 10px;
+	}
+}
+
+#footer {
+  margin: 10px auto;
+  max-width: 1170px;
+  padding: 5px 30px;
+}
+
+#footer a {
+  /*color: #e31837;
+  font-size: 1em;*/
+  
+  text-decoration: none;
+  /*border-bottom: 1px dotted #ee7d88;*/
+  line-height: 25.6px;
+  
+  color: #666666;
+  /*margin: 0 20px 0 0;*/
+  font-size: .8em;
+  
+}
+
+#footer a:hover {
+  /*color: #9a0100;*/
+  /*border-bottom: 1px solid #9a0100;*/
+}
+
+.div_york_logo img {
+	width:140px;
+	/*margin: 15px 35px;*/
+}
+
+.rdescDiv_cont {
+	display: none;
+}
+
+#step2abubble {
+	width: 240px;
+}
+
+#page_criteria, #page_favorites {
+	box-shadow:none;
+}
+.left_gradient {
+	background: linear-gradient(to right,rgba(72, 72, 72, 0.3),rgba(120,120,120,0));
+}
+.right_gradient {
+	background: linear-gradient(to left,rgba(72, 72, 72, 0.3),rgba(120,120,120,0));
+}
+.expander {
+	background-color: black;
+}
+.time_block {
+	font-size: 7px;
+	font-weight: bold;
+	line-height: 95%;
+}
+.wider .time_block {
+	font-size: 9px;
+    font-weight: normal;
+    line-height: 100%;
+}
+
+@media only screen and (max-width:680px) { /* Under 680px wide */
+
+	.div_york_logo {
+		top:0px;
+		left:15px;
+	}
+	.div_york_logo img {
+		width:180px;	
+	}
+	.plusBox {
+	max-width:100%;
+	}
+	#step2abubble {
+	width:100%;
+	}
+	.header_invader {
+	position:relative;
+	top:0;
+	text-align:left;
+	}
+	.sq_full_name {
+	float:left;
+	padding-left:20px;
+	}
+	
+}
+@media only screen and (max-width:500px) { /* Under 680px wide */ 
+	.navigation li {
+		float:none;
+		text-align:left;
+	}
+	.navigation_buttons>div {
+		float:none !important;
+		display:block;
+	}
+	.header_lang{
+		font-size:12px;
+	}
+
+}
