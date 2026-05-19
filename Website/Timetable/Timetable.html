@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@6.1.11/index.global.min.js"></script>
+  
+  <style>
+    #calendar {
+      max-width: 1100px;
+      margin: 40px auto;
+      
+    }
+
+    .term-rows {
+      display: flex;
+      column-count: 2;
+      max-width: 1098px;
+      margin: 40px auto -65px auto;
+      border: 1px solid #dddddd;
+      text-align: center;
+    }
+    
+    .time-column {
+      flex: 0 0 60px;
+    }
+
+    .term1-row {
+        background-color: rgb(255, 204, 203);
+        flex: 1;
+    }
+
+    .term2-row {
+        background-color: lightblue;
+        flex: 1;
+    }
+  </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var calendarEl = document.getElementById("calendar");
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: "resourceTimeGrid", 
+
+        headerToolbar: true,
+        selectable: true,
+        initialDate: '2018-01-11',
+        
+        resources: [
+            { id: "0", title: "Mon" },
+            { id: "1", title: "Tue" },
+            { id: "2", title: "Wed" },
+            { id: "3", title: "Thu" },
+            { id: "4", title: "Fri" },
+            { id: "5", title: "Mon" },
+            { id: "6", title: "Tue" },
+            { id: "7", title: "Wed" },
+            { id: "8", title: "Thu" },
+            { id: "9", title: "Fri" }
+        ],
+
+        events: [
+          {
+            id: "Meeting1",
+            resourceId: "1",
+            start: "2018-01-11T10:00:00",
+            end: "2018-01-11T12:00:00",
+            title: "Meeting"
+          }
+        ],
+
+
+        dateClick: function(info) {
+          alert('Date: ' + info.dateStr);
+          alert('Resource ID: ' + info.resource.id);
+        },
+
+        schedulerLicenseKey: "GPL-My-Project-Is-Open-Source"
+
+        
+      });
+      document.getElementById('add-event-btn').addEventListener('click', function() {
+        calendar.addEvent({
+          id: 'EECS 1021',
+          resourceId: '1',             
+          title: 'EECS 1021',
+          start: '2018-01-11T14:00:00',    
+          end: '2018-01-11T16:01:00',
+          //backgroundColor: '#28a745',       
+          //borderColor: '#28a745'
+        });
+    }), 
+      calendar.render();
+  });
+  </script>
+</head>
+<body>
+  <div class="term-rows">
+    <div class="time-column"></div>
+    <div class="term1-row">Term 1</div>
+    <div class="term2-row">Term 2</div>
+  </div>  
+  <div id="calendar"></div>
+  <button id="add-event-btn">Generate schedule</button>
+</body>
+</html>
