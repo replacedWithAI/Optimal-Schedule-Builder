@@ -2,7 +2,8 @@ from typing import Any
 from pathlib import Path
 import json
 class Course_json_retriever:
-    def __init__(self, user_path: Path, requested_course_names: list[str]):
+    def __init__(self, requested_course_names: list[str]):
+        user_path = self.__get_files_folder()
         department_codes = self.__get_department_codes(requested_course_names)
         course_codes = self.__get_course_codes(requested_course_names)
         department_data = self.__open_department_jsons(user_path, department_codes)
@@ -10,6 +11,10 @@ class Course_json_retriever:
                                                                 department_codes, 
                                                                 course_codes)
         
+    def __get_files_folder(self):
+        user_path = Path(__file__).resolve().parent / "output_courses_json 2026_01_15"
+        return user_path
+
     def __get_department_codes(self, requested_course_names: list[str]) -> list[str]: # needs to methodology later
         department_codes = []
         for curr_course_name in requested_course_names:
@@ -31,7 +36,6 @@ class Course_json_retriever:
         for department in department_codes:
             try: 
                 path = Path(str(user_path) + '/' + department + ".json")
-                print(path)
                 with path.open() as department_json:
                     current_department_data = json.load(department_json)
                     department_data.append(current_department_data)

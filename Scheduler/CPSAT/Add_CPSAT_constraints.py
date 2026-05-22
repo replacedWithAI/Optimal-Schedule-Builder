@@ -55,6 +55,7 @@ class Constraint_adder:
                                                         model)
                                                         
             #print(sections_available)
+            course.sections_presence = sections_available
             model.add(sum(sections_available) == 1)
         return
                 
@@ -95,7 +96,7 @@ class Constraint_adder:
                     unique_chooseable_class_idx += 1
                     chooseable_classes.append([])
 
-        print(chooseable_classes)
+        # print(chooseable_classes)
         for unique_chooseable_class in chooseable_classes:
             if unique_chooseable_class != []:
                 model.add(sum(unique_chooseable_class) == curr_section_presence)
