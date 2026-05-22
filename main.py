@@ -5,15 +5,19 @@ from Scheduler.Downloading_and_processing_json_files.Extract_process_course_data
 from Scheduler.CPSAT.CPSAT import Schedule_maker
 from Scheduler.Schedule_plotter.Plotter import Plotter
 
+'''
 requested_courses = [input("Ok nice, now give your course names and type '-1' to leave")]
 while (requested_courses[-1] != "-1"):
     requested_courses.append(input("List another or type '-1' to leave"))
 del(requested_courses[-1])
 print(requested_courses)
+'''
+
+requested_courses = ["CHEM 1100", "MATH 1013", "MATH 1014", "EECS 1021", "MATH 1028", "ENG 1102", "MATH 2030", "MATH 2015"]
 
 Course_json_retriever = Course_json_retriever(requested_courses)
 course_jsons = Course_json_retriever.get_course_jsons()
-print(course_jsons)
+# print(course_jsons)
 del Course_json_retriever
         
 Course_file_extractor = Course_file_extractor(course_jsons)
