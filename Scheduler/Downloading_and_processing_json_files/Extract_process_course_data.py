@@ -15,12 +15,14 @@ class Course_file_extractor:
         for course_json in self.course_jsons:
             course_key = course_json.get("key")
             section_json = course_json.get("schedule")
-            course_obj = Course( course_key.get("faculty"), course_key.get \
-                                ("dept"), course_key.get("code"), \
-                                course_key.get("credit"), \
-                                course_json.get("name"), \
-                                course_json.get("prereq"), \
-                                self.__make_section_obj(section_json) ) 
+            course_obj = Course( faculty = course_key.get("faculty"), 
+                                department = course_key.get ("dept"), 
+                                course_code = course_key.get("code"), 
+                                credits = course_key.get("credit"), 
+                                course_name = course_json.get("name"), 
+                                prerequisites = course_json.get("prereq"), 
+                                sections = self.__make_section_obj(section_json), 
+                                sections_presence = []) 
             courses.append(course_obj)
 
         return courses
@@ -34,6 +36,8 @@ class Course_file_extractor:
             class_session_jsons = section_json.get("classes")
             term = terms_in_this_section( section_json.get("term") )
             section_classes = self.__make_class_obj(class_session_jsons, term)
+
+            if ('L' in term): continue
 
             if (len(section_classes) == 0):
                 continue

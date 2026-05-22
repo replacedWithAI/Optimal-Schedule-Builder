@@ -19,11 +19,10 @@ class Schedule_maker:
          days_present) = self.__add_courses_to_CPSAT(courses, model)
         
         self.__add_constraints(unavailable_hours, intervals_by_day,
-                               days_present, interval_variables,
-                               courses, model)
+                                days_present, interval_variables,
+                                courses, model)
         
-        status = self.__solve_for_objectives(intervals_by_day, days_present,
-                                             model, solver, commute_times)
+        status = self.__solve_for_objectives(intervals_by_day, model, solver, commute_times)
         
         del intervals_by_day
         del days_present
@@ -51,22 +50,21 @@ class Schedule_maker:
                           days_present: list[Any],
                           interval_variables: dict[dict[dict[int, Any]]],
                           courses: list[Course],
-                          model: cp_model):
+                          model: cp_model) -> list[Any]:
         
         Constraint_adder(unavailable_hours, intervals_by_day, days_present, 
-                         interval_variables, courses, model)
+                             interval_variables, courses, model)
         return
         
 
     def __solve_for_objectives(self,
                                intervals_by_day: dict[str, list[Any]],
-                               days_present: list[Any],
                                model: cp_model,
                                solver: cp_model,
                                commute_times: int = 0) -> int:
         
         solver.parameters.log_search_progress = True  # Enable logging
-        Solve_best_schedule(intervals_by_day, days_present, model, solver, commute_times)
+        Solve_best_schedule(intervals_by_day, model, commute_times)
         status = solver.solve(model)
         return status
 

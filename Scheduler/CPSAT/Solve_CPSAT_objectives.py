@@ -3,28 +3,23 @@ from ortools.sat.python import cp_model
 class Solve_best_schedule:
     def __init__(self, 
                  intervals_by_day: dict[str, list[Any]], 
-                 days_present: list[Any], 
                  model: cp_model, 
-                 solver: cp_model,
                  commute_time: int = 0):
     
-        self.__objective_priority(intervals_by_day, days_present, model, solver,
+        self.__objective_priority(intervals_by_day, model, 
                                   commute_time)
 
 
     def __objective_priority(self, 
                              intervals_by_day: dict[str, list[Any]], 
-                             days_present: list[Any], 
                              model: cp_model, 
-                             solver: cp_model,
                              commute_time: int = 0): #WIP
-        self.__solve_minimal_dead_times(intervals_by_day, days_present, 
+        self.__solve_minimal_dead_times(intervals_by_day, 
                                         model, commute_time)
     
 
     def __solve_minimal_dead_times(self,
                                    intervals_by_day: dict[str, list[Any]],
-                                   days_present: list[Any],
                                    model: cp_model,
                                    commute_time: int = 0):
         curr_day_index = 0
