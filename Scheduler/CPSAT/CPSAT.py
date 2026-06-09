@@ -27,7 +27,7 @@ class Schedule_maker:
         del intervals_by_day
         del days_present
         
-        self.all_chosen_courses = self.__extract_solver_values(courses, status,
+        self.all_best_courses = self.__extract_solver_values(courses, status,
                                                                interval_variables,
                                                                model, solver)
         del interval_variables
@@ -63,7 +63,7 @@ class Schedule_maker:
                                solver: cp_model,
                                commute_times: int = 0) -> int:
         
-        solver.parameters.log_search_progress = True  # Enable logging
+        # solver.parameters.log_search_progress = True  # Enable logging
         Solve_best_schedule(intervals_by_day, model, commute_times)
         status = solver.solve(model)
         return status

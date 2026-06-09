@@ -49,8 +49,8 @@ def terms_in_this_section(term: str) -> list[int]:
     elif term == "Y" or term == "SU":
         return [0, 1]
     elif "L" in term:
-        print("Special term; block model, WL, or L1/L2")
+        # print("Special term; block model, WL, or L1/L2")
         return [0]
     else:
-        print("No considered term")
+        # print("No considered term")
         return [0]
