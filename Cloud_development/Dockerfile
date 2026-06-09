@@ -8,4 +8,6 @@ RUN pip install -r Documentation/requirements.txt
 
 COPY . .
 
-CMD ["python", "-m", "main.py"]
+EXPOSE 80
+
+CMD ["uvicorn", "Cloud_development.main:app", "--host", "0.0.0.0", "--port", "80"]
