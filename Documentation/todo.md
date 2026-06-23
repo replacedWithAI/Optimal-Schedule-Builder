@@ -1,9 +1,9 @@
 # Small tasks
-- [ ] Make a test to verify return values
-- [ ] Modify how the code identifies a lecture/mandatory class. Test case: ENG 1102
-- [ ] Modify the assert_correct_number_CPSAT_variables; Im gonna not return 
-start_time and is_presents variables into the CPSAT class
+- [ ] Refactor arguments for Plotter.py since I extract a dictonary from CPSAT
 - [ ] Clean up variable names
+    - [ ] Change "course code" to "course number"
+    - Probably make a "class" data type that has "class sessions"
+    - [ ] Remove classes; I have no objects. Just use files and functions
 
 # Generally 
 - [ ] Plot the schedules after solving from solver

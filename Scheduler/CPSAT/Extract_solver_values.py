@@ -34,22 +34,28 @@ class Solver_values_extractor:
         for course in courses: # needs to change if gonna toggle courses
             
             course_name = course.course_name
-            # print(course_name)
+            course_code = course.department + ' ' + course.course_code
+            
             # print(interval_variables[course_name])
-            curr_chosen_classes = self.__get_chosen_sections_classes(course.sections,
+            curr_course_classes = self.__get_chosen_sections_classes(
+                                                                     course_code,
+                                                                     course.sections,
                                                                      course.sections_presence, 
                                                                      interval_variables[course_name], 
                                                                      solver)
-            all_chosen_courses.append(curr_chosen_classes)
+            all_chosen_courses.append(curr_course_classes)
 
         return all_chosen_courses
     
     
     def __get_chosen_sections_classes(self, 
+                                     course_code: str,
                                      sections: list[Section], 
                                      sections_presence: list[Any],
                                      interval_variables: dict[dict[int, Any]],
-                                     solver: cp_model) -> list[Any]:
+                                     solver: cp_model) -> dict:
+        
+        chosen_classes = []
         for i in range(len(sections)):
 
             section_letter = sections[i].section_letter
@@ -57,7 +63,6 @@ class Solver_values_extractor:
 
             section_is_chosen = (solver.value(sections_presence[i]) == 1)
 
-            chosen_classes = []
             if section_is_chosen:
                 # print(section_letter)
                 
@@ -66,7 +71,7 @@ class Solver_values_extractor:
                                                            classes_intervals,
                                                            solver)
                 break
-        return chosen_classes
+        return {(course_code + ' ' + "Section " + section_letter): chosen_classes}
 
 
     def __get_chosen_classes(self, 
@@ -82,9 +87,15 @@ class Solver_values_extractor:
             is_chosen_class = solver.value(class_is_present) == 1
             # print(is_chosen_class)
             if is_chosen_class:
+                
+                chosen_class = {curr_class.activity_name: {"start": [], "end": [], "size": []}}
 
                 for i in range(len(curr_class.start_times)):
-                    chosen_classes.append(classes_intervals[curr_class.activity_name]
-                                                           [i])
+                    curr_interval = classes_intervals[curr_class.activity_name][i]
+                    chosen_class[curr_class.activity_name]["start"].append(curr_interval.start_expr())
+                    chosen_class[curr_class.activity_name]["size"].append(curr_interval.size_expr())
+                    chosen_class[curr_class.activity_name]["end"].append(curr_interval.end_expr())
+
+                chosen_classes.append(chosen_class)
 
         return chosen_classes

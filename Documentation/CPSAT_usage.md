@@ -77,3 +77,15 @@ Then, the overall goal is to minimize the sum of all school_day_lengths across a
 ## Extract_solver_values / extract_solver_values
 Gonna get the selected sections and classes by the solver
 If I wanna let it toggle classes, I gotta add it in get_taken_courses
+
+# Scheduling cavets
+
+## Lab 99 isn't considered
+Since people don't usually take it, it's ignored
+Its duration isn't listed in VSB anyways; you can't schedule around it
+
+## Block model isn't considered
+It's probably easy to manually add it, but I'm lazy
+It's kind of insane to take more than 5 courses a semester anyways, I'm sorry
+
+You can try blocking off all of fall semester and using this for winter

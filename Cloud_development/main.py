@@ -6,6 +6,7 @@ if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
 from fastapi import FastAPI, HTTPException
+import json
 from fastapi.middleware.cors import CORSMiddleware
 from program import calculate_schedule
 
@@ -15,21 +16,23 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=["*"],
-    allow_methods=["POST"],
+    allow_methods=["*"],
     allow_headers=["*"]
 )
 
-@app.post("/api/run")
-async def call_solver(selected_courses: dict) -> dict:
-    try: 
-        courses = selected_courses.get("courses") # revamp if people fix 
-                                                  # courses/sections/labs
+@app.get("/")
+async def connect() -> dict:
+    return {"status": "connected"}
 
-        best_courses = calculate_schedule(courses)
 
-        return best_courses
-    except Exception as exception:
-        raise HTTPException(status_code=500, details=str(exception))
+@app.post("/calculate")
+def call_solver(selected_courses: dict) -> dict:
+    # courses = selected_courses.get("courses") # revamp if people fix 
+                                                # courses/sections/labs
+
+    best_courses = calculate_schedule()
+
+    return {"courses": best_courses}
 
 
             

@@ -25,9 +25,10 @@ def calculate_schedule(selected_courses: dict = {"Courses": ["CHEM 1100", "MATH 
     Schedule_maker_obj = Schedule_maker(unavailable_hours, courses)
     all_best_courses = Schedule_maker_obj.all_best_courses
     print(all_best_courses)
-    Plotter_obj = Plotter(all_best_courses)
+    # Plotter_obj = Plotter(all_best_courses)
 
-    return {"courses": all_best_courses}
+    return all_best_courses
     # print(all_chosen_courses)
 
-calculate_schedule()
+if __name__ == "__main__":
+    calculate_schedule()
