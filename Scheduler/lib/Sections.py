@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Scheduler.lib.Data_types.Class_sessions import Class_session
+from Scheduler.lib.Class_sessions import Class_session
 
 @dataclass
 class Section:

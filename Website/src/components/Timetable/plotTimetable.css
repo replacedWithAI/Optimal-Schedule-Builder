@@ -1,10 +1,10 @@
 /* ScheduleBuilder.css */
 
-.schedule-wrapper {
+.timetable-container {
   font-family: Arial, sans-serif; /* Optional: smooths out standard fonts */
 }
 
-.calendar-container {
+.schedule-container {
   max-width: 1100px;
   margin: 40px auto;
 }
@@ -35,7 +35,7 @@
   padding: 5px 0;
 }
 
-#add-event-btn {
+#plot-timetable-btn {
   margin-top: 15px;
   padding: 10px 20px;
   background-color: #007bff;
@@ -45,6 +45,6 @@
   cursor: pointer;
 }
 
-#add-event-btn:hover {
+#plot-timetable-btn:hover {
   background-color: #0056b3;
 }

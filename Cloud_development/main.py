@@ -24,7 +24,7 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-@app.get("/")
+@app.get("/status")
 async def connect() -> dict:
     return {"status": "connected"}
 
