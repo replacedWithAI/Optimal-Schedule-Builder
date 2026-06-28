@@ -1,0 +1,50 @@
+/* ScheduleBuilder.css */
+
+.schedule-wrapper {
+  font-family: Arial, sans-serif; /* Optional: smooths out standard fonts */
+}
+
+.calendar-container {
+  max-width: 1100px;
+  margin: 40px auto;
+}
+
+.term-rows {
+  display: flex;
+  max-width: 1098px;
+  margin: 40px auto -65px auto;
+  border: 1px solid #dddddd;
+  text-align: center;
+  z-index: 10; /* Ensures it sits above calendar layers if it overlaps */
+  position: relative;
+}
+
+.time-column {
+  flex: 0 0 60px; /* Locks exactly to FullCalendar's time axis */
+}
+
+.term1-row {
+  background-color: rgb(255, 204, 203);
+  flex: 1;
+  padding: 5px 0;
+}
+
+.term2-row {
+  background-color: lightblue;
+  flex: 1;
+  padding: 5px 0;
+}
+
+#add-event-btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#add-event-btn:hover {
+  background-color: #0056b3;
+}
