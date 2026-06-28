@@ -4,10 +4,10 @@
     - [ ] Change "course code" to "course number"
     - Probably make a "class" data type that has "class sessions"
     - [ ] Remove classes; I have no objects. Just use files and functions
+- [ ] Make a requirements.txt for solely my API
+- [ ] Write all website stuff with React
 
 # Generally 
-- [ ] Plot the schedules after solving from solver
-- [ ] Host this gosh forsaken program
 - [ ] Modify the course scraper to scrape professors' names
 - [ ] Add RMP constraints and second objective
 - [ ] Add gimmicky nice-to-have constraints

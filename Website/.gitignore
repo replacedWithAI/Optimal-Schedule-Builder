@@ -11,10 +11,6 @@ node_modules
 dist
 dist-ssr
 *.local
-__pycache__/
-.venv/
-.env
-pnpm-lock.yaml
 
 # Editor directories and files
 .vscode/*
