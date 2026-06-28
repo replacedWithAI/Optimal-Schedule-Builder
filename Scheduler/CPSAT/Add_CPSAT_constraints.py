@@ -1,5 +1,5 @@
-from Scheduler.lib.Data_types.Course import Course
-from Scheduler.lib.Data_types.Class_sessions import Class_session
+from Scheduler.lib.Course import Course
+from Scheduler.lib.Class_sessions import Class_session
 from typing import Any
 from ortools.sat.python import cp_model
 

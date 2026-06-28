@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 # from LabsOrTutorials import LabsOrTutorials
 # from Lectures import Lectures
-from Scheduler.lib.Data_types.Sections import Section
+from Scheduler.lib.Sections import Section
 from typing import Any
 
 @dataclass

@@ -3,7 +3,7 @@ from Scheduler.Downloading_and_processing_json_files.Course_json_string_retrieve
 from Scheduler.Downloading_and_processing_json_files.Extract_process_course_data \
     import Course_file_extractor as CourseFileExtractorObj
 from Scheduler.CPSAT.CPSAT import Schedule_maker
-from Scheduler.Schedule_plotter.Plotter import Plotter
+from Scheduler.lib.Plotter import Plotter
 
 def calculate_schedule(selected_courses: dict = {"Courses": ["CHEM 1100", "MATH 1013",
                                                        "MATH 1014", "EECS 1021",

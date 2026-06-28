@@ -1,6 +1,6 @@
-from Scheduler.lib.Data_types.Course import Course
-from Scheduler.lib.Data_types.Sections import Section
-from Scheduler.lib.Data_types.Class_sessions import Class_session
+from Scheduler.lib.Course import Course
+from Scheduler.lib.Sections import Section
+from Scheduler.lib.Class_sessions import Class_session
 from ortools.sat.python import cp_model
 from typing import Any
 # might want to put this in lib, but that's for a while later
