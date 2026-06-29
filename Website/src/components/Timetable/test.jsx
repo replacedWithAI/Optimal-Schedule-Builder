@@ -5,15 +5,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import './plotTimetable.css';
 
 export default function FetchSchedule( {requestedCourses = []} ) {
-	const [events, setEvents] = useState([
-		{
-			id: "Meeting1",
-			resourceId: "1",
-			start: "2018-01-11T10:00:00",
-			end: "2018-01-11T12:00:00",
-			title: "Meeting"
-		}
-	]);
+	const [events, setEvents] = useState([]);
 
 	const plotSchedule = async () => {
 		try {
@@ -41,13 +33,59 @@ export default function FetchSchedule( {requestedCourses = []} ) {
 			const content = await response.json();
 			console.log(`API output: ${JSON.stringify(content)}`);
 
-			const newEvents = /*content.events ||*/ [];
+			const newEvents = processCourseTimes(content) || [];
 			setEvents((prevEvents) => [...prevEvents, ...newEvents]);
 		} catch (error) {
 			console.log(`Error: ${error}`);
 			return;
 		}
 	};
+
+	const processCourseTimes = (content) => {
+		const processedCourseTimes = [];
+		const baseDate = "2018-01-11";
+		const courses = content["courses"]
+
+		courses.forEach((course) => {
+			const [courseCode, classes] = Object.entries(course)[0]; // size 1 array
+
+			classes.forEach((currClass) => {
+				const [className, classSessions] = Object.entries(currClass)[0]; // size 1
+				const startTimes = classSessions["start"];
+				const endTimes = classSessions["end"];
+
+				for (let i = 0; i < startTimes.length; i++) {
+					const startTime = startTimes[i];
+					const endTime = endTimes[i];
+
+					const day = ( Math.floor(startTime / 1440) ).toString();
+
+					const startTimeForDay = startTime % 1440;
+					const startTimeDayHour = ( Math.floor(startTimeForDay / 60)) 
+												.toString().padStart(2, '0');
+					const startTimeDayMins = ( startTimeForDay % 60 )
+												.toString().padStart(2, '0');
+					// in case hours or minutes are single digit
+					
+					const endTimeForDay = endTime % 1440;
+					const endTimeDayHour = ( Math.floor(endTimeForDay / 60)) 
+												.toString().padStart(2, '0');
+					const endTimeDayMins = ( endTimeForDay % 60 )
+												.toString().padStart(2, '0');
+					
+					processedCourseTimes.push({
+						id: `${courseCode} ${className} ${i}`,
+						resourceId: `${day}`,
+						start: `${baseDate}T${startTimeDayHour}:${startTimeDayMins}:00`,
+						end: `${baseDate}T${endTimeDayHour}:${endTimeDayMins}:00`,
+						title: `${courseCode} ${className}`
+					});
+				}
+			});
+		});
+
+		return processedCourseTimes;
+	}
 
 	const handleDateClick = () => {
 
