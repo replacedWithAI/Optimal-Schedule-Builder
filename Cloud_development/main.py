@@ -8,12 +8,12 @@ if parent_dir not in sys.path:
 from fastapi import FastAPI, HTTPException
 import json
 from fastapi.middleware.cors import CORSMiddleware
-from program import calculate_schedule
+from Scheduler.program import calculate_schedule
 
 app = FastAPI()
 
 origins = [
-
+    "https://replacedwithai.github.io/Optimal-Schedule-Builder/"
 ]
 
 app.add_middleware(
