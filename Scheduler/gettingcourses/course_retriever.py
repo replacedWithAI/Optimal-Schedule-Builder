@@ -1,0 +1,73 @@
+from typing import Any
+from pathlib import Path
+import json
+
+__all__ = ["get_course_jsons"]
+
+def get_course_jsons(requested_course_names: list[str]) -> list[dict]:
+    user_path = _get_files_folder()
+    department_codes = _get_department_codes(requested_course_names)
+    course_codes = _get_course_codes(requested_course_names)
+    department_data = _open_department_jsons(user_path, department_codes)
+    course_jsons = _download_course_json_strings(department_data, 
+                                                department_codes, 
+                                                course_codes)
+    
+    return course_jsons
+    
+def _get_files_folder():
+    curr_file_directory = (__file__)
+    curr_folder = Path(curr_file_directory).resolve().parent 
+    course_info_folder = curr_folder / "output_courses_json 2026_01_15"
+    return course_info_folder
+
+def _get_department_codes(requested_course_names: list[str]) -> list[str]:
+    department_codes = []
+    for curr_course_name in requested_course_names:
+        space_index = curr_course_name.find(' ')
+        department_codes.append(curr_course_name[0:space_index])
+    return department_codes
+
+
+def _get_course_codes(requested_course_names: list[str]) -> list[str]:
+    course_codes = []
+    for curr_course_name in requested_course_names:
+        space_index = curr_course_name.find(' ')
+        course_codes.append(curr_course_name[space_index+1:])
+    return course_codes
+
+
+def _open_department_jsons(user_path: Path, department_codes: list[str]) -> list[dict[str, Any]]:
+    department_data = []
+    for department in department_codes:
+        try: 
+            path = Path(str(user_path) + '/' + department + ".json")
+            with path.open() as department_json:
+                current_department_data = json.load(department_json)
+                department_data.append(current_department_data)
+        except FileNotFoundError:
+            print("Can't find the department file in your path")
+            continue
+    return department_data
+    
+
+def _download_course_json_strings(department_data: list[dict[str, Any]], 
+                                    department_codes: list[str], 
+                                    course_codes: list[str]) -> list[dict[str, Any]]:
+    course_json_strings = []
+    index = 0
+    
+    for department in department_data:
+        courses = department.get("courses", "Not found")
+
+        for course in courses:
+            key = course.get("key","Not found")
+            code = key.get("code", "Not found")
+            department = key.get("dept", "Not found")
+            if code == course_codes[index] and department == \
+                department_codes[index]: # I feel like this is bugged; saving test case in drive. It's the same code as C4 without a break
+                course_json_strings.append(course)
+                index += 1
+                break
+
+    return course_json_strings
