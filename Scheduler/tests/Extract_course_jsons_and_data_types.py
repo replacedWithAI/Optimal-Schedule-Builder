@@ -1,8 +1,8 @@
-from Scheduler.Downloading_and_processing_json_files.Download_files_from_file_system import get_files
-from Scheduler.Downloading_and_processing_json_files.Course_json_string_retriever \
+from Scheduler.Downloading_and_processing_json_files.course_retriever \
     import Course_json_retriever
 from Scheduler.Downloading_and_processing_json_files.Extract_process_course_data \
     import Course_file_extractor
+from pathlib import path
 
 department_json_path = get_files()
 print(department_json_path)
