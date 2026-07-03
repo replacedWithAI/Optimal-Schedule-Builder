@@ -1,10 +1,10 @@
 from typing import Any
 from ortools.sat.python import cp_model
-from Scheduler.lib.Course import Course
-from Scheduler.CPSAT.Make_CPSAT_variables import CPSAT_variable_maker
-from Scheduler.CPSAT.Add_CPSAT_constraints import Constraint_adder
-from Scheduler.CPSAT.Solve_CPSAT_objectives import Solve_best_schedule
-from Scheduler.CPSAT.Extract_solver_values import Solver_values_extractor
+from lib import Course
+from CPSAT.Make_CPSAT_variables import CPSAT_variable_maker
+from CPSAT.Add_CPSAT_constraints import Constraint_adder
+from CPSAT.Solve_CPSAT_objectives import Solve_best_schedule
+from CPSAT.Extract_solver_values import Solver_values_extractor
 
 class Schedule_maker:
     def __init__(self, 
