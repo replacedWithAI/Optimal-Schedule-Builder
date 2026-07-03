@@ -1,9 +1,11 @@
-from Scheduler.lib.Course import Course
-from Scheduler.lib.Sections import Section
-from Scheduler.lib.Class_sessions import Class_session
+
 from ortools.sat.python import cp_model
 from typing import Any
-# might want to put this in lib, but that's for a while later
+
+from lib import Course
+from lib import Section
+from lib import ClassSession
+
 class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully you learnt HTML?
     def __init__(self, courses, model):
         start_time_variables = self.__create_start_time_variables(courses)
@@ -63,7 +65,7 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
     
     
     def __classes_is_present(self, 
-                             classes: list[Class_session], 
+                             classes: list[ClassSession], 
                              course_name: str, \
                              section_letter: str, 
                              model: cp_model) -> dict[str, dict[int, Any]]:
@@ -98,7 +100,7 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
     
 
     def __get_num_section_classes_by_type(self,
-                                            classes: list[Class_session]
+                                            classes: list[ClassSession]
                                             ) -> list[str]:
         section_classes = {}
         for curr_class in classes:
@@ -148,7 +150,7 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
                             is_present_variables: list[Any], 
                             course_name:str, 
                             section_letter:str, 
-                            classes: list[Class_session], 
+                            classes: list[ClassSession], 
                             model: cp_model
                             ) ->  dict[str, dict[int, Any]]:
         

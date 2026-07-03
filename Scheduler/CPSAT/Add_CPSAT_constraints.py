@@ -1,8 +1,8 @@
-from Scheduler.lib.Course import Course
-from Scheduler.lib.Class_sessions import Class_session
 from typing import Any
 from ortools.sat.python import cp_model
 
+from lib import Course
+from lib import ClassSession
 class Constraint_adder:
     def __init__(self,
                  unavailable_hours: list[str, list[int, int]],
@@ -14,8 +14,6 @@ class Constraint_adder:
         
         self.__add_no_overlap_constraint(interval_variables, courses, model)
         self.__add_section_per_course_constraint(interval_variables, courses, model)
-        self.__add_unavailable_hours_constraint(unavailable_hours, intervals_by_day, model)
-        self.__track_used_days(days_present, intervals_by_day, model)
 
     def __add_section_per_course_constraint(self, 
                                             interval_variables: dict[str, dict[str, dict
@@ -66,7 +64,7 @@ class Constraint_adder:
                                            curr_section_presence: Any, 
                                            course_name: str, 
                                            section_letter: str, 
-                                           classes: list[Class_session], 
+                                           classes: list[ClassSession], 
                                            model: cp_model):
         chooseable_classes = [[]]
         unique_chooseable_class_idx = 0 # suppose can choose from 5 labs, 3 tutorials
@@ -122,27 +120,11 @@ class Constraint_adder:
                         
         model.add_no_overlap(list_of_intervals)
         return # lets never do that again
-    
-
-    def __add_unavailable_hours_constraint(self,
-                                           unavailable_hours: list[str, list[int, int]],
-                                           intervals_by_days: dict[Any],
-                                           model: cp_model
-                                           ):
 
 
-        for interval in intervals_by_days[unavailable_hours[0]]: # will need clean up
-            unavailable_start = unavailable_hours[1][0]
-            unavailable_end = unavailable_hours[1][1]
-
-            interval_in_unavailable_time = (interval.start_expr() >= unavailable_start) \
-                                            and (interval.start_expr() + interval.size_expr() \
-                                            <= unavailable_end)
-            if (interval_in_unavailable_time):
-                model.add_bool_and(interval.presence_literals[0]) # set bool = 0
-        return
-
-
+'''
+Originally made this for a "minimze school days schedule", but I can do that with
+commute_times = 676767676767676767676767
     def __track_used_days(self, 
                           days_present: list[Any], 
                           intervals_by_days: dict[str, list[Any]],
@@ -162,5 +144,5 @@ class Constraint_adder:
             model.add_max_equality(days_present[curr_day], curr_day_intervals)
 
         return
-        
+'''
                 

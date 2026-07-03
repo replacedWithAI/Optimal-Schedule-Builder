@@ -1,8 +1,8 @@
 from typing import Any
 
-from Scheduler.lib import Course
-from Scheduler.lib import Section
-from Scheduler.lib import ClassSession
+from lib import Course
+from lib import Section
+from lib import ClassSession
 
 __all__ = ["validate_class_sessions"]
 
@@ -17,14 +17,14 @@ def _make_courses(course_jsons: list[dict[str, Any]]) -> list[Course]:
         course_key = course_json.get("key")
         section_json = course_json.get("schedule")
         course = Course(faculty = course_key.get("faculty"), 
-                            department = course_key.get ("dept"), 
-                            course_number = course_key.get("code"), 
-                            course_code = f"{course_json.get("dept")} {course_key.get("code")}", 
-                            credits = course_key.get("credit"), 
-                            course_name = course_json.get("name"),
-                            prerequisites = course_json.get("prereq"), 
-                            sections = _make_sections(section_json), 
-                            sections_presence = []) 
+                        department = course_key.get ("dept"), 
+                        course_number = course_key.get("code"), 
+                        course_code = f"{course_json.get("dept")} {course_key.get("code")}", 
+                        credits = course_key.get("credit"), 
+                        course_name = course_json.get("name"),
+                        prerequisites = course_json.get("prereq"), 
+                        sections = _make_sections(section_json), 
+                        sections_presence = []) 
         courses.append(course)
 
     return courses
@@ -35,9 +35,9 @@ def _make_sections(section_jsons: list[dict[str, Any]]) -> list[Section]:
 
     for section_json in section_jsons:
 
-        class_session_jsons = section_json.get("classes")
+        class_jsons = section_json.get("classes")
         term = _terms_in_this_section(section_json.get("term"))
-        section_classes = _make_classes(class_session_jsons, term)
+        section_classes = _make_classes(class_jsons, term)
 
         uncommon_section = ('L' in term)
         if (uncommon_section): continue
@@ -46,7 +46,7 @@ def _make_sections(section_jsons: list[dict[str, Any]]) -> list[Section]:
 
         section_obj = Section( term, \
                                 section_letter = section_json.get("section"), \
-                                professor = _get_section_professor(class_session_jsons), \
+                                professor = _get_section_professor(class_jsons), \
                                 classes = section_classes )
         Sections.append(section_obj)
 
@@ -60,20 +60,20 @@ def _get_section_professor(class_session_jsons: list[dict[str, Any]]) -> str:
     return lecture_json.get("professor")
 
 
-def _make_classes(class_session_jsons: list[dict[str, Any]], \
+def _make_classes(class_jsons: list[dict[str, Any]], \
                     term: list[int])-> list[ClassSession]: #feel like name should be less abstract
     list_class_sessions = []
 
     # each class session has its list of timeslots
-    for class_session_json in class_session_jsons:
-        session_name = class_session_json.get("name")
+    for class_json in class_jsons:
+        session_name = class_json.get("name")
         if ("99") in session_name: # no one likes lab 99. Im sorry
             continue
 
-        class_session_timeslot_jsons = class_session_json.get("timeslot")
+        class_session_jsons = class_json.get("timeslot")
         curr_class_type = _make_class_sessions( session_name, \
-                                                        class_session_timeslot_jsons, \
-                                                        term) #LECT, LAB, etc
+                                                class_session_jsons, \
+                                                term) #LECT, LAB, etc
         
         if (curr_class_type.global_start_times == []): # never starts; meh method
             continue
@@ -84,7 +84,7 @@ def _make_classes(class_session_jsons: list[dict[str, Any]], \
 
     
 def _make_class_sessions(session_name: str, \
-                         class_session_timeslot_jsons: list[dict[str, Any]],\
+                         class_session_jsons: list[dict[str, Any]],\
                          term: list[int]) -> ClassSession:
     start_times = []
     global_start_times = []
@@ -92,26 +92,26 @@ def _make_class_sessions(session_name: str, \
     global_end_times = []
     campus = []
     for curr_term in term:
-        for class_session_timeslot_json in class_session_timeslot_jsons:
+        for class_session_json in class_session_jsons:
 
-            time = class_session_timeslot_json.get("time")
+            time = class_session_json.get("time")
             # print(time)
             if (time == ""):
                 continue
             
             start_times.append(_start_time_in_minutes(time, \
-                                                      class_session_timeslot_json.get("weekday"), \
+                                                      class_session_json.get("weekday"), \
                                                       curr_term) )
             
             global_start_times.append(_time_in_ten_days_minutes(start_times[-1][0],
                                                                 start_times[-1][1],
                                                                 curr_term) )
             
-            durations.append(int( class_session_timeslot_json.get("duration") ))
+            durations.append(int( class_session_json.get("duration") ))
 
             global_end_times.append( global_start_times[-1] + durations[-1] )
 
-            campus.append( class_session_timeslot_json.get("campus") )  
+            campus.append( class_session_json.get("campus") )  
 
     return ClassSession(session_name, start_times, global_start_times,
                             durations, global_end_times, campus)
@@ -157,16 +157,16 @@ def _time_in_ten_days_minutes(time: int, day: int, curr_term: int) -> int:
     return (curr_term * 7200) + (day * 1440) + time # max 14400
 
 
-def _terms_in_this_section(term: str) -> list[int]:
+def _terms_in_this_section(term: str) -> list[int]: # ok I'm not hardcoding all this
     # print(term)
-    if term == "F" or term == "S1":
-        return [0]
-    elif term == "W" or term == "S2":
-        return [1]
-    elif term == "Y" or term == "SU":
-        return [0, 1]
-    elif "L" in term:
+    if "L" in term or term == "FS" or term == "WS": # bit obsolete; see check_cond
         # print("Special term; block model, WL, or L1/L2")
+        return [0]
+    elif ("W" in term) or term == "S2" or term == "B1" or term == "B4":
+        return [1]
+    elif term == "Y" or term == "SU" or term == "FW" or term == "B3":
+        return [0, 1]
+    elif ("F" in term) or term == "S1"  or term == "B2":
         return [0]
     else:
         # print("No considered term")

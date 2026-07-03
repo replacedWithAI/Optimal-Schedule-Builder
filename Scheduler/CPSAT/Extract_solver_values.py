@@ -1,8 +1,9 @@
 from ortools.sat.python import cp_model
+
 from typing import Any
-from Scheduler.lib.Course import Course
-from Scheduler.lib.Sections import Section
-from Scheduler.lib.Class_sessions import Class_session
+from lib import Course
+from lib import Section
+from lib import ClassSession
 
 class Solver_values_extractor:
     def __init__(self, 
@@ -75,7 +76,7 @@ class Solver_values_extractor:
 
 
     def __get_chosen_classes(self, 
-                             classes: list[Class_session],
+                             classes: list[ClassSession],
                              classes_intervals: dict[str, dict[int, Any]],
                              solver: cp_model) -> list[Any]:
         chosen_classes = []
