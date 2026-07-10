@@ -5,7 +5,6 @@ from lib import Course
 from lib import ClassSession
 class Constraint_adder:
     def __init__(self,
-                 unavailable_hours: list[str, list[int, int]],
                  intervals_by_day: dict[str, list[Any]],
                  days_present: list[Any],
                  interval_variables: dict[dict[dict[int, Any]]], 
@@ -16,8 +15,7 @@ class Constraint_adder:
         self.__add_section_per_course_constraint(interval_variables, courses, model)
 
     def __add_section_per_course_constraint(self, 
-                                            interval_variables: dict[str, dict[str, dict
-                                                                    [str, dict[int, Any]]]], 
+                                            interval_variables: dict[str, Any], 
                                             courses: list[Course], 
                                             model: cp_model):
         for course in courses:
@@ -59,8 +57,7 @@ class Constraint_adder:
                 
         
     def __add_one_lab_tutorial_per_section(self,
-                                           interval_variables: dict[str, dict[str, dict
-                                                                   [str, dict[int, Any]]]], 
+                                           interval_variables: dict[str, Any], 
                                            curr_section_presence: Any, 
                                            course_name: str, 
                                            section_letter: str, 
@@ -102,8 +99,7 @@ class Constraint_adder:
     
 
     def __add_no_overlap_constraint(self, 
-                                    interval_variables: dict[str, dict[str, dict
-                                                            [str, dict[int, Any]]]], 
+                                    interval_variables: dict[str, Any], 
                                     courses: list[Course], 
                                     model: cp_model):
         list_of_intervals = [] # yes. your ram is crying. I know

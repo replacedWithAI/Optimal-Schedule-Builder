@@ -4,14 +4,14 @@ from lib import Course
 from lib import Section
 from lib import ClassSession
 
-__all__ = ["validate_class_sessions"]
+from gettingcourses.check_conditions import ConditionChecker
 
-def validate_class_sessions(course_jsons: list[dict[str, Any]]):
-    courses = _make_courses(course_jsons)
-    return courses
+__all__ = ["make_courses"]
 
-def _make_courses(course_jsons: list[dict[str, Any]]) -> list[Course]:
+def make_courses(course_jsons: list[dict[str, Any]], 
+                  personal_times: dict = {}) -> list[Course]:
     courses = []
+    validator = ConditionChecker(personal_times)
     
     for course_json in course_jsons:
         course_key = course_json.get("key")
@@ -19,35 +19,37 @@ def _make_courses(course_jsons: list[dict[str, Any]]) -> list[Course]:
         course = Course(faculty = course_key.get("faculty"), 
                         department = course_key.get ("dept"), 
                         course_number = course_key.get("code"), 
-                        course_code = f"{course_json.get("dept")} {course_key.get("code")}", 
+                        course_code = 
+                        f"{course_json.get("dept")} {course_key.get("code")}", 
                         credits = course_key.get("credit"), 
                         course_name = course_json.get("name"),
                         prerequisites = course_json.get("prereq"), 
-                        sections = _make_sections(section_json), 
+                        sections = _make_sections(section_json, validator), 
                         sections_presence = []) 
         courses.append(course)
+    course_json = None
 
     return courses
 
 
-def _make_sections(section_jsons: list[dict[str, Any]]) -> list[Section]:
+def _make_sections(section_jsons: list[dict[str, Any]], 
+                   validator: ConditionChecker) -> list[Section]:
     Sections = []
 
     for section_json in section_jsons:
 
         class_jsons = section_json.get("classes")
+
         term = _terms_in_this_section(section_json.get("term"))
-        section_classes = _make_classes(class_jsons, term)
+        if (validator.is_usual_term(term)): continue
 
-        uncommon_section = ('L' in term)
-        if (uncommon_section): continue
+        section_classes = _make_classes(class_jsons, term, validator)
+        if (validator.has_no_classes(section_classes)): continue
 
-        if (len(section_classes) == 0): continue
-
-        section_obj = Section( term, \
-                                section_letter = section_json.get("section"), \
-                                professor = _get_section_professor(class_jsons), \
-                                classes = section_classes )
+        section_obj = Section(term = term,
+                              section_letter = section_json.get("section"),
+                              professor = _get_section_professor(class_jsons),
+                              classes = section_classes)
         Sections.append(section_obj)
 
     return Sections
@@ -60,54 +62,57 @@ def _get_section_professor(class_session_jsons: list[dict[str, Any]]) -> str:
     return lecture_json.get("professor")
 
 
-def _make_classes(class_jsons: list[dict[str, Any]], \
-                    term: list[int])-> list[ClassSession]: #feel like name should be less abstract
+def _make_classes(class_jsons: list[dict[str, Any]],
+                term: list[int],
+                validator: ConditionChecker)-> list[ClassSession]: 
     list_class_sessions = []
-
+    
     # each class session has its list of timeslots
     for class_json in class_jsons:
         session_name = class_json.get("name")
-        if ("99") in session_name: # no one likes lab 99. Im sorry
-            continue
+        if (validator.is_lab_99(session_name)): continue # no one likes lab 99. Im sorry 
 
         class_session_jsons = class_json.get("timeslot")
-        curr_class_type = _make_class_sessions( session_name, \
-                                                class_session_jsons, \
-                                                term) #LECT, LAB, etc
+        curr_class = _make_class_sessions(session_name, class_session_jsons, 
+                                          term, validator) #LECT, LAB, etc
         
-        if (curr_class_type.global_start_times == []): # never starts; meh method
-            continue
+        if (validator.no_sessions_start(curr_class.global_start_times)): continue
         
-        list_class_sessions.append( curr_class_type )
+        list_class_sessions.append(curr_class)
     
     return list_class_sessions
 
     
 def _make_class_sessions(session_name: str, \
                          class_session_jsons: list[dict[str, Any]],\
-                         term: list[int]) -> ClassSession:
+                         term: list[int],
+                         validator: ConditionChecker) -> ClassSession:
     start_times = []
     global_start_times = []
     durations = []
     global_end_times = []
     campus = []
+
     for curr_term in term:
         for class_session_json in class_session_jsons:
 
             time = class_session_json.get("time")
             # print(time)
-            if (time == ""):
-                continue
+            if (validator.session_doesnt_start(time)): continue
             
             start_times.append(_start_time_in_minutes(time, \
-                                                      class_session_json.get("weekday"), \
-                                                      curr_term) )
+                                                      class_session_json.get("weekday"),
+                                                      curr_term))
+            
+            durations.append(int( class_session_json.get("duration") ))
+
+            if (validator.outside_personal_times([start_times[-1], 
+                                                start_times[-1][0] + durations[-1],
+                                                ])): continue
             
             global_start_times.append(_time_in_ten_days_minutes(start_times[-1][0],
                                                                 start_times[-1][1],
                                                                 curr_term) )
-            
-            durations.append(int( class_session_json.get("duration") ))
 
             global_end_times.append( global_start_times[-1] + durations[-1] )
 
@@ -146,7 +151,7 @@ def _convert_day_into_number(weekday: str) -> int:
     elif weekday == "F": 
         return 4
     else:
-        print("Day isn't any of these: " + str(weekday))
+        print(f"Day isn't any of these: {str(weekday)}")
         return 0
 
 

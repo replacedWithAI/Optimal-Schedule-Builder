@@ -34,6 +34,7 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
 
     def __classes_start_times(self, classes: list[Course]
                               ) -> dict[str, dict[str, dict[str, dict[int, Any]]]]:
+
         section_start_times = {
             curr_class.activity_name: {
                 i: curr_class.global_start_times[i]
