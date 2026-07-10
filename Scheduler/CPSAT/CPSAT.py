@@ -8,7 +8,6 @@ from CPSAT.Extract_solver_values import Solver_values_extractor
 
 class Schedule_maker:
     def __init__(self, 
-                 unavailable_hours: list[str, list[int, int]],
                  courses: list[Course], 
                  commute_times: int =  0):
         
@@ -18,7 +17,7 @@ class Schedule_maker:
         (interval_variables, intervals_by_day,
          days_present) = self.__add_courses_to_CPSAT(courses, model)
         
-        self.__add_constraints(unavailable_hours, intervals_by_day,
+        self.__add_constraints(intervals_by_day,
                                 days_present, interval_variables,
                                 courses, model)
         
@@ -45,14 +44,13 @@ class Schedule_maker:
     
 
     def __add_constraints(self,
-                          unavailable_hours: list[str, list[int, int]],
                           intervals_by_day: dict[str, list[Any]],
                           days_present: list[Any],
                           interval_variables: dict[dict[dict[int, Any]]],
                           courses: list[Course],
                           model: cp_model) -> list[Any]:
         
-        Constraint_adder(unavailable_hours, intervals_by_day, days_present, 
+        Constraint_adder(intervals_by_day, days_present, 
                              interval_variables, courses, model)
         return
         

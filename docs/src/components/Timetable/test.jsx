@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -6,6 +6,7 @@ import './plotTimetable.css';
 
 export default function FetchSchedule( {requestedCourses = []} ) {
 	const [events, setEvents] = useState([]);
+	const busyTimes = useRef({});
 
 	const plotSchedule = async () => {
 		try {
@@ -87,8 +88,88 @@ export default function FetchSchedule( {requestedCourses = []} ) {
 		return processedCourseTimes;
 	}
 
-	const handleDateClick = () => {
+	const handleSelectClick = (cellInfo) => {
+		const newBusyTime = {
+			id: `selected-${Date.now()}`,
+			start: cellInfo.startStr,
+			end: cellInfo.endStr,
+			resourceId: cellInfo.resource.id,
+			backgroundColor: '#888888',
+			title: "Busy",
+			extendedProps: {
+				isSelectionBlock: true
+			}
+		}
 
+		setEvents((prevEvents) => {
+			const todayBusyTimes= [];
+			const otherItems = [];
+
+			prevEvents.forEach(e => {
+				if (e.extendedProps?.isSelectionBlock 
+					&& e.resourceId == newBusyTime.resourceId) {
+					todayBusyTimes.push(e);
+				} else {
+					otherItems.push(e);
+				}
+			});
+			return tryMergeBusy([...todayBusyTimes, newBusyTime], otherItems);
+		});
+
+		cellInfo.view.calendar.unselect(); // only display 1 event; try comment out
+		console.log("Made a busy time");
+	};
+
+	const tryMergeBusy = (todayBusys, otherItems) => {
+		todayBusys.sort((a, b) => new Date(a.start) - new Date(b.start));
+
+		const processedBusys = [];
+		let currBusy = {...todayBusys[0]};
+
+		let weekdayNumber = todayBusys[0].resourceId;
+		busyTimes.current[weekdayNumber] = [];
+		
+		for (let i = 1; i < todayBusys.length; i++) {
+			const nextBusy = todayBusys[i];
+			
+			const overlaps = new Date(nextBusy.start) <= new Date(currBusy.end); 
+			if (overlaps) {
+				const isSubset = new Date(nextBusy.end) < new Date(currBusy.end);
+				currBusy.end = isSubset ? currBusy.end : nextBusy.end;
+			} else {
+				processedBusys.push(currBusy);
+				busyTimes.current[weekdayNumber].push([
+														toMinutes(currBusy.start),
+														toMinutes(currBusy.end)
+													  ]);
+
+				currBusy = {...nextBusy};
+			}
+		}
+		processedBusys.push(currBusy);
+		busyTimes.current[weekdayNumber].push([
+										toMinutes(currBusy.start),
+										toMinutes(currBusy.end)
+										]);
+
+		console.log(busyTimes);
+		
+		return [...otherItems, ...processedBusys];
+	}
+
+	const toMinutes = (dateStr) => {
+		const date = new Date(dateStr);
+		return date.getHours()*60 + date.getMinutes();
+	}
+
+	const handleEventClick = (eventInfo) => {
+		if (eventInfo.event.extendedProps.isSelectionBlock) {
+			setEvents((prevEvents) => prevEvents.filter((currEvent) => currEvent.id
+																	!== eventInfo.event.id));
+			console.log("Deleted a busy time");
+		} else {
+			console.log("Selected a class session event");
+		}
 	};
 
 	return (
@@ -104,12 +185,15 @@ export default function FetchSchedule( {requestedCourses = []} ) {
 					plugins={[resourceTimeGridPlugin, interactionPlugin]} //downloaded features
 					initialView="resourceTimeGridDay" //timetable design/format
 					headerToolbar={false}
+					initialDate="2018-01-11" // fix timetable to one day
 					selectable={true} // enables blocking off times
-					initialDate="2018-01-11" // fix timetable for one day
-					schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+					selectMirror={true} // let user see blocked off times
+					slotDuration="00:30:00" // divide table into 30 minute cells
 					
+					select={handleSelectClick}
+					eventClick={handleEventClick}
+
 					events={events}
-					dateClick={handleDateClick} // handles logic of selectable
 					resources={[
 						{ id: "0", title: "Mon" },
 						{ id: "1", title: "Tue" },
@@ -122,6 +206,7 @@ export default function FetchSchedule( {requestedCourses = []} ) {
 						{ id: "8", title: "Thu" },
 						{ id: "9", title: "Fri" }
 					]}
+					schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
 				/>
 
 				<button id="plot-timetable-btn" onClick={plotSchedule}>
