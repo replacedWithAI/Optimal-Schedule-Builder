@@ -16,10 +16,11 @@ def calculate_schedule(selected_courses: list = ["CHEM 1100", "MATH 1013",
     # print("Alright, now you can enter unavailable days and hours to schedule around." \
     # "\nEnter in the following format pls (Semester1 Mon 18:00 24:00)")
     personal_times = {0: [[12390, 12391]]}
+    # personal_times = {0: [[690, 691]]}
 
     courses = make_courses(course_jsons, personal_times)
     del course_jsons
-    print(courses)
+    # print(courses)
 
     Schedule_maker_obj = Schedule_maker(courses)
     all_best_courses = Schedule_maker_obj.all_best_courses
