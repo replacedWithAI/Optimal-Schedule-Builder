@@ -43,9 +43,9 @@ class Plotter:
                     name = course_name + ' ' + class_name
                     day = class_info["start"][i] // 1440
                     duration = class_info["size"][i]
-                    end_time = class_info["end"][i] % 1440
+                    start_time = class_info["start"][i] % 1440
 
-                    interval = schedule.bar(day, duration, bottom=end_time, label = name,
+                    interval = schedule.bar(day, duration, bottom=start_time, label = name,
                                             facecolor=colour)
                     
                     schedule.bar_label(interval, labels = [name],label_type="center",

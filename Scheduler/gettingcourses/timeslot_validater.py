@@ -20,14 +20,14 @@ def make_courses(course_jsons: list[dict[str, Any]],
                         department = course_key.get ("dept"), 
                         course_number = course_key.get("code"), 
                         course_code = 
-                        f"{course_json.get("dept")} {course_key.get("code")}", 
+                        f"{course_key.get ("dept")} {course_key.get("code")}", 
                         credits = course_key.get("credit"), 
                         course_name = course_json.get("name"),
                         prerequisites = course_json.get("prereq"), 
                         sections = _make_sections(section_json, validator), 
                         sections_presence = []) 
         courses.append(course)
-    course_json = None
+        course_json = None
 
     return courses
 
@@ -77,6 +77,8 @@ def _make_classes(class_jsons: list[dict[str, Any]],
                                           term, validator) #LECT, LAB, etc
         
         if (validator.no_sessions_start(curr_class.global_start_times)): continue
+
+        if (validator.outside_personal_times(curr_class)): continue
         
         list_class_sessions.append(curr_class)
     
@@ -101,15 +103,11 @@ def _make_class_sessions(session_name: str, \
             if (validator.session_doesnt_start(time)): continue
             
             start_times.append(_start_time_in_minutes(time, \
-                                                      class_session_json.get("weekday"),
-                                                      curr_term))
-            
+                                                    class_session_json.get("weekday"),
+                                                    curr_term))
+
             durations.append(int( class_session_json.get("duration") ))
 
-            if (validator.outside_personal_times([start_times[-1], 
-                                                start_times[-1][0] + durations[-1],
-                                                ])): continue
-            
             global_start_times.append(_time_in_ten_days_minutes(start_times[-1][0],
                                                                 start_times[-1][1],
                                                                 curr_term) )
