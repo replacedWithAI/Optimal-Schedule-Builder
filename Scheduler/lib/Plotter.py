@@ -36,16 +36,18 @@ class Plotter:
             colour = colours[colour_index]
             colour_index += 1
 
-            course_name, curr_class = list(course.items())[0]
-            curr_class = curr_class[0]
-            for class_name, class_info in curr_class.items():
-                for i in range(len(class_info["start"])):
-                    name = course_name + ' ' + class_name
-                    day = class_info["start"][i] // 1440
-                    duration = class_info["size"][i]
-                    end_time = class_info["end"][i] % 1440
+            course_name, classes = list(course.items())[0]
+            
+            for curr_class in classes:
+                class_name, session_info =  list(curr_class.items())[0]
 
-                    interval = schedule.bar(day, duration, bottom=end_time, label = name,
+                for i in range(len(session_info["start"])):
+                    name = f"{course_name} {class_name}"
+                    day = session_info["start"][i] // 1440
+                    duration = session_info["size"][i]
+                    start_time = session_info["start"][i] % 1440
+
+                    interval = schedule.bar(day, duration, bottom=start_time, label = name,
                                             facecolor=colour)
                     
                     schedule.bar_label(interval, labels = [name],label_type="center",

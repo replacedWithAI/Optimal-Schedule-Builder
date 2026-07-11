@@ -22,7 +22,7 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
     def __create_start_time_variables(self, courses: list[Course]
                                       ) -> dict[str, dict[str, dict[str, dict[int, Any]]]]: 
         start_time_variables = {
-            course.course_name: {
+            course.course_code: {
                 section.section_letter: self.__classes_start_times(section.classes)
                 for section in course.sections
             }
@@ -34,6 +34,7 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
 
     def __classes_start_times(self, classes: list[Course]
                               ) -> dict[str, dict[str, dict[str, dict[int, Any]]]]:
+
         section_start_times = {
             curr_class.activity_name: {
                 i: curr_class.global_start_times[i]
@@ -50,10 +51,9 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
                                       model: cp_model
                                       ) -> dict[str, dict[str, dict[str, dict[int, Any]]]]:
         is_present_variables = {
-            course.course_name: {
-                section.section_letter: self.__classes_is_present(section.classes, \
-                                                                 (course.department + " "
-                                                                  + course.course_code), \
+            course.course_code: {
+                section.section_letter: self.__classes_is_present(section,
+                                                                 course.course_code,
                                                                  section.section_letter, 
                                                                  model)
                 for section in course.sections
@@ -65,53 +65,37 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
     
     
     def __classes_is_present(self, 
-                             classes: list[ClassSession], 
-                             course_name: str, \
+                             section: Section, 
+                             course_code: str, \
                              section_letter: str, 
                              model: cp_model) -> dict[str, dict[int, Any]]:
         
-        section_is_present = model.new_bool_var(f"{course_name}_section_" + \
-                                                f"{section_letter}_" + \
-                                                f"taken")
-        section_presence = {}
-        num_each_section_class_type = self.__get_num_section_classes_by_type(classes)
+        section.sections_presence = model.new_bool_var(f"{course_code}_section_" + \
+                                                       f"{section_letter}_" + \
+                                                       f"taken")
+        classes = section.classes
+        classes_presence = {}
 
         for i in range(len(classes)):
             curr_class = classes[i]
             curr_class_presence = {curr_class.activity_name: {}}
 
             space_index = curr_class.activity_name.find(' ')
-            curr_class_type = curr_class.activity_name[:space_index]
-            num_curr_class_type = num_each_section_class_type[curr_class_type]
+            class_type = curr_class.activity_name[:space_index]
 
-            if num_curr_class_type == 1:
-                CPSAT_bool = section_is_present
+            if class_type in section.fixed_classes:
+                CPSAT_bool = section.sections_presence
             else:
-                CPSAT_bool = model.new_bool_var(f"{course_name}_section_" + \
+                CPSAT_bool = model.new_bool_var(f"{course_code}_section_" + \
                                                 f"{section_letter}_" + \
                                                 f"{curr_class.activity_name}" + \
                                                 f"_taken")
             
             for j in range(len(curr_class.start_times)):
                 curr_class_presence[curr_class.activity_name][j] = CPSAT_bool
-            section_presence.update(curr_class_presence)
+            classes_presence.update(curr_class_presence)
 
-        return section_presence
-    
-
-    def __get_num_section_classes_by_type(self,
-                                            classes: list[ClassSession]
-                                            ) -> list[str]:
-        section_classes = {}
-        for curr_class in classes:
-            
-            space_index = curr_class.activity_name.find(" ")
-            curr_class_type = curr_class.activity_name[:space_index] # lect, blen, tutr...
-            section_classes.setdefault(curr_class_type, 0)
-            section_classes[curr_class_type] += 1
-
-        #print(f"section classes: {section_classes}")
-        return section_classes
+        return classes_presence
 
 
     def __create_interval_variables(self,
@@ -124,12 +108,12 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
                                     ) -> dict[str, dict[str, dict[str, dict[int, Any]]]]:
         
         interval_variables = {
-            course.course_name: {
+            course.course_code: {
                 section.section_letter: self.__classes_intervals
                                         ( \
-                                            start_time_variables[course.course_name]
+                                            start_time_variables[course.course_code]
                                                                 [section.section_letter], \
-                                            is_present_variables[course.course_name]
+                                            is_present_variables[course.course_code]
                                                                 [section.section_letter],\
                                             (course.department + " " + course.course_code),\
                                             section.section_letter, \
@@ -148,7 +132,7 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
     def __classes_intervals(self, 
                             start_time_variables: list[Any], 
                             is_present_variables: list[Any], 
-                            course_name:str, 
+                            course_code:str, 
                             section_letter:str, 
                             classes: list[ClassSession], 
                             model: cp_model
@@ -160,7 +144,7 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
                             start = start_time_variables[curr_class.activity_name][i], \
                             size = curr_class.duration[i], \
                             is_present = is_present_variables[curr_class.activity_name][i], \
-                            name = f"{course_name}_section_{section_letter}_" \
+                            name = f"{course_code}_section_{section_letter}_" \
                                  + f"{curr_class.activity_name}" \
                             )
                 for i in range(len(curr_class.start_times))
@@ -182,13 +166,13 @@ class CPSAT_variable_maker: # I am so sorry, there's so much nesting. Hopefully 
         for course in courses:
             for section in course.sections:
                 for curr_class in section.classes:
-                    for i in range(len(interval_variables[course.course_name]
+                    for i in range(len(interval_variables[course.course_code]
                                                         [section.section_letter]
                                                         [curr_class.activity_name])):
                         
                         days_key = self.__get_curr_day(curr_class.start_times[i][1])
                         days_key += self.__get_current_term(curr_class.start_times[i][2])
-                        intervals_by_days [days_key].append(interval_variables[course.course_name]
+                        intervals_by_days [days_key].append(interval_variables[course.course_code]
                                                                 [section.section_letter]
                                                                 [curr_class.activity_name]
                                                                 [i])
