@@ -34,15 +34,14 @@ class Solver_values_extractor:
 
         for course in courses: # needs to change if gonna toggle courses
             
-            course_name = course.course_name
-            course_code = course.department + ' ' + course.course_code
+            course_code = course.course_code
             
-            # print(interval_variables[course_name])
+            # print(interval_variables[course_code])
             curr_course_classes = self.__get_chosen_sections_classes(
                                                                      course_code,
                                                                      course.sections,
                                                                      course.sections_presence, 
-                                                                     interval_variables[course_name], 
+                                                                     interval_variables[course_code], 
                                                                      solver)
             all_chosen_courses.append(curr_course_classes)
 

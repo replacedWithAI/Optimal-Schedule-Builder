@@ -19,7 +19,7 @@ class Constraint_adder:
                                             courses: list[Course], 
                                             model: cp_model):
         for course in courses:
-            course_name = course.course_name
+            course_code = course.course_code
             sections_available = []
 
             for section in course.sections:
@@ -28,7 +28,7 @@ class Constraint_adder:
                 classes = section.classes
  
                 for curr_class in classes:
-                    curr_class_is_present_var = interval_variables[course_name] \
+                    curr_class_is_present_var = interval_variables[course_code] \
                                                                   [section_letter] \
                                                                   [curr_class.activity_name] \
                                                                   [0].presence_literals()[0]
@@ -45,7 +45,7 @@ class Constraint_adder:
                 
                 self.__add_one_lab_tutorial_per_section(interval_variables,
                                                         section_is_present_var, 
-                                                        course_name, 
+                                                        course_code, 
                                                         section_letter, 
                                                         classes, 
                                                         model)
@@ -59,7 +59,7 @@ class Constraint_adder:
     def __add_one_lab_tutorial_per_section(self,
                                            interval_variables: dict[str, Any], 
                                            curr_section_presence: Any, 
-                                           course_name: str, 
+                                           course_code: str, 
                                            section_letter: str, 
                                            classes: list[ClassSession], 
                                            model: cp_model):
@@ -70,7 +70,7 @@ class Constraint_adder:
         for i in range(len(classes)):
             
             curr_class_name = classes[i].activity_name
-            curr_class_interval = interval_variables[course_name] \
+            curr_class_interval = interval_variables[course_code] \
                                            [section_letter] \
                                            [curr_class_name] \
                                            [0]
@@ -108,7 +108,7 @@ class Constraint_adder:
             for section in course.sections:
                 for curr_class in section.classes:
                     for i in range(len(curr_class.start_times)):
-                        curr_interval = interval_variables[course.course_name] \
+                        curr_interval = interval_variables[course.course_code] \
                                                           [section.section_letter] \
                                                           [curr_class.activity_name] \
                                                           [i]

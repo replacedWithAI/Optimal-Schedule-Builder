@@ -16,6 +16,8 @@ class Section:
     section_letter: str
     professor: str
     classes: list[ClassSession]
+    fixed_classes: list[str]
+    sections_presence: list[Any]
 
 @dataclass
 class Course:
@@ -27,5 +29,4 @@ class Course:
     course_name: str
     prerequisites: list[str]
     sections: list[Section]
-    sections_presence: list[Any]
 

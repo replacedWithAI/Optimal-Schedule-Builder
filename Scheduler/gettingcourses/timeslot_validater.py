@@ -11,7 +11,7 @@ __all__ = ["make_courses"]
 def make_courses(course_jsons: list[dict[str, Any]], 
                   personal_times: dict = {}) -> list[Course]:
     courses = []
-    validator = ConditionChecker(personal_times)
+    validator = ConditionChecker(personal_times = personal_times, fixed_classes = "")
     
     for course_json in course_jsons:
         course_key = course_json.get("key")
@@ -24,10 +24,10 @@ def make_courses(course_jsons: list[dict[str, Any]],
                         credits = course_key.get("credit"), 
                         course_name = course_json.get("name"),
                         prerequisites = course_json.get("prereq"), 
-                        sections = _make_sections(section_json, validator), 
-                        sections_presence = []) 
+                        sections = _make_sections(section_json, validator))
         courses.append(course)
         course_json = None
+        # print(course.course_code)
 
     return courses
 
@@ -41,7 +41,11 @@ def _make_sections(section_jsons: list[dict[str, Any]],
         class_jsons = section_json.get("classes")
 
         term = _terms_in_this_section(section_json.get("term"))
-        if (validator.is_usual_term(term)): continue
+        if (validator.is_unusual_term(term)): continue
+
+        fixed_classes = _get_num_section_classes_by_type(class_jsons)
+        validator.fixed_classes = fixed_classes
+        # print(f"{fixed_classes}\n")
 
         section_classes = _make_classes(class_jsons, term, validator)
         if (validator.has_no_classes(section_classes)): continue
@@ -49,7 +53,9 @@ def _make_sections(section_jsons: list[dict[str, Any]],
         section_obj = Section(term = term,
                               section_letter = section_json.get("section"),
                               professor = _get_section_professor(class_jsons),
-                              classes = section_classes)
+                              classes = section_classes,
+                              fixed_classes = fixed_classes,
+                              sections_presence = None)
         Sections.append(section_obj)
 
     return Sections
@@ -63,8 +69,8 @@ def _get_section_professor(class_session_jsons: list[dict[str, Any]]) -> str:
 
 
 def _make_classes(class_jsons: list[dict[str, Any]],
-                term: list[int],
-                validator: ConditionChecker)-> list[ClassSession]: 
+                  term: list[int],
+                  validator: ConditionChecker)-> list[ClassSession]: 
     list_class_sessions = []
     
     # each class session has its list of timeslots
@@ -76,9 +82,13 @@ def _make_classes(class_jsons: list[dict[str, Any]],
         curr_class = _make_class_sessions(session_name, class_session_jsons, 
                                           term, validator) #LECT, LAB, etc
         
-        if (validator.no_sessions_start(curr_class.global_start_times)): continue
+        session_pruned = (validator.no_sessions_start(curr_class.global_start_times)) \
+                         or (validator.outside_personal_times(curr_class))
 
-        if (validator.outside_personal_times(curr_class)): continue
+        curr_class_type = session_name[:session_name.find(' ')]
+        if (session_pruned):
+            if (validator.is_fixed_class(curr_class_type)): return []
+            continue
         
         list_class_sessions.append(curr_class)
     
@@ -174,3 +184,20 @@ def _terms_in_this_section(term: str) -> list[int]: # ok I'm not hardcoding all 
     else:
         # print("No considered term")
         return [0]
+
+
+def _get_num_section_classes_by_type(classes_json: list[dict[str, Any]]) \
+                                                            -> dict[str, int]:
+    fixed_section_classes = {}
+    for curr_class in classes_json:
+        
+        space_index = curr_class["name"].find(' ')
+        curr_class_type = curr_class["name"][:space_index] # lect, blen, tutr...
+
+        fixed_section_classes.setdefault(curr_class_type, 0)
+        fixed_section_classes[curr_class_type] = \
+                                fixed_section_classes.get(curr_class_type, 0) + 1
+
+    #print(f"section classes: {section_classes}")
+    return [curr_class for curr_class, count in fixed_section_classes.items() 
+            if count == 1]
