@@ -3,10 +3,11 @@ from bisect import bisect_left
 from lib import ClassSession
 
 class ConditionChecker:
-    def __init__(self, personal_times: dict):
+    def __init__(self, personal_times: dict, fixed_classes: list[str]):
         self.personal_times = personal_times
+        self.fixed_classes = None
 
-    def is_usual_term(self, term: str) -> bool:
+    def is_unusual_term(self, term: str) -> bool:
         unusual_term = ("L" in term) or (term == "FS") or (term == "WS")
         return unusual_term
 
@@ -48,3 +49,6 @@ class ConditionChecker:
             if (is_outside): return True
 
         return False
+    
+    def is_fixed_class(self, curr_class_type: str) -> bool:
+        return curr_class_type in self.fixed_classes
