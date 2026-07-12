@@ -9,24 +9,27 @@ from gettingcourses.check_conditions import ConditionChecker
 __all__ = ["make_courses"]
 
 def make_courses(course_jsons: list[dict[str, Any]], 
-                  personal_times: dict = {}) -> list[Course]:
+                  personal_times: dict = {}, 
+                  chosen_sections_classes: dict[dict[dict[str]]] = {}) -> list[Course]:
     courses = []
-    validator = ConditionChecker(personal_times = personal_times, fixed_classes = "")
+    validator = ConditionChecker(personal_times = personal_times, 
+                                 chosen_sections_classes = chosen_sections_classes)
     
     for course_json in course_jsons:
-        course_key = course_json.get("key")
-        section_json = course_json.get("schedule")
-        course = Course(faculty = course_key.get("faculty"), 
-                        department = course_key.get ("dept"), 
-                        course_number = course_key.get("code"), 
-                        course_code = 
-                        f"{course_key.get ("dept")} {course_key.get("code")}", 
-                        credits = course_key.get("credit"), 
-                        course_name = course_json.get("name"),
-                        prerequisites = course_json.get("prereq"), 
+        course_key = course_json["key"]
+        section_json = course_json["schedule"]
+        course_code = f"{course_key["dept"]} {course_key["code"]}"
+        validator.course_code = course_code
+
+        course = Course(faculty = course_key["faculty"], 
+                        department = course_key["dept"], 
+                        course_number = course_key["code"], 
+                        course_code = course_code, 
+                        credits = course_key["credit"], 
+                        course_name = course_json["name"],
+                        prerequisites = course_json["prereq"], 
                         sections = _make_sections(section_json, validator))
         courses.append(course)
-        course_json = None
         # print(course.course_code)
 
     return courses
@@ -39,19 +42,23 @@ def _make_sections(section_jsons: list[dict[str, Any]],
     for section_json in section_jsons:
 
         class_jsons = section_json.get("classes")
-
         term = _terms_in_this_section(section_json.get("term"))
-        if (validator.is_unusual_term(term)): continue
+        
+        validator.section_letter = section_json["section"]
+        should_prune = validator.is_unusual_term(term) \
+                        or validator.isnt_chosen_section()
+        if (should_prune): continue
 
         fixed_classes = _get_num_section_classes_by_type(class_jsons)
         validator.fixed_classes = fixed_classes
+
         # print(f"{fixed_classes}\n")
 
         section_classes = _make_classes(class_jsons, term, validator)
         if (validator.has_no_classes(section_classes)): continue
 
         section_obj = Section(term = term,
-                              section_letter = section_json.get("section"),
+                              section_letter = section_json["section"],
                               professor = _get_section_professor(class_jsons),
                               classes = section_classes,
                               fixed_classes = fixed_classes,
@@ -65,7 +72,7 @@ def _get_section_professor(class_session_jsons: list[dict[str, Any]]) -> str:
     lecture_json = class_session_jsons[0] # WIP
     if (lecture_json.get("professor") is None):
         return ""
-    return lecture_json.get("professor")
+    return lecture_json["professor"]
 
 
 def _make_classes(class_jsons: list[dict[str, Any]],
@@ -75,10 +82,14 @@ def _make_classes(class_jsons: list[dict[str, Any]],
     
     # each class session has its list of timeslots
     for class_json in class_jsons:
-        session_name = class_json.get("name")
-        if (validator.is_lab_99(session_name)): continue # no one likes lab 99. Im sorry 
+        session_name = class_json["name"]
 
-        class_session_jsons = class_json.get("timeslot")
+        should_prune = validator.is_lab_99(session_name) or \
+                        validator.isnt_chosen_class(session_name)
+
+        if (should_prune): continue
+
+        class_session_jsons = class_json["timeslot"]
         curr_class = _make_class_sessions(session_name, class_session_jsons, 
                                           term, validator) #LECT, LAB, etc
         
@@ -108,15 +119,15 @@ def _make_class_sessions(session_name: str, \
     for curr_term in term:
         for class_session_json in class_session_jsons:
 
-            time = class_session_json.get("time")
+            time = class_session_json["time"]
             # print(time)
             if (validator.session_doesnt_start(time)): continue
             
             start_times.append(_start_time_in_minutes(time, \
-                                                    class_session_json.get("weekday"),
+                                                    class_session_json["weekday"],
                                                     curr_term))
 
-            durations.append(int( class_session_json.get("duration") ))
+            durations.append(int( class_session_json["duration"] ))
 
             global_start_times.append(_time_in_ten_days_minutes(start_times[-1][0],
                                                                 start_times[-1][1],
@@ -124,7 +135,7 @@ def _make_class_sessions(session_name: str, \
 
             global_end_times.append( global_start_times[-1] + durations[-1] )
 
-            campus.append( class_session_json.get("campus") )  
+            campus.append(class_session_json["campus"])  
 
     return ClassSession(session_name, start_times, global_start_times,
                             durations, global_end_times, campus)
