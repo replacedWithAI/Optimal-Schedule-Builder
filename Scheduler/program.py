@@ -5,20 +5,27 @@ from lib.Plotter import Plotter
 
 # assume the workspace folder is Scheduler
 
-def calculate_schedule(selected_courses: list = ["CHEM 1100", "MATH 1013",
+def calculate_schedule(possible_courses: list = ["CHEM 1100", "MATH 1013",
                                                 "MATH 1014", "EECS 1021",
                                                 "MATH 1028", "ENG 1102",
                                                 "MATH 2030", "MATH 2015"]
                                                             ) -> dict:
-    course_jsons = get_course_jsons(selected_courses)
-    print(course_jsons)
+    course_jsons = get_course_jsons(possible_courses)
+    # print(course_jsons)
     
     # print("Alright, now you can enter unavailable days and hours to schedule around." \
     # "\nEnter in the following format pls (Semester1 Mon 18:00 24:00)")
-    personal_times = {0: [[12390, 12391]]}
+    # personal_times = {0: [[12390, 12391]]}
     # personal_times = {0: [[690, 691]]}
 
-    courses = make_courses(course_jsons, personal_times)
+    fixed_courses = []
+    chosen_sections_classes = {"EECS 1021": {
+        'Y': ["LAB 05"]
+    }}
+    
+    # maybe I should make MakeCoursesQuery
+    courses = make_courses(course_jsons, chosen_sections_classes = chosen_sections_classes
+                           )
     del course_jsons
     # print(courses)
 
