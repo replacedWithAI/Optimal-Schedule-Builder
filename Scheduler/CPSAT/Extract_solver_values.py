@@ -77,22 +77,19 @@ def _get_chosen_classes(classes: list[ClassSession],
 
     for curr_class in classes:
         class_name = curr_class.activity_name
-        chosen_classes_empty = not fixed_classes
-        if (fixed_classes): return chosen_classes
-        if (class_name not in fixed_classes): continue
             
-        class_presence = classes_intervals[class_name][0].presence_literals[0]
+        class_presence = classes_intervals[class_name][0].presence_literals()[0]
         if (solver.value(class_presence) == 1):
         
             chosen_class = {curr_class.activity_name: {"start": [], "end": [], "size": []}}
 
             for i in range(len(curr_class.start_times)):
                 curr_interval = classes_intervals[curr_class.activity_name][i]
+                print(type(curr_interval.start_expr()))
                 chosen_class[curr_class.activity_name]["start"].append(curr_interval.start_expr())
                 chosen_class[curr_class.activity_name]["size"].append(curr_interval.size_expr())
                 chosen_class[curr_class.activity_name]["end"].append(curr_interval.end_expr())
 
             chosen_classes.append(chosen_class)
-        fixed_classes.pop(fixed_classes.index(class_name))
 
     return chosen_classes
