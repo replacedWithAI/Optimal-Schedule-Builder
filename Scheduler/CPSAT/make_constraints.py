@@ -59,10 +59,10 @@ def _add_one_lab_tutorial_per_section(interval_variables: dict[str, Any],
             
         is_chooseable_class = (session_presence != curr_section_presence)
         if (is_chooseable_class):
-            chooseable_classes.append(curr_section_presence)
+            chooseable_classes.append(session_presence)
 
         # print(chooseable_classes)
-    model.add(sum(chooseable_classes) == curr_section_presence)
+    if (chooseable_classes): model.add(sum(chooseable_classes) == curr_section_presence)
 
 
 def _add_no_overlap_constraint(interval_variables: dict[str, Any], 
