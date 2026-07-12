@@ -31,11 +31,10 @@ def calculate_schedule(possible_courses: list = ["CHEM 1100", "MATH 1013",
 
     all_best_courses = find_best_options(courses)
     del courses
-    # print(all_best_courses)
+    print(all_best_courses)
     Plotter_obj = Plotter(all_best_courses)
 
     return all_best_courses
-    # print(all_chosen_courses)
 
 if __name__ == "__main__":
     calculate_schedule()
