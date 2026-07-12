@@ -1,5 +1,5 @@
 import Scheduler.tests.Extract_course_jsons_and_data_types as Extract_course_jsons_and_data_types
-from Scheduler.CPSAT.Make_CPSAT_variables import CPSAT_variable_maker
+from Scheduler.CPSAT.variable_maker import CPSAT_variable_maker
 from ortools.sat.python import cp_model
 from ortools.sat.python.cp_model_helper import IntVar
 
