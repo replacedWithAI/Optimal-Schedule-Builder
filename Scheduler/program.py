@@ -1,6 +1,6 @@
 from gettingcourses import get_course_jsons
 from gettingcourses import make_courses
-from CPSAT.CPSAT import Schedule_maker
+from CPSAT import find_best_options
 from lib.Plotter import Plotter
 
 # assume the workspace folder is Scheduler
@@ -24,13 +24,13 @@ def calculate_schedule(possible_courses: list = ["CHEM 1100", "MATH 1013",
     }}
     
     # maybe I should make MakeCoursesQuery
-    courses = make_courses(course_jsons, chosen_sections_classes = chosen_sections_classes
-                           )
+    courses = make_courses(course_jsons, personal_times = {}, 
+                           chosen_sections_classes = chosen_sections_classes)
     del course_jsons
     # print(courses)
 
-    Schedule_maker_obj = Schedule_maker(courses)
-    all_best_courses = Schedule_maker_obj.all_best_courses
+    all_best_courses = find_best_options(courses)
+    del courses
     # print(all_best_courses)
     Plotter_obj = Plotter(all_best_courses)
 

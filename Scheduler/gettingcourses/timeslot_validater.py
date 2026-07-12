@@ -29,6 +29,8 @@ def make_courses(course_jsons: list[dict[str, Any]],
                         course_name = course_json["name"],
                         prerequisites = course_json["prereq"], 
                         sections = _make_sections(section_json, validator))
+        del course_json
+        # print (course_jsons)
         courses.append(course)
         # print(course.course_code)
 
