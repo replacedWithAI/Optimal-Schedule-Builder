@@ -2,87 +2,98 @@ from typing import Any
 from ortools.sat.python import cp_model
 
 from lib import Course
+from lib import Section
 from lib import ClassSession
 
 __all__ = ["make_scheduling_rules"]
 
-def make_scheduling_rules(interval_variables: dict[dict[dict[int, Any]]], 
-                            courses: list[Course], 
-                            model: cp_model):
-    _add_no_overlap_constraint(interval_variables, courses, model)
-    _add_section_per_course_constraint(interval_variables, courses, model)
+class ConstraintEnforcer:
+    def __init__(self, interval_variables: dict[dict[dict[int, Any]]], 
+                 requested_courses: list[str], max_courses_term: int, model: cp_model):
+        self.interval_variables = interval_variables
+        self.requested_courses = requested_courses
+        self.max_courses_term = max_courses_term
+        self.model = model
+        self.term1_sections = []
+        self.term2_sections = []
 
 
-def _add_section_per_course_constraint(interval_variables: dict[str, Any], 
-                                        courses: list[Course], 
-                                        model: cp_model):
-    for course in courses:
-        course_code = course.course_code
-        sections_available = []
-
-        for section in course.sections:
-
-            section_letter = section.section_letter
-            classes = section.classes
-
-            curr_section_presence = section.sections_presence
-            sections_available.append(curr_section_presence)
-            
-            _add_one_lab_tutorial_per_section(interval_variables,
-                                                curr_section_presence, 
-                                                course_code, 
-                                                section_letter, 
-                                                classes, 
-                                                model)
-                                                    
-        #print(sections_available)
-        model.add(sum(sections_available) == 1)
-    return
-            
-    
-def _add_one_lab_tutorial_per_section(interval_variables: dict[str, Any], 
-                                        curr_section_presence: Any, 
-                                        course_code: str, 
-                                        section_letter: str, 
-                                        classes: list[ClassSession], 
-                                        model: cp_model):
-    chooseable_classes = []
-
-    for curr_class in classes:
+    def enforce_scheduling_rules(self, courses: list[Course]):
+        course_presences = []
         
-        curr_class_name = curr_class.activity_name
-        session_interval = interval_variables[course_code] \
-                                            [section_letter] \
-                                            [curr_class_name] \
-                                            [0]
-        session_presence = session_interval.presence_literals()[0]
-            
-        is_chooseable_class = (session_presence != curr_section_presence)
-        if (is_chooseable_class):
-            chooseable_classes.append(session_presence)
+        for course in courses:
+            course_presences.append(course.course_presence)
+            self.__add_section_constraints(course.sections, course.course_presence)
+            self.__enforce_requested_courses(course)
 
-        # print(chooseable_classes)
-    if (chooseable_classes): model.add(sum(chooseable_classes) == curr_section_presence)
+        self.__maximise_courses(course_presences)
+        self.__enforce_courses_term(course_presences)
+        self.__enforce_no_overlap()
 
 
-def _add_no_overlap_constraint(interval_variables: dict[str, Any], 
-                                courses: list[Course], 
-                                model: cp_model):
-    intervals = [] # yes. your ram is crying. I know
-    
-    for course in courses: # yeah I know. We iterate through everything
-        for section in course.sections:
-            for curr_class in section.classes:
-                for i in range(len(curr_class.start_times)):
-                    curr_interval = interval_variables[course.course_code] \
-                                                        [section.section_letter] \
-                                                        [curr_class.activity_name] \
-                                                        [i]
-                    intervals.append(curr_interval)
-                    
-    model.add_no_overlap(intervals)
-    return # lets never do that again
+    def __add_section_constraints(self, sections: list[Section], course_presence: Any):
+        sections_presences = []
 
+        for section in sections:
+            sections_presences.append(section.section_presence)
+            self.__add_class_constraints(section.classes, section.section_presence)
+
+            if section.term == [0]: 
+                self.term1_sections.append(section.section_presence)
+            elif section.term == [1]:
+                self.term2_sections.append(section.section_presence)
+            elif section.term == [0, 1]:
+                self.term1_sections.append(section.section_presence)
+                self.term2_sections.append(section.section_presence)
+
+        self.__add_section_per_course_constraint(course_presence, sections_presences)
+
+
+    def __add_class_constraints(self, classes: list[ClassSession], section_presence: Any):
+        chooseable_classes = []
+
+        for curr_class in classes:
+            if curr_class.session_presences[0] != section_presence: 
+                chooseable_classes.append(curr_class.session_presences[0])
+
+        self.__add_one_lab_tutorial_per_section(section_presence, chooseable_classes)
+        
+
+    def __maximise_courses(self, course_presences: list[Any]):
+        print(len(course_presences))
+        self.model.add(sum(course_presences) == len(course_presences)) # WIP
+
+
+    def __enforce_requested_courses(self, course: Course):
+        if course.course_code in self.requested_courses:
+            self.model.add(course.course_presence == 1)
+
+
+    def __enforce_courses_term(self, course_presences: list[Any]):
+        if self.max_courses_term != 0:
+            self.model.add(sum(self.term1_sections) <= self.max_courses_term)
+            self.model.add(sum(self.term2_sections) <= self.max_courses_term)
+
+
+    def __add_section_per_course_constraint(self, course_presence: Any, 
+                                            sections_available: list[Any]):
+        self.model.add(sum(sections_available) == course_presence)
+
+                
+    def __add_one_lab_tutorial_per_section(self, section_presence: Any,
+                                           chooseable_classes: list[Any]):
+        if (chooseable_classes): self.model.add(sum(chooseable_classes) == section_presence)
+
+
+    def __enforce_no_overlap(self):                    
+        intervals = [
+            interval
+            for sections in self.interval_variables.values()
+            for classes in sections.values()
+            for session in classes.values()
+            for interval in session.values()
+        ]
+        self.model.add_no_overlap(intervals)
 
 '''
 Originally made this for a "minimze school days schedule", but I can do that with

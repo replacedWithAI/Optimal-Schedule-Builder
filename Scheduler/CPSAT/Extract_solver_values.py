@@ -37,9 +37,9 @@ def _get_chosen_courses(courses: list[Course],
         
         # print(interval_variables[course_code])
         curr_course_classes = _get_chosen_sections_classes(course_code,
-                                                            course.sections,
-                                                            interval_variables[course_code], 
-                                                            solver)
+                                                           course.sections,
+                                                           interval_variables[course_code], 
+                                                           solver)
         all_chosen_courses.append(curr_course_classes)
 
     return all_chosen_courses
@@ -56,7 +56,7 @@ def _get_chosen_sections_classes(course_code: str,
         section_letter = section.section_letter
         classes = section.classes
 
-        section_is_chosen = (solver.value(section.sections_presence) == 1)
+        section_is_chosen = (solver.value(section.section_presence) == 1)
 
         if section_is_chosen:
             
@@ -76,19 +76,19 @@ def _get_chosen_classes(classes: list[ClassSession],
     chosen_classes = []
 
     for curr_class in classes:
-        class_name = curr_class.activity_name
+        class_name = curr_class.session_name
             
         class_presence = classes_intervals[class_name][0].presence_literals()[0]
         if (solver.value(class_presence) == 1):
         
-            chosen_class = {curr_class.activity_name: {"start": [], "end": [], "size": []}}
+            chosen_class = {curr_class.session_name: {"start": [], "end": [], "size": []}}
 
             for i in range(len(curr_class.start_times)):
-                curr_interval = classes_intervals[curr_class.activity_name][i]
+                curr_interval = classes_intervals[curr_class.session_name][i]
                 print(type(curr_interval.start_expr()))
-                chosen_class[curr_class.activity_name]["start"].append(curr_interval.start_expr())
-                chosen_class[curr_class.activity_name]["size"].append(curr_interval.size_expr())
-                chosen_class[curr_class.activity_name]["end"].append(curr_interval.end_expr())
+                chosen_class[curr_class.session_name]["start"].append(curr_interval.start_expr())
+                chosen_class[curr_class.session_name]["size"].append(curr_interval.size_expr())
+                chosen_class[curr_class.session_name]["end"].append(curr_interval.end_expr())
 
             chosen_classes.append(chosen_class)
 

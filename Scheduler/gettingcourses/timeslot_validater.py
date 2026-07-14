@@ -9,11 +9,11 @@ from gettingcourses.check_conditions import ConditionChecker
 __all__ = ["make_courses"]
 
 def make_courses(course_jsons: list[dict[str, Any]], 
-                  personal_times: dict = {}, 
-                  chosen_sections_classes: dict[dict[dict[str]]] = {}) -> list[Course]:
+                  personal_times: dict, 
+                  pinned_sections_classes: dict[dict[dict[str]]]) -> list[Course]:
     courses = []
     validator = ConditionChecker(personal_times = personal_times, 
-                                 chosen_sections_classes = chosen_sections_classes)
+                                 pinned_sections_classes = pinned_sections_classes)
     
     for course_json in course_jsons:
         course_key = course_json["key"]
@@ -27,6 +27,7 @@ def make_courses(course_jsons: list[dict[str, Any]],
                         course_code = course_code, 
                         credits = course_key["credit"], 
                         course_name = course_json["name"],
+                        course_presence = None,
                         prerequisites = course_json["prereq"], 
                         sections = _make_sections(section_json, validator))
         del course_json
@@ -64,7 +65,7 @@ def _make_sections(section_jsons: list[dict[str, Any]],
                               professor = _get_section_professor(class_jsons),
                               classes = section_classes,
                               fixed_classes = fixed_classes,
-                              sections_presence = None)
+                              section_presence = None)
         Sections.append(section_obj)
 
     return Sections
@@ -139,8 +140,10 @@ def _make_class_sessions(session_name: str, \
 
             campus.append(class_session_json["campus"])  
 
-    return ClassSession(session_name, start_times, global_start_times,
-                            durations, global_end_times, campus)
+    return ClassSession(session_name=session_name, start_times=start_times, 
+                        global_start_times=global_start_times,
+                            duration=durations, global_end_times=global_end_times, 
+                            campus=campus, session_presences=[])
 
  # time reletive to the num minutes in a day
 def _start_time_in_minutes(start_time: str, weekday: str, curr_term: int) -> list[int]:

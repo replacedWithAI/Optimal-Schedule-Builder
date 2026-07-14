@@ -3,9 +3,9 @@ from bisect import bisect_left
 from lib import ClassSession
 
 class ConditionChecker:
-    def __init__(self, personal_times: dict = {}, chosen_sections_classes: dict = {}):
+    def __init__(self, personal_times: dict, pinned_sections_classes: dict):
         self.personal_times = personal_times
-        self.chosen_sections_classes = chosen_sections_classes
+        self.pinned_sections_classes = pinned_sections_classes
         self.course_code = ""
         self.section_letter = ''
 
@@ -24,23 +24,23 @@ class ConditionChecker:
         return is_lab_99
     
     def __has_chosen_section(self) -> bool:
-        return self.chosen_sections_classes and \
-               self.chosen_sections_classes.get(self.course_code)
+        return self.pinned_sections_classes and \
+               self.pinned_sections_classes.get(self.course_code)
                 
 
     def isnt_chosen_section(self) -> bool:
         return self.__has_chosen_section() and \
-                self.section_letter not in self.chosen_sections_classes[self.course_code]
+                self.section_letter not in self.pinned_sections_classes[self.course_code]
     
     def __has_chosen_class(self) -> bool:
         return self.__has_chosen_section() \
-                and self.chosen_sections_classes \
+                and self.pinned_sections_classes \
                 .get(self.course_code).get(self.section_letter)
     
 
     def isnt_chosen_class(self, class_name: str) -> bool:
         return self.__has_chosen_class() and class_name not in \
-                self.chosen_sections_classes.get(self.course_code) \
+                self.pinned_sections_classes.get(self.course_code) \
                 .get(self.section_letter)
 
 
