@@ -10,4 +10,5 @@ COPY . .
 
 EXPOSE 80
 
-CMD ["uvicorn", "Cloud_development.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "Cloud_development.main:app", "--host", "0.0.0.0", "--port", "80", \
+     --limit-max-body-size ]
