@@ -19,8 +19,9 @@ def find_best_options(courses: list[Course],
     enforcer = ConstraintEnforcer(interval_variables, requested_courses, max_courses_term,
                                   model)
     enforcer.enforce_scheduling_rules(courses)
+    course_presences = enforcer.course_presences
     
-    solve_scheduling_goals(intervals_by_day, model, commute_times)
+    solve_scheduling_goals(intervals_by_day, course_presences, commute_times, model)
     status = solver.solve(model)
 
     del intervals_by_day
