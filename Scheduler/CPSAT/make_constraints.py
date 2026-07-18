@@ -16,18 +16,16 @@ class ConstraintEnforcer:
         self.model = model
         self.term1_sections = []
         self.term2_sections = []
+        self.course_presences = []
 
 
     def enforce_scheduling_rules(self, courses: list[Course]):
-        course_presences = []
-        
         for course in courses:
-            course_presences.append(course.course_presence)
+            self.course_presences.append(course.course_presence)
             self.__add_section_constraints(course.sections, course.course_presence)
             self.__enforce_requested_courses(course)
 
-        self.__maximise_courses(course_presences)
-        self.__enforce_courses_term(course_presences)
+        self.__enforce_courses_term()
         self.__enforce_no_overlap()
 
 
@@ -57,11 +55,6 @@ class ConstraintEnforcer:
                 chooseable_classes.append(curr_class.session_presences[0])
 
         self.__add_one_lab_tutorial_per_section(section_presence, chooseable_classes)
-        
-
-    def __maximise_courses(self, course_presences: list[Any]):
-        print(len(course_presences))
-        self.model.add(sum(course_presences) == len(course_presences)) # WIP
 
 
     def __enforce_requested_courses(self, course: Course):
@@ -69,10 +62,10 @@ class ConstraintEnforcer:
             self.model.add(course.course_presence == 1)
 
 
-    def __enforce_courses_term(self, course_presences: list[Any]):
-        if self.max_courses_term != 0:
-            self.model.add(sum(self.term1_sections) <= self.max_courses_term)
-            self.model.add(sum(self.term2_sections) <= self.max_courses_term)
+    def __enforce_courses_term(self):
+        if self.max_courses_term == 0: exit() # what are you doing bro
+        self.model.add(sum(self.term1_sections) <= self.max_courses_term)
+        self.model.add(sum(self.term2_sections) <= self.max_courses_term)
 
 
     def __add_section_per_course_constraint(self, course_presence: Any, 
