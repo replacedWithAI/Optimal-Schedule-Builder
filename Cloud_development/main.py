@@ -20,7 +20,7 @@ from Scheduler.program import calculate_schedule
 def get_global_key(request: Request) -> str:
     return "global"
 
-limiter = Limiter(key_func = get_global_key, default_limits="100/5minutes")
+limiter = Limiter(key_func=get_global_key, default_limits="100/5minutes")
 app = FastAPI()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -42,7 +42,7 @@ async def connect() -> dict:
 
 @app.post("/calculate")
 @limiter.limit("1/5seconds", key_func=get_remote_address)
-async def call_solver(payload: dict) -> dict:
+async def call_solver(request: Request, payload: dict) -> dict:
     # courses = selected_courses.get("courses") # revamp if people fix 
                                                 # courses/sections/labs
 
