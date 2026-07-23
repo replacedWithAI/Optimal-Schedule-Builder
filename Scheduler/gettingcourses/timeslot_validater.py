@@ -49,7 +49,8 @@ def _make_sections(section_jsons: list[dict[str, Any]],
         
         validator.section_letter = section_json["section"]
         should_prune = validator.is_unusual_term(term) \
-                        or validator.isnt_chosen_section()
+                        or validator.isnt_chosen_section() \
+                        or validator.isnt_fixed_term(term)
         if (should_prune): continue
 
         fixed_classes = _get_num_section_classes_by_type(class_jsons)
@@ -69,13 +70,6 @@ def _make_sections(section_jsons: list[dict[str, Any]],
         Sections.append(section_obj)
 
     return Sections
-
-
-def _get_section_professor(class_session_jsons: list[dict[str, Any]]) -> str:
-    lecture_json = class_session_jsons[0] # WIP
-    if (lecture_json.get("professor") is None):
-        return ""
-    return lecture_json["professor"]
 
 
 def _make_classes(class_jsons: list[dict[str, Any]],
@@ -142,10 +136,12 @@ def _make_class_sessions(session_name: str, \
 
     return ClassSession(session_name=session_name, start_times=start_times, 
                         global_start_times=global_start_times,
-                            duration=durations, global_end_times=global_end_times, 
-                            campus=campus, session_presences=[])
+                        duration=durations, global_end_times=global_end_times, 
+                        campus=campus, session_presences=[])
 
- # time reletive to the num minutes in a day
+# helper functions -------------------------------------------------------------
+
+# time reletive to the num minutes in a day
 def _start_time_in_minutes(start_time: str, weekday: str, curr_term: int) -> list[int]:
     if (len(start_time) == 5):
         hour = int(start_time[:2])
@@ -217,3 +213,22 @@ def _get_num_section_classes_by_type(classes_json: list[dict[str, Any]]) \
     #print(f"section classes: {section_classes}")
     return [curr_class for curr_class, count in fixed_section_classes.items() 
             if count == 1]
+
+
+def _get_section_professor(class_session_jsons: list[dict[str, Any]]) -> str:
+    lecture_json = class_session_jsons[0] # WIP
+    if (lecture_json.get("professor") is None):
+        return ""
+    return lecture_json["professor"]
+
+
+def _get_RMP_score(
+                   professor: str, 
+                   score: int, 
+                   num_reviews: int,
+                   default_score: int = 2,
+                   required_num_reviews: int = 0
+) -> int:
+    if score is None or professor == "" or num_reviews < required_num_reviews:
+        return default_score
+    return score

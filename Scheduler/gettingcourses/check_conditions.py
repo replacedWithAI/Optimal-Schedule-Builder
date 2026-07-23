@@ -9,31 +9,41 @@ class ConditionChecker:
         self.course_code = ""
         self.section_letter = ''
 
+    # section conditions--------------------------------------------------------
+
     def is_unusual_term(self, term: str) -> bool:
         unusual_term = ("L" in term) or (term == "FS") or (term == "WS")
         return unusual_term
-
-
-    def has_no_classes(self, section_classes: list = []) -> bool:
-        has_section_classes = (len(section_classes) == 0)
-        return has_section_classes
 
 
     def is_lab_99(self, session_name: str) -> bool: # no one likes lab 99. Im sorry
         is_lab_99 = (("99") in session_name)
         return is_lab_99
     
-    def __has_chosen_section(self) -> bool:
+    def __has_chosen_section_or_term(self) -> bool:
         return self.pinned_sections_classes and \
                self.pinned_sections_classes.get(self.course_code)
                 
 
     def isnt_chosen_section(self) -> bool:
-        return self.__has_chosen_section() and \
+        return self.__has_chosen_section_or_term() and \
                 self.section_letter not in self.pinned_sections_classes[self.course_code]
     
+    
+    def has_no_classes(self, section_classes: list = []) -> bool:
+        has_section_classes = (len(section_classes) == 0)
+        return has_section_classes
+    
+
+    def isnt_fixed_term(self, term: str):
+        return self.__has_chosen_section_or_term() and \
+                self.pinned_sections_classes[self.course_code] != [] \
+                and (term not in self.pinned_sections_classes[self.course_code])
+    
+    # class conditions----------------------------------------------------------
+    
     def __has_chosen_class(self) -> bool:
-        return self.__has_chosen_section() \
+        return self.__has_chosen_section_or_term() \
                 and self.pinned_sections_classes \
                 .get(self.course_code).get(self.section_letter)
     
@@ -52,6 +62,7 @@ class ConditionChecker:
     def session_doesnt_start(self, time: str) -> bool:
         return time == ""
 
+    # session conditions--------------------------------------------------------
 
     def outside_personal_times(self, curr_class: ClassSession) -> bool:
         for i in range(len(curr_class.start_times)):
@@ -76,5 +87,5 @@ class ConditionChecker:
         return curr_class_type in self.fixed_classes
     
     
-    def campus_isnt_one(self) -> bool:
+    def isnt_chosen_campus(self) -> bool:
         return
