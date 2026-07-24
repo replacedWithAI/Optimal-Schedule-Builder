@@ -32,7 +32,8 @@ def _get_chosen_courses(courses: list[Course],
     all_chosen_courses = []
 
     for course in courses: # needs to change if gonna toggle courses
-        
+        if (solver.value(course.course_presence) == 0):
+            continue
         course_code = course.course_code
         
         # print(interval_variables[course_code])
@@ -52,20 +53,18 @@ def _get_chosen_sections_classes(course_code: str,
     
     chosen_classes = []
     for section in sections:
+        if (solver.value(section.section_presence) == 0):
+            continue
 
         section_letter = section.section_letter
         classes = section.classes
-
-        section_is_chosen = (solver.value(section.section_presence) == 1)
-
-        if section_is_chosen:
             
-            classes_intervals = interval_variables[section_letter]
-            chosen_classes = _get_chosen_classes(classes, 
-                                                 classes_intervals,
-                                                 section.fixed_classes,
-                                                 solver)
-            break
+        classes_intervals = interval_variables[section_letter]
+        chosen_classes = _get_chosen_classes(classes, 
+                                                classes_intervals,
+                                                section.fixed_classes,
+                                                solver)
+        break
     return {f"{course_code} Section {section_letter}": chosen_classes}
 
 
@@ -85,7 +84,6 @@ def _get_chosen_classes(classes: list[ClassSession],
 
             for i in range(len(curr_class.start_times)):
                 curr_interval = classes_intervals[curr_class.session_name][i]
-                print(type(curr_interval.start_expr()))
                 chosen_class[curr_class.session_name]["start"].append(curr_interval.start_expr())
                 chosen_class[curr_class.session_name]["size"].append(curr_interval.size_expr())
                 chosen_class[curr_class.session_name]["end"].append(curr_interval.end_expr())

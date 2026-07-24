@@ -9,13 +9,13 @@ from gettingcourses.check_conditions import ConditionChecker
 __all__ = ["make_courses"]
 
 def make_courses(course_jsons: list[dict[str, Any]], 
-                  personal_times: dict, 
-                  pinned_sections_classes: dict[dict[dict[str]]]) -> list[Course]:
+                 personal_times: dict, 
+                 pinned_sections_classes: dict[dict[dict[str]]]) -> list[Course]:
     courses = []
     validator = ConditionChecker(personal_times = personal_times, 
                                  pinned_sections_classes = pinned_sections_classes)
     
-    for course_json in course_jsons:
+    for course_json in course_jsons.values():
         course_key = course_json["key"]
         section_json = course_json["schedule"]
         course_code = f"{course_key["dept"]} {course_key["code"]}"
@@ -42,7 +42,7 @@ def _make_sections(section_jsons: list[dict[str, Any]],
                    validator: ConditionChecker) -> list[Section]:
     Sections = []
 
-    for section_json in section_jsons:
+    for section_json in section_jsons.values():
 
         class_jsons = section_json.get("classes")
         term = _terms_in_this_section(section_json.get("term"))
@@ -50,7 +50,7 @@ def _make_sections(section_jsons: list[dict[str, Any]],
         validator.section_letter = section_json["section"]
         should_prune = validator.is_unusual_term(term) \
                         or validator.isnt_chosen_section() \
-                        or validator.isnt_fixed_term(term)
+                        or validator.isnt_fixed_term(section_json.get("term"))
         if (should_prune): continue
 
         fixed_classes = _get_num_section_classes_by_type(class_jsons)
@@ -63,7 +63,8 @@ def _make_sections(section_jsons: list[dict[str, Any]],
 
         section_obj = Section(term = term,
                               section_letter = section_json["section"],
-                              professor = _get_section_professor(class_jsons),
+                              professor = _get_section_professor(section_json, 
+                                                                 fixed_classes),
                               classes = section_classes,
                               fixed_classes = fixed_classes,
                               section_presence = None)
@@ -78,7 +79,7 @@ def _make_classes(class_jsons: list[dict[str, Any]],
     list_class_sessions = []
     
     # each class session has its list of timeslots
-    for class_json in class_jsons:
+    for class_json in class_jsons.values():
         session_name = class_json["name"]
 
         should_prune = validator.is_lab_99(session_name) or \
@@ -114,7 +115,7 @@ def _make_class_sessions(session_name: str, \
     campus = []
 
     for curr_term in term:
-        for class_session_json in class_session_jsons:
+        for class_session_json in class_session_jsons.values():
 
             time = class_session_json["time"]
             # print(time)
@@ -201,7 +202,7 @@ def _terms_in_this_section(term: str) -> list[int]: # ok I'm not hardcoding all 
 def _get_num_section_classes_by_type(classes_json: list[dict[str, Any]]) \
                                                             -> dict[str, int]:
     fixed_section_classes = {}
-    for curr_class in classes_json:
+    for curr_class in classes_json.values():
         
         space_index = curr_class["name"].find(' ')
         curr_class_type = curr_class["name"][:space_index] # lect, blen, tutr...
@@ -215,11 +216,11 @@ def _get_num_section_classes_by_type(classes_json: list[dict[str, Any]]) \
             if count == 1]
 
 
-def _get_section_professor(class_session_jsons: list[dict[str, Any]]) -> str:
-    lecture_json = class_session_jsons[0] # WIP
-    if (lecture_json.get("professor") is None):
+def _get_section_professor(section_json: list[dict[str, Any]], 
+                           fixed_classes: list[str]) -> str:
+    if (section_json.get("professor", None) is None):
         return ""
-    return lecture_json["professor"]
+    return section_json["professor"]
 
 
 def _get_RMP_score(
