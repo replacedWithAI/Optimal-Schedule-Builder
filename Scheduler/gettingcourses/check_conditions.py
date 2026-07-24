@@ -37,8 +37,11 @@ class ConditionChecker:
 
     def isnt_fixed_term(self, term: str):
         return self.__has_chosen_section_or_term() and \
-                self.pinned_sections_classes[self.course_code] != [] \
-                and (term not in self.pinned_sections_classes[self.course_code])
+               self.pinned_sections_classes[self.course_code] != [] \
+               and  \
+               self.pinned_sections_classes[self.course_code]["fixed_term"] != [] \
+               and term not in self.pinned_sections_classes[self.course_code] \
+                                                           ["fixed_term"]
     
     # class conditions----------------------------------------------------------
     

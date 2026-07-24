@@ -23,9 +23,9 @@ class ConstraintEnforcer:
         for course in courses:
             self.course_presences.append(course.course_presence)
             self.__add_section_constraints(course.sections, course.course_presence)
-            self.__enforce_requested_courses(course)
+            self.__pin_requested_courses(course)
 
-        self.__enforce_courses_term()
+        self.__enforce_courses_per_term()
         self.__enforce_no_overlap()
 
 
@@ -57,12 +57,12 @@ class ConstraintEnforcer:
         self.__add_one_lab_tutorial_per_section(section_presence, chooseable_classes)
 
 
-    def __enforce_requested_courses(self, course: Course):
+    def __pin_requested_courses(self, course: Course):
         if course.course_code in self.requested_courses:
             self.model.add(course.course_presence == 1)
 
 
-    def __enforce_courses_term(self):
+    def __enforce_courses_per_term(self):
         if self.max_courses_term == 0: exit() # what are you doing bro
         self.model.add(sum(self.term1_sections) <= self.max_courses_term)
         self.model.add(sum(self.term2_sections) <= self.max_courses_term)
@@ -88,27 +88,7 @@ class ConstraintEnforcer:
         ]
         self.model.add_no_overlap(intervals)
 
-'''
-Originally made this for a "minimze school days schedule", but I can do that with
-commute_times = 676767676767676767676767
-def __track_used_days(
-                        days_present: list[Any], 
-                        intervals_by_days: dict[str, list[Any]],
-                        model: cp_model):
-    curr_day = -1
 
-    for intervals in intervals_by_days.values():
-        curr_day += 1
-        if intervals == []:
-            continue
-
-        curr_day_intervals = []
-
-        for interval in intervals:
-            interval_is_present = interval.presence_literals()[0]
-            curr_day_intervals.append(interval_is_present)
-        model.add_max_equality(days_present[curr_day], curr_day_intervals)
-
-    return
-'''
+    def __pin_sections_classes(self):
+        for courses, sections in 
             

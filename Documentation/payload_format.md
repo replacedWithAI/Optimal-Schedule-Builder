@@ -9,18 +9,16 @@ payload = {
         "changed course data": {
             {course code}: {
                 faculty: str
-                department: str
-                course_number: str
-                course_code: str
-                credits: str
-                course_name: str
-                prerequisites: [{course codes}]
+                dept: str
+                code: str <!-- the course number -->
+                credit: str
+                name: str
+                prereq: [{course codes}]
 
                 {section letter}: {
                     term: [{term number}]
-                    section_letter: str
+                    section: str <!-- section letter -->
                     professor: str
-                    fixed_classes: [{class names}]
 
                     {class name}: {
                         session_name: str
