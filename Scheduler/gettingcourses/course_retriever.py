@@ -9,17 +9,20 @@ def get_course_jsons(requested_course_names: list[str]) -> list[dict]:
     department_codes = _get_department_codes(requested_course_names)
     course_codes = _get_course_codes(requested_course_names)
     department_data = _open_department_jsons(user_path, department_codes)
-    course_jsons = _download_course_json_strings(department_data, 
+    course_jsons = _download_course_json(department_data, 
                                                 department_codes, 
                                                 course_codes)
+    course_jsons = _normalise_course_jsons(course_jsons)
     
     return course_jsons
+
     
 def _get_files_folder():
     curr_file_directory = (__file__)
     curr_folder = Path(curr_file_directory).resolve().parent 
     course_info_folder = curr_folder / "output_courses_json 2026_01_15"
     return course_info_folder
+
 
 def _get_department_codes(requested_course_names: list[str]) -> list[str]:
     department_codes = []
@@ -37,7 +40,8 @@ def _get_course_codes(requested_course_names: list[str]) -> list[str]:
     return course_codes
 
 
-def _open_department_jsons(user_path: Path, department_codes: list[str]) -> list[dict[str, Any]]:
+def _open_department_jsons(user_path: Path, 
+                           department_codes: list[str]) -> list[dict[str, Any]]:
     department_data = []
     for department in department_codes:
         try: 
@@ -51,10 +55,10 @@ def _open_department_jsons(user_path: Path, department_codes: list[str]) -> list
     return department_data
     
 
-def _download_course_json_strings(department_data: list[dict[str, Any]], 
-                                    department_codes: list[str], 
-                                    course_codes: list[str]) -> list[dict[str, Any]]:
-    course_json_strings = []
+def _download_course_json(department_data: list[dict[str, Any]], 
+                                  department_codes: list[str], 
+                                  course_codes: list[str]) -> list[dict[str, Any]]:
+    course_jsons = []
     index = 0
     
     for department in department_data:
@@ -65,9 +69,42 @@ def _download_course_json_strings(department_data: list[dict[str, Any]],
             code = key.get("code", "Not found")
             department = key.get("dept", "Not found")
             if code == course_codes[index] and department == \
-                department_codes[index]: # I feel like this is bugged; saving test case in drive. It's the same code as C4 without a break
-                course_json_strings.append(course)
+                department_codes[index]: # I feel like this is bugged 
+                course_jsons.append(course)
                 index += 1
                 break
 
-    return course_json_strings
+    return course_jsons
+
+
+def _normalise_course_jsons(course_jsons: list[dict]) -> dict:
+    return { # what in tarnation is this?
+            f"{course_json["key"]["dept"]} {course_json["key"]["code"]}": {
+                **course_json,
+                "schedule": {
+
+                    section["section"]: {
+                        **section,
+                        "classes": {
+
+                            curr_class["name"]: {
+                                **curr_class,
+                                "timeslot": {
+                                    session["weekday"]: session
+                                    for session in curr_class["timeslot"]
+                                }
+                            }
+                            for curr_class in section["classes"]
+                        }
+
+                    }
+                    for section in course_json["schedule"]
+                }
+                
+            }
+            for course_json in course_jsons
+        }
+
+
+
+        

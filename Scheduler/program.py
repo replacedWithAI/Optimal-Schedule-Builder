@@ -20,10 +20,10 @@ def calculate_schedule(payload: dict[str, dict] = {"courses":{
     personal_times = {}
     pinned_sections_classes = {"EECS 1021": {
         'Y': ["LAB 05"],
-        "Fixed term": ['W']
+        "fixed_term": ["W"]
     }}
-    requested_courses = []
-    commute_times = 721
+    requested_courses = payload["courses"]["possible"]
+    commute_times = 0
     max_courses_term = 4
 
     # pinned_sections_classes = payload["courses"]["pinned sections classes"]
