@@ -1,11 +1,11 @@
 payload = {
     "courses": {                                            <!-- course info -->
         "possible courses" [{course codes}]                 <!-- courses to take -->
-        "pinned sections classes" {                         
+        "pinned sections classes terms": {                         
             {section letter}: [class/activity names]
-            "Fixed term": [{term_letter}]
+            "fixed_terms": [{term_letter}]
         }
-        "requested courses": [{course codes}]
+        "pinned courses": [{course codes}]
         "changed course data": {
             {course code}: {
                 faculty: str
@@ -38,7 +38,10 @@ payload = {
             {weekday number}: [[start time, end time]]
         }
 
+        "pin campus": str
         "max courses per term": int
+        "required num reviews": int
+        "default RMP score": float
     }
 
     "goals": {                                              <!-- main missions -->

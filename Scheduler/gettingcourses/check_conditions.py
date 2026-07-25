@@ -3,9 +3,10 @@ from bisect import bisect_left
 from lib import ClassSession
 
 class ConditionChecker:
-    def __init__(self, personal_times: dict, pinned_sections_classes: dict):
-        self.personal_times = personal_times
-        self.pinned_sections_classes = pinned_sections_classes
+    def __init__(self, payload: dict):
+        self.personal_times = payload["preferences"]["personal times"]
+        self.pinned_sections_classes_terms = payload["courses"] \
+                                              ["pinned sections classes terms"]
         self.course_code = ""
         self.section_letter = ''
 
@@ -19,15 +20,23 @@ class ConditionChecker:
     def is_lab_99(self, session_name: str) -> bool: # no one likes lab 99. Im sorry
         is_lab_99 = (("99") in session_name)
         return is_lab_99
+
     
-    def __has_chosen_section_or_term(self) -> bool:
-        return self.pinned_sections_classes and \
-               self.pinned_sections_classes.get(self.course_code)
+    def __has_pinned_section_or_term(self) -> bool:
+        return (
+            self.pinned_sections_classes_terms != {} 
+            and self.pinned_sections_classes_terms.get(self.course_code) != None
+        )
                 
 
-    def isnt_chosen_section(self) -> bool:
-        return self.__has_chosen_section_or_term() and \
-                self.section_letter not in self.pinned_sections_classes[self.course_code]
+    def isnt_fixed_section(self) -> bool:
+        return (
+            self.__has_pinned_section_or_term() and \
+            self.pinned_sections_classes_terms[self.course_code] \
+                                        .get("sections classes") != {} and \
+            self.section_letter not in self.pinned_sections_classes_terms
+                                       [self.course_code]
+        )
     
     
     def has_no_classes(self, section_classes: list = []) -> bool:
@@ -35,26 +44,32 @@ class ConditionChecker:
         return has_section_classes
     
 
-    def isnt_fixed_term(self, term: str):
-        return self.__has_chosen_section_or_term() and \
-               self.pinned_sections_classes[self.course_code] != [] \
-               and  \
-               self.pinned_sections_classes[self.course_code]["fixed_term"] != [] \
-               and term not in self.pinned_sections_classes[self.course_code] \
-                                                           ["fixed_term"]
+    def isnt_fixed_terms(self, term: str):
+        return (
+            self.__has_pinned_section_or_term() and \
+            self.pinned_sections_classes_terms[self.course_code] \
+                                        .get("terms") != None and \
+            term not in self.pinned_sections_classes_terms[self.course_code]["terms"]
+        )
     
     # class conditions----------------------------------------------------------
     
     def __has_chosen_class(self) -> bool:
-        return self.__has_chosen_section_or_term() \
-                and self.pinned_sections_classes \
-                .get(self.course_code).get(self.section_letter)
+        if not self.__has_pinned_section_or_term(): return False
+
+        section_has_pinned = self.pinned_sections_classes_terms[self.course_code] \
+                            .get("sections classes") != None
+        has_pinned_class = self.pinned_sections_classes_terms[self.course_code] \
+                           ["sections classes"].get(self.section_letter) != None
+        return section_has_pinned and has_pinned_class
     
 
     def isnt_chosen_class(self, class_name: str) -> bool:
-        return self.__has_chosen_class() and class_name not in \
-                self.pinned_sections_classes.get(self.course_code) \
-                .get(self.section_letter)
+        return (
+            self.__has_chosen_class() and class_name not in \
+            self.pinned_sections_classes_terms[self.course_code]["sections classes"] \
+                                              [self.section_letter]
+        )
 
 
     def no_sessions_start(self, global_start_times: list = []) -> bool: # ran into empty case

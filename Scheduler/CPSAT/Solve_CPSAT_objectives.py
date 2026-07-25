@@ -4,17 +4,20 @@ from ortools.sat.python import cp_model
 __all__ = ["solve_scheduling_goals"]
 
 def solve_scheduling_goals(intervals_by_day: dict[str, list[Any]], 
-                           course_presences: list[Any], commute_time: int, model: cp_model):
+                           course_presences: list[Any], commute_time: int, 
+                           model: cp_model):
     _objective_priority(intervals_by_day, course_presences, commute_time, model)
 
 
 def _objective_priority(intervals_by_day: dict[str, list[Any]], 
-                        course_presences: list[Any], commute_time: int, model: cp_model): #WIP
+                        course_presences: list[Any], commute_time: int, 
+                        model: cp_model): #WIP
     _solve_minimal_dead_times(intervals_by_day, course_presences, commute_time, model)
 
 
 def _solve_minimal_dead_times(intervals_by_day: dict[str, list[Any]],
-                              course_presences: list[Any], commute_time: int, model: cp_model):
+                              course_presences: list[Any], commute_time: int, 
+                              model: cp_model):
     all_daily_school_day_length = []
 
     for curr_day, intervals in intervals_by_day.items():
@@ -42,5 +45,6 @@ def _solve_minimal_dead_times(intervals_by_day: dict[str, list[Any]],
         model.add(school_day_length == (day_end-day_start + is_day_active*commute_time*2))
         all_daily_school_day_length.append(school_day_length)
 
-    BIG_WEIGHT = 14400
-    model.minimize(sum(all_daily_school_day_length) - BIG_WEIGHT*sum(course_presences))
+    TAKE_COURSES_WEIGHT = 14400
+    model.minimize(sum(all_daily_school_day_length) - TAKE_COURSES_WEIGHT*
+                                                      sum(course_presences))

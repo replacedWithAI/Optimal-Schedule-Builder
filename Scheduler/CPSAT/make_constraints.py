@@ -9,10 +9,10 @@ __all__ = ["make_scheduling_rules"]
 
 class ConstraintEnforcer:
     def __init__(self, interval_variables: dict[dict[dict[int, Any]]], 
-                 requested_courses: list[str], max_courses_term: int, model: cp_model):
+                 payload: dict, model: cp_model):
         self.interval_variables = interval_variables
-        self.requested_courses = requested_courses
-        self.max_courses_term = max_courses_term
+        self.requested_courses = payload["courses"]["pinned courses"]
+        self.max_courses_term = payload["preferences"]["max courses per term"]
         self.model = model
         self.term1_sections = []
         self.term2_sections = []
@@ -89,6 +89,4 @@ class ConstraintEnforcer:
         self.model.add_no_overlap(intervals)
 
 
-    def __pin_sections_classes(self):
-        for courses, sections in 
             
