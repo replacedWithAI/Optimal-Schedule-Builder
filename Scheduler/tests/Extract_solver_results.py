@@ -1,6 +1,0 @@
-import test_constraints_are_added
-
-test_constraints_are_added_obj = test_constraints_are_added
-CPSAT_obj = test_constraints_are_added_obj.CPSAT_obj
-all_chosen_classes = CPSAT_obj.all_chosen_classes
-print(all_chosen_classes)

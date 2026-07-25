@@ -6,21 +6,18 @@ from CPSAT.make_constraints import ConstraintEnforcer
 from CPSAT.Solve_CPSAT_objectives import solve_scheduling_goals
 from CPSAT.Extract_solver_values import get_best_classes
 
-def find_best_options(courses: list[Course],
-                      requested_courses: list[str], 
-                      max_courses_term: int,
-                      commute_times: int):
+def find_best_options(courses: list[Course], payload: dict):
     
     model = cp_model.CpModel()
     solver = cp_model.CpSolver()
 
     (interval_variables, intervals_by_day) = make_CPSAT_variables(courses, model)
     
-    enforcer = ConstraintEnforcer(interval_variables, requested_courses, max_courses_term,
-                                  model)
+    enforcer = ConstraintEnforcer(interval_variables, payload, model)
     enforcer.enforce_scheduling_rules(courses)
     course_presences = enforcer.course_presences
-    
+
+    commute_times = payload["goals"]["commute times"]
     solve_scheduling_goals(intervals_by_day, course_presences, commute_times, model)
     status = solver.solve(model)
 

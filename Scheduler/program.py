@@ -5,43 +5,17 @@ from lib.Plotter import Plotter
 
 # assume the workspace folder is Scheduler
 
-def calculate_schedule(payload: dict[str, dict] = {"courses":{
-                                                "possible": ["CHEM 1100", "MATH 1013",
-                                                "MATH 1014", "EECS 1021",
-                                                "MATH 1028", "ENG 1102",
-                                                "MATH 2030", "MATH 2015"]}}) -> dict:
-    possible_courses = payload["courses"]["possible"]
-    
-
-    course_jsons = get_course_jsons(possible_courses)
+def calculate_schedule(payload: dict[str, dict]) -> dict:
+    requested_course_names = payload["courses"]["possible"]
+    course_jsons = get_course_jsons(requested_course_names)
     # print(course_jsons)
     
-    # personal_times = {0: [[12390, 12391]]}
-    personal_times = {}
-    pinned_sections_classes = {"EECS 1021": {
-        'Y': ["LAB 05"],
-        "fixed_term": ["W"]
-    }}
-    requested_courses = payload["courses"]["possible"]
-    commute_times = 0
-    max_courses_term = 4
-
-    # pinned_sections_classes = payload["courses"]["pinned sections classes"]
-    # personal_times = payload["preferences"]["personal times"]
-    courses = make_courses(course_jsons, personal_times = personal_times, 
-                           pinned_sections_classes = pinned_sections_classes)
+    courses = make_courses(course_jsons, payload)
     del course_jsons
-    # print(courses)
+    print(courses)
 
-    # requested_courses = payload["courses"]["requested courses"]
-    # commute_times = payload["goals"]["commute times"]
-    # max_courses_term = payload["preferences"]["max courses per term"]
-    all_best_courses = find_best_options(courses, 
-                                         requested_courses = requested_courses,
-                                         max_courses_term = max_courses_term,
-                                         commute_times = commute_times)
+    all_best_courses = find_best_options(courses, payload)
     del courses
-    print(all_best_courses)
     Plotter_obj = Plotter(all_best_courses)
 
     return all_best_courses
