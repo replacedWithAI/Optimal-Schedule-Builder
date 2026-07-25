@@ -16,6 +16,7 @@ class Section:
     term: list[int]
     section_letter: str
     professor: str
+    RMP_score: float
     classes: list[ClassSession]
     fixed_classes: list[str]
     section_presence: Any

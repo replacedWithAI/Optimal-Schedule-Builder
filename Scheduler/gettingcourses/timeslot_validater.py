@@ -8,12 +8,9 @@ from gettingcourses.check_conditions import ConditionChecker
 
 __all__ = ["make_courses"]
 
-def make_courses(course_jsons: list[dict[str, Any]], 
-                 personal_times: dict, 
-                 pinned_sections_classes: dict[dict[dict[str]]]) -> list[Course]:
+def make_courses(course_jsons: list[dict[str, Any]], payload: dict) -> list[Course]:
     courses = []
-    validator = ConditionChecker(personal_times = personal_times, 
-                                 pinned_sections_classes = pinned_sections_classes)
+    validator = ConditionChecker(payload)
     
     for course_json in course_jsons.values():
         course_key = course_json["key"]
@@ -29,7 +26,7 @@ def make_courses(course_jsons: list[dict[str, Any]],
                         course_name = course_json["name"],
                         course_presence = None,
                         prerequisites = course_json["prereq"], 
-                        sections = _make_sections(section_json, validator))
+                        sections = _make_sections(section_json, validator, payload))
         del course_json
         # print (course_jsons)
         courses.append(course)
@@ -39,7 +36,7 @@ def make_courses(course_jsons: list[dict[str, Any]],
 
 
 def _make_sections(section_jsons: list[dict[str, Any]], 
-                   validator: ConditionChecker) -> list[Section]:
+                   validator: ConditionChecker, payload: dict) -> list[Section]:
     Sections = []
 
     for section_json in section_jsons.values():
@@ -49,22 +46,31 @@ def _make_sections(section_jsons: list[dict[str, Any]],
         
         validator.section_letter = section_json["section"]
         should_prune = validator.is_unusual_term(term) \
-                        or validator.isnt_chosen_section() \
-                        or validator.isnt_fixed_term(section_json.get("term"))
+                        or validator.isnt_fixed_section() \
+                        or validator.isnt_fixed_terms(section_json.get("term"))
         if (should_prune): continue
 
         fixed_classes = _get_num_section_classes_by_type(class_jsons)
         validator.fixed_classes = fixed_classes
 
-        # print(f"{fixed_classes}\n")
-
         section_classes = _make_classes(class_jsons, term, validator)
         if (validator.has_no_classes(section_classes)): continue
 
+        professor = _get_section_professor(section_json, fixed_classes)
+        score = section_json.get("score")
+        num_reviews = section_json.get("num_reviews", 0)
+        default_score = payload["preferences"]["default RMP score"]
+        required_num_reviews = payload["preferences"]["required num reviews"]
+        
         section_obj = Section(term = term,
                               section_letter = section_json["section"],
-                              professor = _get_section_professor(section_json, 
-                                                                 fixed_classes),
+                              professor = professor,
+                              RMP_score = _get_RMP_score(professor = professor, 
+                                                         score = score,
+                                                         num_reviews = num_reviews,
+                                                         default_score = default_score,
+                                                         required_num_reviews = 
+                                                         required_num_reviews),
                               classes = section_classes,
                               fixed_classes = fixed_classes,
                               section_presence = None)
@@ -80,21 +86,21 @@ def _make_classes(class_jsons: list[dict[str, Any]],
     
     # each class session has its list of timeslots
     for class_json in class_jsons.values():
-        session_name = class_json["name"]
+        class_name = class_json["name"]
 
-        should_prune = validator.is_lab_99(session_name) or \
-                        validator.isnt_chosen_class(session_name)
+        should_prune = validator.is_lab_99(class_name) or \
+                        validator.isnt_chosen_class(class_name)
 
         if (should_prune): continue
 
         class_session_jsons = class_json["timeslot"]
-        curr_class = _make_class_sessions(session_name, class_session_jsons, 
+        curr_class = _make_class_sessions(class_name, class_session_jsons, 
                                           term, validator) #LECT, LAB, etc
         
         session_pruned = (validator.no_sessions_start(curr_class.global_start_times)) \
                          or (validator.outside_personal_times(curr_class))
 
-        curr_class_type = session_name[:session_name.find(' ')]
+        curr_class_type = class_name[:class_name.find(' ')]
         if (session_pruned):
             if (validator.is_fixed_class(curr_class_type)): return []
             continue
@@ -223,13 +229,8 @@ def _get_section_professor(section_json: list[dict[str, Any]],
     return section_json["professor"]
 
 
-def _get_RMP_score(
-                   professor: str, 
-                   score: int, 
-                   num_reviews: int,
-                   default_score: int = 2,
-                   required_num_reviews: int = 0
-) -> int:
+def _get_RMP_score(professor: str, score: int, num_reviews: int,
+                   default_score: int, required_num_reviews: int) -> int:
     if score is None or professor == "" or num_reviews < required_num_reviews:
         return default_score
     return score
