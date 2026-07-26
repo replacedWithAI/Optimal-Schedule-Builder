@@ -4,7 +4,8 @@ import json
 
 __all__ = ["get_course_jsons"]
 
-def get_course_jsons(requested_course_names: list[str]) -> list[dict]:
+def get_course_jsons(requested_course_names: list[str], 
+                     payload: dict) -> list[dict]:
     user_path = _get_files_folder()
     department_codes = _get_department_codes(requested_course_names)
     course_codes = _get_course_codes(requested_course_names)
@@ -13,6 +14,7 @@ def get_course_jsons(requested_course_names: list[str]) -> list[dict]:
                                                 department_codes, 
                                                 course_codes)
     course_jsons = _normalise_course_jsons(course_jsons)
+    _overwrite_courses(course_jsons, payload)
     
     return course_jsons
 
@@ -68,8 +70,8 @@ def _download_course_json(department_data: list[dict[str, Any]],
             key = course.get("key","Not found")
             code = key.get("code", "Not found")
             department = key.get("dept", "Not found")
-            if code == course_codes[index] and department == \
-                department_codes[index]: # I feel like this is bugged 
+            if code == course_codes[index] \
+            and department == department_codes[index]: # I feel like this is bugged 
                 course_jsons.append(course)
                 index += 1
                 break
@@ -104,6 +106,24 @@ def _normalise_course_jsons(course_jsons: list[dict]) -> dict:
             }
             for course_json in course_jsons
         }
+
+
+def _overwrite_courses(course_jsons: dict, payload: dict):
+    changed_course_data = payload["courses"]["changed course data"]
+    if changed_course_data == {}: return 
+
+    courses_to_overwrite = changed_course_data.keys()
+
+    for course in courses_to_overwrite:
+        queue = [(course_jsons[course], changed_course_data[course])]
+
+        while queue:
+            original, new = queue.pop()
+            for course, data in new.items():
+                if (isinstance(data, dict) and data != {}):
+                    queue.append((original[course], data))
+                else:
+                    original[course] = data
 
 
 

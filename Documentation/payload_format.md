@@ -1,11 +1,11 @@
 payload = {
     "courses": {                                            <!-- course info -->
-        "possible courses" [{course codes}]                 <!-- courses to take -->
+        "possible courses" [{course codes: str}] <!-- courses to take -->
         "pinned sections classes terms": {                         
-            {section letter}: [class/activity names]
+            {section letter}: [class/activity names: str]
             "fixed_terms": [{term_letter}]
         }
-        "pinned courses": [{course codes}]
+        "pinned courses": [{course codes: str}]
         "changed course data": {
             {course code}: {
                 faculty: str
@@ -14,19 +14,22 @@ payload = {
                 credit: str
                 name: str
                 prereq: [{course codes}]
+                
+                "schedule": {
+                    {section letter}: {
+                        term: [{term: int}]
+                        section: str <!-- section letter -->
+                        professor: str
 
-                {section letter}: {
-                    term: [{term number}]
-                    section: str <!-- section letter -->
-                    professor: str
-
-                    {class name}: {
-                        session_name: str
-                        start_times: [[{minutes}, {weekday}, {semester int}]...] 
-                        global_start_times: [{minutes}]
-                        duration: [{minutes}]
-                        global_end_times: [{minutes}]
-                        campus: [str]
+                        classes: {
+                            {class name}: {
+                                {weekday: str}: {
+                                    time: str
+                                    duration: str
+                                    campus: str
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -38,7 +41,7 @@ payload = {
             {weekday number}: [[start time, end time]]
         }
 
-        "pin campus": str
+        "pin campus": [{campus: str}]
         "max courses per term": int
         "required num reviews": int
         "default RMP score": float
