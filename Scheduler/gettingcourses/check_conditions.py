@@ -7,8 +7,10 @@ class ConditionChecker:
         self.personal_times = payload["preferences"]["personal times"]
         self.pinned_sections_classes_terms = payload["courses"] \
                                               ["pinned sections classes terms"]
+        self.pinned_campuses = payload["preferences"]["pinned campuses"]
         self.course_code = ""
         self.section_letter = ''
+        fixed_classes = []
 
     # section conditions--------------------------------------------------------
 
@@ -33,9 +35,9 @@ class ConditionChecker:
         return (
             self.__has_pinned_section_or_term() and \
             self.pinned_sections_classes_terms[self.course_code] \
-                                        .get("sections classes") != {} and \
+                                        .get("sections classes", {}) != {} and \
             self.section_letter not in self.pinned_sections_classes_terms
-                                       [self.course_code]
+                                       [self.course_code]["sections classes"]
         )
     
     
@@ -57,11 +59,15 @@ class ConditionChecker:
     def __has_chosen_class(self) -> bool:
         if not self.__has_pinned_section_or_term(): return False
 
-        section_has_pinned = self.pinned_sections_classes_terms[self.course_code] \
-                            .get("sections classes") != None
-        has_pinned_class = self.pinned_sections_classes_terms[self.course_code] \
-                           ["sections classes"].get(self.section_letter) != None
-        return section_has_pinned and has_pinned_class
+        return (
+            self.__has_pinned_section_or_term() and \
+            self.pinned_sections_classes_terms[self.course_code] \
+                            .get("sections classes", {}) != {} and \
+            self.pinned_sections_classes_terms[self.course_code] \
+                            ["sections classes"].get(self.section_letter) != None and \
+            self.pinned_sections_classes_terms[self.course_code] \
+                           ["sections classes"][self.section_letter] != []
+        )
     
 
     def isnt_chosen_class(self, class_name: str) -> bool:
@@ -100,10 +106,16 @@ class ConditionChecker:
             if (is_outside): return True
 
         return False
-    
+
+
+    '''
+    Used to identify, after processing all sessions, that if sessions were invalid
+    and the current class/module is mandatory for that section, 
+    the section is pruned 
+    '''
     def is_fixed_class(self, curr_class_type: str) -> bool:
         return curr_class_type in self.fixed_classes
     
     
-    def isnt_chosen_campus(self) -> bool:
-        return
+    def isnt_chosen_campus(self, campus: str) -> bool:
+        return campus != [] and campus not in self.pinned_campuses
