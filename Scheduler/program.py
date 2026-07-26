@@ -7,12 +7,12 @@ from lib.Plotter import Plotter
 
 def calculate_schedule(payload: dict[str, dict]) -> dict:
     requested_course_names = payload["courses"]["possible"]
-    course_jsons = get_course_jsons(requested_course_names)
-    # print(course_jsons)
+    course_jsons = get_course_jsons(requested_course_names, payload)
+    print(course_jsons)
     
     courses = make_courses(course_jsons, payload)
     del course_jsons
-    print(courses)
+    # print(courses)
 
     all_best_courses = find_best_options(courses, payload)
     del courses

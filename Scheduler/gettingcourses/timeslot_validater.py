@@ -13,6 +13,8 @@ def make_courses(course_jsons: list[dict[str, Any]], payload: dict) -> list[Cour
     validator = ConditionChecker(payload)
     
     for course_json in course_jsons.values():
+        if course_json == {}: continue
+
         course_key = course_json["key"]
         section_json = course_json["schedule"]
         course_code = f"{course_key["dept"]} {course_key["code"]}"
@@ -40,19 +42,21 @@ def _make_sections(section_jsons: list[dict[str, Any]],
     Sections = []
 
     for section_json in section_jsons.values():
+        if section_json == {}: continue
 
-        class_jsons = section_json.get("classes")
-        term = _terms_in_this_section(section_json.get("term"))
+        term = section_json.get("term")
         
         validator.section_letter = section_json["section"]
         should_prune = validator.is_unusual_term(term) \
                         or validator.isnt_fixed_section() \
-                        or validator.isnt_fixed_terms(section_json.get("term"))
+                        or validator.isnt_fixed_terms(term)
         if (should_prune): continue
 
+        class_jsons = section_json.get("classes")
         fixed_classes = _get_num_section_classes_by_type(class_jsons)
         validator.fixed_classes = fixed_classes
 
+        term = _terms_in_this_section(term)
         section_classes = _make_classes(class_jsons, term, validator)
         if (validator.has_no_classes(section_classes)): continue
 
@@ -61,7 +65,7 @@ def _make_sections(section_jsons: list[dict[str, Any]],
         num_reviews = section_json.get("num_reviews", 0)
         default_score = payload["preferences"]["default RMP score"]
         required_num_reviews = payload["preferences"]["required num reviews"]
-        
+
         section_obj = Section(term = term,
                               section_letter = section_json["section"],
                               professor = professor,
@@ -122,14 +126,14 @@ def _make_class_sessions(session_name: str, \
 
     for curr_term in term:
         for class_session_json in class_session_jsons.values():
-
+            
             time = class_session_json["time"]
             # print(time)
             if (validator.session_doesnt_start(time)): continue
             
-            start_times.append(_start_time_in_minutes(time, \
-                                                    class_session_json["weekday"],
-                                                    curr_term))
+            start_times.append(_start_time_in_minutes(time,
+                                                      class_session_json["weekday"],
+                                                      curr_term))
 
             durations.append(int( class_session_json["duration"] ))
 
@@ -161,9 +165,9 @@ def _start_time_in_minutes(start_time: str, weekday: str, curr_term: int) -> lis
         hour = 0
         minutes = 0
 
-    start_time = hour*60 + minutes # max: 1440
+    start_time_int = hour*60 + minutes # max: 1440
     weekday_number = _convert_day_into_number(weekday)
-    return [start_time, weekday_number, curr_term]
+    return [start_time_int, weekday_number, curr_term]
 
 
 def _convert_day_into_number(weekday: str) -> int:
@@ -183,9 +187,6 @@ def _convert_day_into_number(weekday: str) -> int:
 
 
 def _time_in_ten_days_minutes(time: int, day: int, curr_term: int) -> int:
-    # print(curr_term)
-    # print(day)
-    # print(time)
     return (curr_term * 7200) + (day * 1440) + time # max 14400
 
 

@@ -33,7 +33,7 @@ payload = {
             0: [[12390, 12391]]
         },
 
-        "pinned campus": "",
+        "pinned campuses": [],
         "max courses per term": 5,
         "required num reviews": 0,
         "default RMP score": 2
