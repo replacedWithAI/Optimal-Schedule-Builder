@@ -20,10 +20,11 @@ def _objective_priority(courses: list[Course],
     commute_times = payload["goals"]["commute times"]
     objective_priority = payload["goals"]["objective priority"]
 
-    objectives = _propagate_objective_todo_list(objective_priority,
+    objectives = _propagate_objective_todo_list(courses,
+                                                objective_priority,
                                                 intervals_by_day,
-                                                course_presences,
-                                                commute_times)
+                                                course_presences, commute_times, 
+                                                model)
 
     solver = cp_model.CpSolver()
 
