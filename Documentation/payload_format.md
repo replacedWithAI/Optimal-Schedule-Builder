@@ -1,3 +1,4 @@
+```
 payload = {
     "courses": {                                            <!-- course info -->
         "possible courses" [{course codes: str}] <!-- courses to take -->
@@ -48,7 +49,8 @@ payload = {
     }
 
     "goals": {                                              <!-- main missions -->
-        "objective priority": [{objective names}]
+        "objective priority": list[str] = [{objective names}]
         "commute times": int
     }
 }
+```
