@@ -9,17 +9,16 @@ from CPSAT.Extract_solver_values import get_best_classes
 def find_best_options(courses: list[Course], payload: dict):
     
     model = cp_model.CpModel()
-    solver = cp_model.CpSolver()
 
     (interval_variables, intervals_by_day) = make_CPSAT_variables(courses, model)
     
     enforcer = ConstraintEnforcer(interval_variables, payload, model)
     enforcer.enforce_scheduling_rules(courses)
     course_presences = enforcer.course_presences
+    del enforcer
 
-    commute_times = payload["goals"]["commute times"]
-    solve_scheduling_goals(intervals_by_day, course_presences, commute_times, model)
-    status = solver.solve(model)
+    status, solver = solve_scheduling_goals(courses, intervals_by_day, 
+                                            course_presences, payload, model)
 
     del intervals_by_day
     
