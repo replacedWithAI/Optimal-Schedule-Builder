@@ -1,23 +1,80 @@
 from typing import Any
 from ortools.sat.python import cp_model
 
+from lib import Course
+
+
 __all__ = ["solve_scheduling_goals"]
 
-def solve_scheduling_goals(intervals_by_day: dict[str, list[Any]], 
-                           course_presences: list[Any], commute_time: int, 
+def solve_scheduling_goals(courses: list[Course],
+                           intervals_by_day: dict[str, list[Any]], 
+                           course_presences: list[Any], payload: dict, 
                            model: cp_model):
-    _objective_priority(intervals_by_day, course_presences, commute_time, model)
+    _objective_priority(intervals_by_day, course_presences, payload, model)
 
 
-def _objective_priority(intervals_by_day: dict[str, list[Any]], 
-                        course_presences: list[Any], commute_time: int, 
-                        model: cp_model): #WIP
-    _solve_minimal_dead_times(intervals_by_day, course_presences, commute_time, model)
+def _objective_priority(courses: list[Course],
+                        intervals_by_day: dict[str, list[Any]], 
+                        course_presences: list[Any], payload: dict, 
+                        model: cp_model): 
+    commute_times = payload["goals"]["commute times"]
+    objective_priority = payload["goals"]["objective priority"]
+
+    objectives = _propagate_objective_todo_list(objective_priority,
+                                                intervals_by_day,
+                                                course_presences,
+                                                commute_times)
+
+    solver = cp_model.CpSolver()
+
+    for i, (objective, direction) in enumerate(objectives):
+        if (direction == "minimise"):
+            model.minimize(objective)
+        elif (direction == "maximise"):
+            model.maximize(objective)
+        else:
+            print(f"Error with direction: {direction} for objective {objective}")
+            continue
+
+        status = solver.solve(model)
+        if status != cp_model.OPTIMAL and status != cp_model.FEASIBLE:
+            print(f"Solver couldn't solve {objective}; status: {status}")
+            continue
+
+        not_last_objective = i < len(objectives) - 1
+        if not_last_objective:
+            best_value = solver.value(objective)
+            model.add(objective == best_value)
+
+    return status, solver
+
+
+def _propagate_objective_todo_list(courses: list[Course],
+                                   objective_priority: list[str],
+                                   intervals_by_day: dict[str, list[Any]],
+                                   course_presences: list[Any],
+                                   commute_time: int, model: cp_model
+                                   ) -> list[tuple]:
+    objectives = []
+
+    prof_ratings = _solve_best_professors(courses, model)
+    total_dead_times = _solve_minimal_dead_times(intervals_by_day, commute_time,
+                                                 model)
+
+    objectives.append((sum(course_presences), "maximise"))
+    for objective in objective_priority:
+        if (objective == "least dead times"):
+            objectives.append((total_dead_times, "minimise"))
+        elif objective == "best rated profs":
+            objectives.append((prof_ratings, "maximise"))
+        else:
+            print(f"Objective {objective} is unconsidered")
+
+    return objectives
 
 
 def _solve_minimal_dead_times(intervals_by_day: dict[str, list[Any]],
-                              course_presences: list[Any], commute_time: int, 
-                              model: cp_model):
+                              commute_time: int, model: cp_model):
     all_daily_school_day_length = []
 
     for curr_day, intervals in intervals_by_day.items():
@@ -45,6 +102,15 @@ def _solve_minimal_dead_times(intervals_by_day: dict[str, list[Any]],
         model.add(school_day_length == (day_end-day_start + is_day_active*commute_time*2))
         all_daily_school_day_length.append(school_day_length)
 
-    TAKE_COURSES_WEIGHT = 14400
-    model.minimize(sum(all_daily_school_day_length) - TAKE_COURSES_WEIGHT*
-                                                      sum(course_presences))
+    return (sum(all_daily_school_day_length))
+
+
+def _solve_best_professors(courses: list[Course], model: cp_model):
+    schedule_score = 0
+
+    for course in courses:
+        for section in course:
+            rating = int(round(section.RMP_score * 10))
+            section_presence = section.section_presence
+            schedule_score += rating * section_presence
+    return schedule_score
