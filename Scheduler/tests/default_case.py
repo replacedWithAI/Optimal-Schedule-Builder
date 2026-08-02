@@ -7,6 +7,7 @@ if parent_dir not in sys.path:
 
 from program import calculate_schedule
 
+
 payload = {
     "courses": {                                           
         "possible": ["CHEM 1100", "MATH 1013",
@@ -48,3 +49,5 @@ payload = {
 if __name__ == "__main__":
     all_best_courses = calculate_schedule(payload)
     print(all_best_courses)
+
+    # Plotter_obj = Plotter(all_best_courses)
