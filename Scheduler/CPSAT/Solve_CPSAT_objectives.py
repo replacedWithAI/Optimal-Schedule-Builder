@@ -9,14 +9,15 @@ __all__ = ["solve_scheduling_goals"]
 def solve_scheduling_goals(courses: list[Course],
                            intervals_by_day: dict[str, list[Any]], 
                            course_presences: list[Any], payload: dict, 
-                           model: cp_model):
-    _objective_priority(intervals_by_day, course_presences, payload, model)
+                           model: cp_model) -> tuple:
+    return _objective_priority(courses, intervals_by_day, course_presences, 
+                               payload, model)
 
 
 def _objective_priority(courses: list[Course],
                         intervals_by_day: dict[str, list[Any]], 
                         course_presences: list[Any], payload: dict, 
-                        model: cp_model): 
+                        model: cp_model) -> tuple: 
     commute_times = payload["goals"]["commute times"]
     objective_priority = payload["goals"]["objective priority"]
 
@@ -63,6 +64,11 @@ def _propagate_objective_todo_list(courses: list[Course],
                                                  model)
 
     objectives.append((sum(course_presences), "maximise"))
+
+    if objective_priority == []:
+        objective_priority.append((total_dead_times, "minimise"))
+        return objective_priority
+
     for objective in objective_priority:
         if (objective == "least dead times"):
             objectives.append((total_dead_times, "minimise"))
@@ -110,7 +116,7 @@ def _solve_best_professors(courses: list[Course], model: cp_model):
     schedule_score = 0
 
     for course in courses:
-        for section in course:
+        for section in course.sections:
             rating = int(round(section.RMP_score * 10))
             section_presence = section.section_presence
             schedule_score += rating * section_presence
