@@ -10,7 +10,7 @@ export default function FetchSchedule( {requestedCourses = []} ) {
 
 	const plotSchedule = async () => {
 		try {
-			const apiURL = new URL(import.meta.env.VITE_azureURL);
+			const apiURL = new URL(`${import.meta.env.VITE_AZUREURL}/calculate`);
 
 			requestedCourses.forEach(course => apiURL.searchParams.append("tags", course));
 			const dictionary = Object.fromEntries(requestedCourses); //idk how I'm formating this yet
