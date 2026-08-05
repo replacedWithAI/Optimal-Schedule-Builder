@@ -28,3 +28,6 @@ dist-ssr
 python
 __pycache__/
 .venv/
+
+*storybook.log
+storybook-static

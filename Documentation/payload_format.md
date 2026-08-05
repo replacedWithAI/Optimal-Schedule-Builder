@@ -1,30 +1,34 @@
 ```
 payload = {
-    "courses": {                                            <!-- course info -->
-        "possible courses" [{course codes: str}] <!-- courses to take -->
-        "pinned sections classes terms": {                         
-            {section letter}: [class/activity names: str]
-            "fixed_terms": [{term_letter}]
+    "courses": {                                 <!-- course info -->
+        "possible courses" [<course codes: str>] <!-- courses to take -->
+        "pinned sections classes terms": {       <!-- 
+                                                    pinning specific parts of 
+                                                    a course, but not the course 
+                                                    itself 
+                                                 -->                  
+            <section letter>: [class/activity names: str]
+            "fixed_terms": [<term_letter>]
         }
-        "pinned courses": [{course codes: str}]
+        "pinned courses": [<course codes: str>]  <!--pinning only courses -->
         "changed course data": {
-            {course code}: {
+            <course code>: {
                 faculty: str
                 dept: str
-                code: str <!-- the course number -->
+                code: str                        <!-- the course number -->
                 credit: str
                 name: str
-                prereq: [{course codes}]
+                prereq: [<course codes>]
                 
                 "schedule": {
-                    {section letter}: {
-                        term: [{term: int}]
-                        section: str <!-- section letter -->
+                    <section letter>: {
+                        term: [<term: int>]
+                        section: str             <!-- section letter -->
                         professor: str
 
                         classes: {
-                            {class name}: {
-                                {weekday: str}: {
+                            <class name>: {
+                                <weekday: str>: {
                                     time: str
                                     duration: str
                                     campus: str
@@ -39,7 +43,7 @@ payload = {
 
     "preferences" {                                         <!-- side missions -->
         "personal times": {
-            {weekday number}: [[start time, end time]]
+            <weekday number>: [[start time, end time]]
         }
 
         "pin campus": [{campus: str}]

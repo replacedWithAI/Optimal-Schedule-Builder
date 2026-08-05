@@ -70,7 +70,7 @@ def _propagate_objective_todo_list(courses: list[Course],
         return objective_priority
 
     for objective in objective_priority:
-        if (objective == "least dead times"):
+        if (objective == "minimal dead times"):
             objectives.append((total_dead_times, "minimise"))
         elif objective == "best rated profs":
             objectives.append((prof_ratings, "maximise"))
