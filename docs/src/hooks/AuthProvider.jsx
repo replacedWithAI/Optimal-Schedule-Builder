@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import AuthContext from "./auth_context.jsx";
+import { AuthContext } from "./auth_context.jsx";
 
-const API_URL = import.meta.env.VITEAZUREURL;
+const API_URL = import.meta.env.VITE_AZUREURL;
 
 /**
  * Used to wrap App.jsx in main.jsx, such that all components are authenticated
@@ -27,7 +27,7 @@ export default function AuthProvider({children}) {
         fetch(`${API_URL}/me`, {
             credentials: "include"
         })
-            .then((result) => (res.ok ? res.json() : null))
+            .then((result) => (result.ok ? result.json() : null))
             .then((data) => {
                 setUser(data);
                 setLoading(false);
@@ -42,14 +42,14 @@ export default function AuthProvider({children}) {
     const logout = async () => {
         await fetch(`${API_URL}/auth/logout`, {
             method: "POST",
-            crednetials: "include"
+            credentials: "include"
         });
         setUser(null);
     }
 
     return (
-        <AuthProvider value={{user, loading, authError, logout}}>
+        <AuthContext.Provider value={{user, loading, authError, logout}}>
             {children}
-        </AuthProvider>
+        </AuthContext.Provider>
     );
 }

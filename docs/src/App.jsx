@@ -1,6 +1,6 @@
 import useAuth from "./hooks/auth_context.jsx";
 import AuthProvider from "./hooks/AuthProvider.jsx";
-import login_page from "./pages/login_page.jsx"; 
+import LoginPage from "./pages/login_page.jsx"; 
 import FetchSchedule from "./components/timetable.jsx";
 import "./app.css";
 
@@ -32,13 +32,13 @@ function AppContent() {
         )
     }
 
-    if (!user) return <login_page />;
+    if (!user) return <LoginPage />;
     
     return (
         <div>
             <header className="top-menu">
                 <span>{user.email}</span>
-                <button className="signout_button">Sign out</button>
+                <button className="signout-button">Sign out</button>
             </header>
             <FetchSchedule />
         </div>
