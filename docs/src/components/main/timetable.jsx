@@ -173,7 +173,7 @@ export default function FetchSchedule( {requestedCourses = []} ) {
 	};
 
 	return (
-		<div className="timetable-root">
+		<div className="timetable-container">
 			<div className="term-rows">
 				<div className="time-column"></div>
 				<div className="term1-row">Term 1</div>

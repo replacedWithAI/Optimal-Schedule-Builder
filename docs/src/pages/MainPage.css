@@ -1,0 +1,82 @@
+.page-wrapper {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.top-menu {
+	display: flex;
+	justify-content: flex-end;
+	padding: 12px 24px;
+	gap: 12px;
+	align-items: center;
+	font-size: 0.875rem;
+	color: #374151;
+	border-bottom: 1px solid #e5e7eb;
+	flex-shrink: 0;
+}
+
+.signout-button {
+	padding: 6px 14px;
+	border-radius: 6px;
+	border: 1px solid #d1d5db;
+	background: #fff;
+	cursor: pointer;
+}
+
+/* left/right panels ---------------------------------------------------------*/
+
+.main-content {
+	display: flex;
+	flex: 1;
+	min-height: 0; /* lets children scroll instead of growing the page */
+	width: 100%;
+}
+
+.left-panel {	
+	flex: 1 1 50%;
+	min-width: 0;
+	overflow: hidden;
+	border-right: 1px solid #e5e7eb;
+}
+
+.right-panel {
+	flex: 1 1 50%;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+/* top/bottom 50/50 split within the right panel------------------------------*/
+
+.top-right {
+	flex: 1 1 50%;
+	min-width: 0;
+	min-height: 0;
+	overflow: auto;
+}
+
+.bottom-right {
+	flex: 1 1 50%;
+	min-height: 0;
+	overflow: auto;
+	border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 860px) {
+	.main-content {
+		flex-direction: column;
+	}
+
+	.left-panel .right-panel {
+		width: 100%;
+	}
+
+	.left-panel {
+		width: 100%;
+		max-height: 45vh;
+		border-right: none;
+		border-bottom: 1px solid #e5e7eb;
+	}
+}

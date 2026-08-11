@@ -7,25 +7,6 @@
     color: #6b7280;
 }
 
-.top-menu {
-    display: flex;
-    justify-content: flex-end;
-    padding: 12px 24px;
-    gap: 12px;
-    align-items: center;
-    font-family:Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 0.875rem;
-    color: #374151;
-}
-
-.signout-button {
-    padding: 6px 14px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    background: #fff;
-    cursor: pointer;
-}
-
 .auth-error-display {
     flex-direction: column;
 }
