@@ -8,7 +8,7 @@ payload = {
                                                     itself 
                                                  -->                  
             <section letter>: [class/activity names: str]
-            "fixed_terms": [<term_letter>]
+            "terms": []
         }
         "pinned courses": [<course codes: str>]  <!--pinning only courses -->
         "changed course data": {
@@ -28,10 +28,12 @@ payload = {
 
                         classes: {
                             <class name>: {
-                                <weekday: str>: {
-                                    time: str
-                                    duration: str
-                                    campus: str
+                                "timeslot": {
+                                    <weekday: str>: {
+                                        time: str
+                                        duration: str
+                                        campus: str
+                                    }
                                 }
                             }
                         }

@@ -19,7 +19,7 @@ payload = {
                 "sections classes": {
                     "Y": ["LAB 05"]
                 },
-                "terms": ["W"]
+                "terms": []
             }
         },
         "pinned courses": ["CHEM 1100", "MATH 1013",
