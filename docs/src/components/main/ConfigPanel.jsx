@@ -88,7 +88,7 @@ export default function ConfigPanel({functionsAndUseStates}) {
 					<CourseInputSection
 						inputType="possible"
 						label="Enter courses"
-						placeholder="e.g. Separated by newlines; EECS 1021\nMATH 1014"
+						placeholder="e.g. Separated by newlines; EECS 1021"
 						value={possibleCourseDraft}
 						onChange={(e) => setPossibleCourseDraft(e.target.value)}
 						onEnter={() => {
@@ -102,7 +102,7 @@ export default function ConfigPanel({functionsAndUseStates}) {
 					<CourseInputSection
 						inputType="pinned"
 						label="Courses to guarantee a spot for"
-						placeholder="e.g. Separated by newlines; MATH 2015\nEECS 3101"
+						placeholder="e.g. Separated by newlines; MATH 2015"
 						value={pinnedCourseDraft}
 						onChange={(e) => setPinnedCourseDraft(e.target.value)}
 						onEnter={() => {

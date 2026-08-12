@@ -39,12 +39,12 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 @router.get("/login")
 def login(request: Request):
     """Make Google OAuth consent screen URL, then redirects the browser there"""
-    redirect_url = _get_redirect_url(request)
+    redirect_uri = _get_redirect_uri(request)
 
     google_auth_url = (
         "https://accounts.google.com/o/oauth2/v2/auth"
         f"?client_id={GOOGLE_CLIENT_ID}"
-        f"&redirect_uri={redirect_url}"
+        f"&redirect_uri={redirect_uri}"
         "&response_type=code"
         "&scope=openid email profile"
         "&access_type=offline"
@@ -61,8 +61,8 @@ async def callback(code: str, request: Request, response: Response):
     check the domain, issue a JWT cookie
     """
 
-    redirect_url = _get_redirect_url(request)
-    google_id_token = await _exchange_auth_code_for_id_token(code, redirect_url)
+    redirect_uri = _get_redirect_uri(request)
+    google_id_token = await _exchange_auth_code_for_id_token(code, redirect_uri)
     user_info = _verify_google_token(google_id_token)
     email = user_info["email"]
     _assert_school_email(email)
@@ -75,7 +75,7 @@ async def callback(code: str, request: Request, response: Response):
         value=jwt_token,
         httponly=True,
         secure=True,
-        samesite="strict",
+        samesite="none",
         max_age=JWT_EXPIRY_HOURS*3600,
         path="/"
     )
@@ -106,14 +106,14 @@ def require_auth(session: Annotated[str | None, Cookie()] = None) -> dict:
                                                     "Log in again")
 
 
-def _get_redirect_url(request: Request) -> str:
+def _get_redirect_uri(request: Request) -> str:
     """ Builds and reutrns the callback URL """
 
     base_url = str(request.base.url).rstrip("/")
     return f"{base_url}/auth/callback"
 
 
-async def _exchange_auth_code_for_id_token(code: str, redirect_url: str) -> str:
+async def _exchange_auth_code_for_id_token(code: str, redirect_uri: str) -> str:
     """ POSTs the auth code to Google and gets the raw ID string token """
 
     async with httpx.AsyncClient() as client:
@@ -122,7 +122,7 @@ async def _exchange_auth_code_for_id_token(code: str, redirect_url: str) -> str:
                 "code": code,
                 "client_id": GOOGLE_CLIENT_ID,
                 "client_secret": GOOGLE_CLIENT_SECRET,
-                "redirect_url": redirect_url,
+                "redirect_uri": redirect_uri,
                 "grant_type": "authorization code"
             }
         )
