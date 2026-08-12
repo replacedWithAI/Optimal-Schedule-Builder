@@ -1,5 +1,6 @@
-import CourseList from "../components/main/CourseList.jsx"
-import React, { useState } from "react";
+import React, {useState, useEffect} from "react";
+import CourseList from "../components/main/CourseList.jsx";
+import useStatesAndFunctions from "../hooks/useStatesAndFunctions.js";
 
 export default {
     title: "components/CourseList",
@@ -7,17 +8,15 @@ export default {
 }
 
 const CourseListTemplate = () => {
-    const [possibleCourses, setPossibleCourses] = useState(["EECS 1021", "MATH 1014", 
-                                                            "EECS 3311"]);
-    const [pinnedCourses, setPinnedCourses] = useState(["EECS 3101", "EECS 1021"]);
+    const functionsAndUseStates = useStatesAndFunctions();
+
+    useEffect(() => {
+        functionsAndUseStates.setPossibleCourses(["EECS 1021", "MATH 1014", "EECS 3311"]);
+        functionsAndUseStates.setPinnedCourses(["EECS 3101", "EECS 1021"])
+    }, []);
 
     return (
-        <CourseList
-            possibleCourses={possibleCourses}
-            setPossibleCourses={setPossibleCourses}
-            pinnedCourses={pinnedCourses}
-            setPinnedCourses={setPinnedCourses}
-        />
+        <CourseList functionsAndUseStates={functionsAndUseStates} />
     );
 }
 
