@@ -28,9 +28,7 @@ export default function MainPage({user, onLogout}) {
                 <aside className="right-panel">
                     <div className="top-right">
                         <FetchSchedule
-                            buildPayload={functionsAndUseStates.buildPayload}
-                            onResult={functionsAndUseStates.setScheduleResult}
-                            onError={functionsAndUseStates.setScheduleError}
+                            functionsAndUseStates={functionsAndUseStates}
                         />
                     </div>
 

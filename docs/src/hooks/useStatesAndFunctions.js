@@ -18,6 +18,7 @@ export default function functionsAndUseStates(){
     const [maxCoursesPerTerm, setMaxCoursesPerTerm] = useState(5);
     const [requiredNumReviews, setRequiredNumReviews] = useState(0);
     const [defaultRMPScore, setDefaultRMPScore] = useState(2.0);
+    const [personalTimes, setPersonalTimes] = useState({});
 
     // goals--------------------------------------------------------------------
     const [objectivePriority, setObjectivePriority] = useState([]);
@@ -57,26 +58,67 @@ export default function functionsAndUseStates(){
 
     //--------------------------------------------------------------------------
     //setting pinned terms, sections, classes
-    const EMPTY_PINNED_ENTRIES = {"terms": [], "sectionLetters": [], "classNames": []};
 
+    const addPinnedTerm = (courseCode, rawTerm) => {
+        const term = sanitizeInput(rawTerm);
 
-    const addPinnedCoursePart = (courseCode, coursePart, coursePartKey, predicate) => {
         setPinnedCourseParts(produce((draft) => {
-            if (!draft[courseCode]) draft[courseCode] = {...EMPTY_PINNED_ENTRIES};
-            const sanitizedCoursePart = sanitizeInput(coursePart);
+            if (!draft[courseCode]) draft[courseCode] = {"terms": [], "sections": {}};
+            if (term && /^[A-Z]$/.test(term) && term.length === 1)
+                draft[courseCode].terms.push(term);
+        }));
+    };
 
-            if (!draft[courseCode][coursePartKey].includes(sanitizedCoursePart) &&
-                (!predicate || predicate(coursePartKey, sanitizedCoursePart))) 
-                draft[courseCode][coursePartKey].push(sanitizedCoursePart);
+
+    const addPinnedSectionLetter = (courseCode, rawLetter) => {
+        const letter = sanitizeInput(rawLetter);
+
+        setPinnedCourseParts(produce((draft) => {
+            if (!draft[courseCode]) draft[courseCode] = {"terms": [], "sections": {}};
+            if (!draft[courseCode].sections) {
+                draft[courseCode].sections = {};
+            }
+            if (letter && /^[A-Z]$/.test(letter) && letter.length === 1 && 
+                !draft[courseCode].sections[letter]) {
+                draft[courseCode].sections[letter] = {};
+            }
+        }));
+    };
+
+
+    const addPinnedClassName = (courseCode, letter, rawName) => {
+        const name = sanitizeInput(rawName);
+        const spaceIdx = name.indexOf(" ")
+        const classType = name.substring(0, spaceIdx);
+        const classNumber = name.substring(spaceIdx+1);
+
+        setPinnedCourseParts(produce((draft) => {
+            const section = draft[courseCode]?.sections?.[letter] ?? false;
+            if (name && section &&
+                 /^[A-Z]+$/.test(classType) && /^\d+$/.test(classNumber) 
+                && classType.length >= 3 && classType.length <= 4 && 
+                classNumber.length === 2 && 1 + classType.length +
+                classNumber.length === name.length)
+                draft[courseCode].sections[letter][name] = {};
         }));
     };
 
 
     const removePinnedCoursePart = (courseCode, coursePart, coursePartKey) => {
+        const keys = Array.isArray(coursePartKey) ? coursePartKey : 
+                                [coursePartKey]
         setPinnedCourseParts(produce((draft) => {
-            if (!draft[courseCode]) return;
-            draft[courseCode][coursePartKey] = 
-            draft[courseCode][coursePartKey].filter((part) => part !== coursePart)
+            let currObject = draft;
+            for (let i = 0; i < keys.length; i++) {
+                if (currObject == null) break; // weirdly, also considers undef
+                currObject = currObject[keys[i]];
+            }
+
+            if (Array.isArray(currObject)) {
+                const index = currObject.indexOf(coursePart)
+                if (index > -1)
+                    currObject.splice(index, 1);
+            }
         }));
     };
 
@@ -114,9 +156,7 @@ export default function functionsAndUseStates(){
         campus: ""
     });
 
-
     const skipModificiation = (key, exists) => !key || exists;
-
 
     const addModifiedCourseData = (path, rawCode) => {
         const code = sanitizeInput(rawCode);
@@ -254,16 +294,60 @@ export default function functionsAndUseStates(){
 
     // Formatting useState vars to send to backend------------------------------
 
+    const buildPinnedSectionsClassesTerms = () => {
+        produce(({}, draft) => {
+            for (const [courseCode, data] of Object.entries(pinnedCourseParts)) {
+                if (data.terms.length === 0 && data.sections.length === 0) continue
+                draft[courseCode] = {};
+
+                draft[courseCode]["terms"] = data.terms || [];
+
+                if (data.sections.length)
+                    for (const [sectionLetter, classObj] of Object.
+                                                    entries(data.sections)) {
+                    draft[courseCode]["section classes"] = Object.keys(classObj) || [];
+                }
+            }
+        });
+    };
+
+
+    const cleanEmptyNodes = (object) => {
+        if (typeof object !== "object" || object === null) return object;
+
+        const result = Array.isArray(object) ? [] : {};
+        for (const [key, value] of Object.entries(object)) {
+            if (value === "" || value === null || value === undefined) continue;
+
+            if (key === "prereq" && typeof value === "string") {
+                const prereqs = val.split(",").map((s) => s.trim()).filter(Boolean);
+                if (prereqs.length > 0) {
+                    cleaned[key] = prereqs;
+                    continue;
+                }
+            }
+
+            if (typeof value === "object") {
+                const nestedCleanedObject = cleanEmptyNodes(value);
+                if (Object.keys(nestedCleanedObject).length > 0)
+                    result[key] = nestedCleanedObject
+            } else res[key] = value;
+        }
+
+        return result;
+    }
+
+
     const buildPayload = () => ({
         "courses": {
             "possible courses": possibleCourses,
-            "pinned section classes terms": {},
+            "pinned section classes terms": buildPinnedSectionsClassesTerms,
             "pinned courses": pinnedCourses,
-            "changed course data": {}
+            "changed course data": cleanEmptyNodes(modifiedCourseData)
 		},
 
 		preferences: {
-			"personal times": {},
+			"personal times": personalTimes,
 			"pin campus": pinnedCampuses,
 			"max courses per term": maxCoursesPerTerm,
 			"required num reviews": requiredNumReviews,
@@ -287,6 +371,7 @@ export default function functionsAndUseStates(){
         maxCoursesPerTerm, setMaxCoursesPerTerm,
         requiredNumReviews, setRequiredNumReviews,
         defaultRMPScore, setDefaultRMPScore,
+        personalTimes, setPersonalTimes,
 
         objectivePriority, setObjectivePriority,
         commuteTimes, setCommuteTimes,
@@ -295,7 +380,8 @@ export default function functionsAndUseStates(){
         scheduleError, setScheduleError,
 
         addCourses, removeCourse,
-        addPinnedCoursePart, removePinnedCoursePart,
+        addPinnedTerm, addPinnedSectionLetter, addPinnedClassName,
+        removePinnedCoursePart,
 
         addModifiedCourseData, removeModifiedCourseData, updateModifiedCourseData,
         addChangedSection, removeChangedSection, updateSectionField,

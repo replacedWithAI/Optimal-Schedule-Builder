@@ -4,11 +4,24 @@ import "./PinCoursePartsButton.css";
 /**
  * A small dropdown panel to add courses to pinnedCourseParts
  */
-export default function PinCoursePartsButton({label, placeholder, tags, onAdd, onRemove}) {
+export default function PinCoursePartsButton({label, badge, children}) {
     const [open, setOpen] = useState(false);
-    const [draft, setDraft] = useState("");
+    return (
+        <div className="tag-popover-wrapper">
+            <button
+                type="button"
+                className={"tag-popover-trigger"}
+                onClick={() => setOpen((prev) => !prev)}
+            >
+                {label}{badge > 0 && <span className="popover-count">{badge}</span>}
+            </button>
+            {open && <div className="popover-panel">{children}</div>}
+        </div>
+    );
+}
 
-    const submitDraft = () => {
+/*
+const submitDraft = () => {
         if (!draft.trim()) return;
         onAdd(draft);
         setDraft("");
@@ -64,5 +77,4 @@ export default function PinCoursePartsButton({label, placeholder, tags, onAdd, o
                 </div>
             )}
         </div>
-    );
-}
+*/
