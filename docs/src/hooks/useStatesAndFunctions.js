@@ -27,7 +27,8 @@ export default function functionsAndUseStates(){
     const [scheduleResult, setScheduleResult] = useState(null);
 	const [scheduleError, setScheduleError] = useState(null);
 
-
+    const sanitizeInput = (input) => input?.trim().toUpperCase() || "";
+    
     //adding courses in pinnedCourses and possibleCourses in ConfigPanel
 	const addCourses = (course, setCourse, currentInput, setCurrentInput) => {
 		const items = currentInput.toUpperCase().split(/\r?\n/);
@@ -59,26 +60,25 @@ export default function functionsAndUseStates(){
     const EMPTY_PINNED_ENTRIES = {"terms": [], "sectionLetters": [], "classNames": []};
 
 
-    const setPinnedTerm = (courseCode, termLetter) => {
-        setPinnedCourseParts((prev) => {
-            const existingEntries = prev[courseCode] ?? EMPTY_PINNED_ENTRIES;
-            const existingTerms = existingEntries.terms || [];
-            const trimmedTerm = termLetter.trim().toUpperCase();
+    const addPinnedCoursePart = (courseCode, coursePart, coursePartKey, predicate) => {
+        setPinnedCourseParts(produce((draft) => {
+            if (!draft[courseCode]) draft[courseCode] = {...EMPTY_PINNED_ENTRIES};
+            const sanitizedCoursePart = sanitizeInput(coursePart);
 
-            const updatedTerms = /^[A-Z]$/.test(trimmedTerm) 
-            && trimmedTerm.length === 1 && !existingTerms.includes(trimmedTerm)
-            ? [...existingTerms, trimmedTerm] : existingTerms;
+            if (!draft[courseCode][coursePartKey].includes(sanitizedCoursePart) &&
+                (!predicate || predicate(coursePartKey, sanitizedCoursePart))) 
+                draft[courseCode][coursePartKey].push(sanitizedCoursePart);
+        }));
+    };
 
-            return {
-                ...prev,
-                [courseCode]: {
-                    ...existingEntries,
-                    "terms": updatedTerms
-                }
-            }
-        })
-    }
 
+    const removePinnedCoursePart = (courseCode, coursePart, coursePartKey) => {
+        setPinnedCourseParts(produce((draft) => {
+            if (!draft[courseCode]) return;
+            draft[courseCode][coursePartKey] = 
+            draft[courseCode][coursePartKey].filter((part) => part !== coursePart)
+        }));
+    };
 
     // logic for modifying course data----------------------------------------------
 
@@ -116,7 +116,6 @@ export default function functionsAndUseStates(){
 
 
     const skipModificiation = (key, exists) => !key || exists;
-    const sanitizeInput = (input) => input?.trim().toUpperCase() || "";
 
 
     const addModifiedCourseData = (path, rawCode) => {
@@ -296,7 +295,7 @@ export default function functionsAndUseStates(){
         scheduleError, setScheduleError,
 
         addCourses, removeCourse,
-        setPinnedTerm, 
+        addPinnedCoursePart, removePinnedCoursePart,
 
         addModifiedCourseData, removeModifiedCourseData, updateModifiedCourseData,
         addChangedSection, removeChangedSection, updateSectionField,
