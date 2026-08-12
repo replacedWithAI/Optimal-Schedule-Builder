@@ -50,9 +50,17 @@ export default function ToggleFieldList({entries, fields, onAdd, onRemove,
 
             {keys.map((key) => {
                 const isOpen = openKeys.includes(key);
+                const isLeaf = fields.length === 0 && !nested;
                 return (
                     <div className="toggle-item" key={key}>
                         <div className="toggle-item-header">
+                            {isLeaf ? (
+                            <span className="toggle-item-title 
+                                             toggle-item-title-static"
+                             >
+                                {key}
+                            </span>)
+                            : (
                             <button 
                                 type="button" 
                                 className="toggle-item-title"
@@ -64,6 +72,7 @@ export default function ToggleFieldList({entries, fields, onAdd, onRemove,
                                 </span>
                                 {key}
                             </button>
+                            )}
 
                             <button
                                 type="button"
@@ -75,7 +84,7 @@ export default function ToggleFieldList({entries, fields, onAdd, onRemove,
                             </button>
                         </div>
 
-                        {isOpen && (
+                        {isOpen && !isLeaf && (
                             <div className="toggle-item-body">
                                 {fields.map((field) => (
                                     <div className="toggle-field-row" key={field.key}>

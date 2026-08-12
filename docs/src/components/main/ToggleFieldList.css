@@ -33,6 +33,8 @@
 	overflow: hidden;
 }
 
+.toggle-item-title-static { cursor: default; }
+
 .toggle-item-header {
 	display: flex;
 	align-items: center;

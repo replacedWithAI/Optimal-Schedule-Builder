@@ -2,43 +2,44 @@ import React, { useState, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import './plotTimetable.css';
+import './timetable.css';
 
-export default function FetchSchedule( {requestedCourses = []} ) {
+export default function FetchSchedule( {functionsAndUseStates} ) {
+	const {setPersonalTimes, onResult, onError, buildPayload} = functionsAndUseStates;
+
 	const [events, setEvents] = useState([]);
 	const busyTimes = useRef({});
 
 	const plotSchedule = async () => {
 		try {
-			const apiURL = new URL(`${import.meta.env.VITE_AZUREURL}/calculate`);
-
-			requestedCourses.forEach(course => apiURL.searchParams.append("tags", course));
-			const dictionary = Object.fromEntries(requestedCourses); //idk how I'm formating this yet
+			console.log(buildPayload())
+			// const apiURL = new URL(`${import.meta.env.VITE_AZUREURL}/calculate`);
 			
-			const response = await fetch(apiURL, {
-				method: "POST",
-				headers: {
-					"Accept": "application/json",
-					"Content-Type": "application/json"
-					//"Authorization": Not done yet
-				},
-				body: JSON.stringify( {dictionary} )	
-			});
+			// const response = await fetch(apiURL, {
+			// 	method: "POST",
+			// 	credentials: "include",
+			// 	headers: {
+			// 		"Accept": "application/json",
+			// 		"Content-Type": "application/json"
+			// 		//"Authorization": Not done yet
+			// 	},
+			// 	body: JSON.stringify( buildPayload() )	
+			// });
 
-			if (!response.ok) {
-				console.error(`API access error; status ${response.status}`);
-				//decide error handling without crashing; idk how
-				return;
-			}
+			// if (!response.ok) {
+			// 	console.error(`API access error; status ${response.status}`);
+			// 	onError?.(`Request failed; status ${response.status}`)
+			// 	return;
+			// }
 
-			const content = await response.json();
-			console.log(`API output: ${JSON.stringify(content)}`);
+			// const content = await response.json();
+			// console.log(`API output: ${JSON.stringify(content)}`);
 
-			const newEvents = processCourseTimes(content) || [];
-			setEvents((prevEvents) => [...prevEvents, ...newEvents]);
+			// const newEvents = processCourseTimes(content) || [];
+			// setEvents((prevEvents) => [...prevEvents, ...newEvents]);
 		} catch (error) {
 			console.log(`Error: ${error}`);
-			return;
+			onError?.(error.message ?? String(error));
 		}
 	};
 
@@ -89,11 +90,12 @@ export default function FetchSchedule( {requestedCourses = []} ) {
 	}
 
 	const handleSelectClick = (cellInfo) => {
+		const targetDay = cellInfo.resource.id;
 		const newBusyTime = {
-			id: `selected-${Date.now()}`,
+			id: `selected-${Math.random().toString(36).substring(2, 7)}`,
 			start: cellInfo.startStr,
 			end: cellInfo.endStr,
-			resourceId: cellInfo.resource.id,
+			resourceId: targetDay,
 			backgroundColor: '#888888',
 			title: "Busy",
 			extendedProps: {
@@ -102,76 +104,72 @@ export default function FetchSchedule( {requestedCourses = []} ) {
 		}
 
 		setEvents((prevEvents) => {
-			const todayBusyTimes= [];
-			const otherItems = [];
-
-			prevEvents.forEach(e => {
-				if (e.extendedProps?.isSelectionBlock 
-					&& e.resourceId == newBusyTime.resourceId) {
-					todayBusyTimes.push(e);
-				} else {
-					otherItems.push(e);
-				}
-			});
-			return tryMergeBusy([...todayBusyTimes, newBusyTime], otherItems);
+			const updatedEvents = [...prevEvents, newBusyTime];
+			recalculateBusyTimes(updatedEvents, targetDay);
+			return updatedEvents;			
 		});
 
-		cellInfo.view.calendar.unselect(); // only display 1 event; try comment out
+		cellInfo.view.calendar.unselect(); // try comment out
 		console.log("Made a busy time");
 	};
 
-	const tryMergeBusy = (todayBusys, otherItems) => {
-		todayBusys.sort((a, b) => new Date(a.start) - new Date(b.start));
-
-		const processedBusys = [];
-		let currBusy = {...todayBusys[0]};
-
-		let weekdayNumber = todayBusys[0].resourceId;
-		busyTimes.current[weekdayNumber] = [];
-		
-		for (let i = 1; i < todayBusys.length; i++) {
-			const nextBusy = todayBusys[i];
-			
-			const overlaps = new Date(nextBusy.start) <= new Date(currBusy.end); 
-			if (overlaps) {
-				const isSubset = new Date(nextBusy.end) < new Date(currBusy.end);
-				currBusy.end = isSubset ? currBusy.end : nextBusy.end;
-			} else {
-				processedBusys.push(currBusy);
-				busyTimes.current[weekdayNumber].push([
-														toMinutes(currBusy.start),
-														toMinutes(currBusy.end)
-													  ]);
-
-				currBusy = {...nextBusy};
-			}
-		}
-		processedBusys.push(currBusy);
-		busyTimes.current[weekdayNumber].push([
-										toMinutes(currBusy.start),
-										toMinutes(currBusy.end)
-										]);
-
-		console.log(busyTimes);
-		
-		return [...otherItems, ...processedBusys];
-	}
 
 	const toMinutes = (dateStr) => {
 		const date = new Date(dateStr);
 		return date.getHours()*60 + date.getMinutes();
-	}
+	};
 
 	const handleEventClick = (eventInfo) => {
 		if (eventInfo.event.extendedProps.isSelectionBlock) {
-			setEvents((prevEvents) => prevEvents.filter((currEvent) => currEvent.id
-																	!== eventInfo.event.id));
+			const targetId = eventInfo.event.id;
+			setEvents((prevEvents) => {
+				const targetEvent = prevEvents.find((e) => e.id === targetId);
+
+				const targetDay = targetEvent?.resourceId 
+				const updatedEvents = prevEvents.filter((e) => e.id !== targetId);
+				recalculateBusyTimes(updatedEvents, targetDay);
+				return updatedEvents;
+			});
 			console.log("Deleted a busy time");
 		} else {
 			console.log("Selected a class session event");
 		}
 	};
 
+
+	const recalculateBusyTimes = (updatedEvents, targetDay) => {
+		const todayBusys = updatedEvents.filter((e) => 
+												e.extendedProps?.isSelectionBlock
+												&& e.resourceId === targetDay);
+
+		if (todayBusys.length === 0) {
+			delete busyTimes.current[targetDay];
+			console.log(`Deleted busy times for day: ${targetDay}`);
+			return;
+		}
+
+		todayBusys.sort((a, b) => new Date(a.start) - new Date(b.start));
+		const mergedBusys = [];
+		let currBusy = {...todayBusys[0]} // needs dict spread because object items
+
+		for (let i = 1; i < todayBusys.length; i++) {
+			const nextBusy = todayBusys[i];
+
+			if (new Date(nextBusy.start) <= new Date(currBusy.end)) {
+				if (new Date(nextBusy.end) > new Date(currBusy.end)) {
+					currBusy.end = nextBusy.end;
+				}
+			} else {
+				mergedBusys.push([toMinutes(currBusy.start), toMinutes(currBusy.end)]);
+				currBusy = {...nextBusy};
+			}
+		}
+		mergedBusys.push([toMinutes(currBusy.start), toMinutes(currBusy.end)]);
+
+		busyTimes.current[targetDay] = mergedBusys;
+		setPersonalTimes?.({...busyTimes.current});
+		console.log(`Updated busy times for day ${targetDay}:`, busyTimes.current);
+	};
 	return (
 		<div className="timetable-container">
 			<div className="term-rows">
@@ -216,3 +214,42 @@ export default function FetchSchedule( {requestedCourses = []} ) {
 		</div>
 	);
 }
+
+/*
+const tryMergeBusy = (todayBusys, otherItems) => {
+		todayBusys.sort((a, b) => new Date(a.start) - new Date(b.start));
+
+		const processedBusys = [];
+		let currBusy = {...todayBusys[0]};
+
+		let weekdayNumber = todayBusys[0].resourceId;
+		busyTimes.current[weekdayNumber] = [];
+		
+		for (let i = 1; i < todayBusys.length; i++) {
+			const nextBusy = todayBusys[i];
+			
+			const overlaps = new Date(nextBusy.start) <= new Date(currBusy.end); 
+			if (overlaps) {
+				const isSubset = new Date(nextBusy.end) < new Date(currBusy.end);
+				currBusy.end = isSubset ? currBusy.end : nextBusy.end;
+			} else {
+				processedBusys.push(currBusy);
+				busyTimes.current[weekdayNumber].push([
+														toMinutes(currBusy.start),
+														toMinutes(currBusy.end)
+													  ]);
+
+				currBusy = {...nextBusy};
+			}
+		}
+		processedBusys.push(currBusy);
+		busyTimes.current[weekdayNumber].push([
+										toMinutes(currBusy.start),
+										toMinutes(currBusy.end)
+										]);
+
+		console.log(busyTimes);
+		
+		return [...otherItems, ...processedBusys];
+	}
+		*/

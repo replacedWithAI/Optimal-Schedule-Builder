@@ -1,6 +1,7 @@
 import { useState } from "react";
 import PinCoursePartsButton from "./PinCoursePartsButton.jsx";
 import MultiSelectDropdown from "./MultiSelectDropdown.jsx";
+import ToggleFieldList from "./ToggleFieldList.jsx";
 import "./CourseList.css";
 
 const TERM_OPTIONS = [
@@ -20,7 +21,9 @@ export default function CourseList({functionsAndUseStates}) {
         pinnedCourses, setPinnedCourses,
         pinnedCourseParts,
         
-        removeCourse, addPinnedCoursePart, removePinnedCoursePart,
+        removeCourse, 
+        addPinnedTerm, addPinnedSectionLetter, addPinnedClassName,
+        removePinnedCoursePart,
     } = functionsAndUseStates;
 
     const [activeTab, setActiveTab] = useState("all");
@@ -103,61 +106,50 @@ export default function CourseList({functionsAndUseStates}) {
                                                 removePinnedCoursePart(course, 
                                                     value, "terms");
                                             } else {
-                                                addPinnedCoursePart(course, value,
-                                                    "terms");
+                                                addPinnedTerm(course, value);
                                             }
                                         }}
                                     />
 
                                     <PinCoursePartsButton
-                                        label="Sections"
-                                        placeholder="e.g. A"
-                                        tags={pinnedCourseParts?.[course]
-                                                ?.sectionLetters ?? []}
-                                        onAdd={(letter) => addPinnedCoursePart(
-                                            course,
-                                            letter,
-                                            "sectionLetters",
-                                            (coursePartKey, sanitizedCoursePart) => (
-                                                /^[A-Z]$/.test(sanitizedCoursePart)
-                                                && sanitizedCoursePart.length === 1
-                                            )
-                                        )}
-                                        onRemove={(letter) => removePinnedCoursePart(
-                                            course, letter, "sectionLetters"
-                                        )}
-                                    />
-
-                                    <PinCoursePartsButton
-                                        label="Classes"
-                                        placeholder="e.g. LECT 01"
-                                        tags={pinnedCourseParts?.[course]
-                                            ?.classNames ?? []}
-                                        onAdd={(name) => addPinnedCoursePart(
-                                            course,
-                                            name,
-                                            "classNames",
-                                            (coursePartKey, sanitizedCoursePart) => {
-                                                const spaceIdx = sanitizedCoursePart
-                                                    .indexOf(" ")
-                                                const classType = sanitizedCoursePart
-                                                    .substring(0, spaceIdx);
-                                                const classNumber = sanitizedCoursePart
-                                                    .substring(spaceIdx+1);
-
-                                                return (/^[A-Z]+$/.test(classType)
-                                                && /^\d+$/.test(classNumber) &&
-                                                classType.length >= 3 && 
-                                                classType.length <= 4 && 
-                                                classNumber.length === 2 &&
-                                                1 + classType.length +
-                                                classNumber.length === 
-                                                sanitizedCoursePart.length)
-                                        })}
-                                        onRemove={(name) => removePinnedCoursePart(
-                                            course, name, "classNames"
-                                        )}
-                                    />
+                                        label="Sections & classes"
+                                        badge={Object.keys(pinnedCourseParts?.[course]
+                                                ?.sections ?? {}).length}
+                                    >
+                                        <ToggleFieldList
+                                            entries={pinnedCourseParts?.[course]
+                                                     ?.sections ?? {}}
+                                            fields={[]}
+                                            onAdd={(path, letter) => 
+                                                addPinnedSectionLetter(course, 
+                                                                       letter)}
+                                            onRemove={(path, letter) => 
+                                                removePinnedCoursePart(course, 
+                                                                       letter, 
+                                                                       ["sections"])}
+                                            onFieldChange={() =>{}}
+                                            addPlaceholder={"Section letter, e.g. A"}
+                                            nested={{
+                                                label: "Classes",
+                                                addPlaceholder: "Class name, e.g."
+                                                                 +" LECT 01",
+                                                getEntries: (section) => section 
+                                                                         ?? {},
+                                                onAdd: (path, className) => 
+                                                    addPinnedClassName(course, 
+                                                                       path[0], 
+                                                                       className),
+                                                onRemove: (sectionLetter, className) => 
+                                                    removePinnedCoursePart(course,
+                                                                          className,
+                                                                          ["sections", 
+                                                                           sectionLetter]),
+                                                onFieldChange: () => {},
+                                                fields: [],
+                                                nested: null
+                                            }}
+                                        />
+                                    </PinCoursePartsButton>
                                 </div>
                             )}
                         </li>

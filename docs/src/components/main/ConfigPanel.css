@@ -117,6 +117,7 @@
 
 .course-input-area textarea {
 	width: 100%;
+	resize: vertical;
 }
 
 .courses-input-area input:focus {
