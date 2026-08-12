@@ -30,8 +30,6 @@ const SESSION_OVERRIDE_FIELDS = [
 
 /** A panel for setting all json strings found in payload_format.md */
 export default function ConfigPanel({functionsAndUseStates}) {
-
-	console.log("WHOLE functionsAndUseStates OBJECT:", functionsAndUseStates);
 	const {
 		possibleCourses, setPossibleCourses,
 		pinnedCourses, setPinnedCourses,

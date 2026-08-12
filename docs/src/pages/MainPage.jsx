@@ -36,10 +36,7 @@ export default function MainPage({user, onLogout}) {
 
                     <div className="bottom-right">
                         <CourseList
-                            possibleCourses={functionsAndUseStates.possibleCourses}
-                            setPossibleCourses={functionsAndUseStates.setPossibleCourses}
-                            pinnedCourses={functionsAndUseStates.pinnedCourses}
-                            setPinnedCourses={functionsAndUseStates.setPinnedCourses}
+                            functionsAndUseStates={functionsAndUseStates}
                         />
                     </div>
                 </aside>
