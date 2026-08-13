@@ -4,7 +4,7 @@
  */
 
 import "./login_page.css";
-import googleLogo from "../assets/google_icon.svg";
+import g-logo from "../assets/g-logo.png";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -20,7 +20,7 @@ export default function LoginPage() {
                 <button className="login-button" onClick={handleLogin} 
                 data-tooltip="Sign in with Google">
                     <img className="logo" 
-                    src="https://developers.google.com/identity/images/g-logo.png" 
+                    src="g-logo" 
                     alt="Sign in with google" />
                 </button>
 

@@ -17,9 +17,6 @@ importers:
       '@fullcalendar/resource-timegrid':
         specifier: ^6.1.21
         version: 6.1.21(@fullcalendar/core@6.1.21)(@fullcalendar/resource@6.1.21(@fullcalendar/core@6.1.21))
-      gh-pages:
-        specifier: ^6.3.0
-        version: 6.3.0
       immer:
         specifier: ^11.1.16
         version: 11.1.16
@@ -72,6 +69,9 @@ importers:
       babel-plugin-react-compiler:
         specifier: ^1.0.0
         version: 1.0.0
+      gh-pages:
+        specifier: ^6.3.0
+        version: 6.3.0
       oxlint:
         specifier: ^1.69.0
         version: 1.71.0

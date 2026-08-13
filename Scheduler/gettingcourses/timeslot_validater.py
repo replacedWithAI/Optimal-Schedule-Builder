@@ -15,16 +15,15 @@ def make_courses(course_jsons: list[dict[str, Any]], payload: dict) -> list[Cour
     for course_json in course_jsons.values():
         if course_json == {}: continue
 
-        course_key = course_json["key"]
         section_json = course_json["schedule"]
-        course_code = f"{course_key["dept"]} {course_key["code"]}"
+        course_code = f"{course_json["dept"]} {course_json["code"]}"
         validator.course_code = course_code
 
-        course = Course(faculty = course_key["faculty"], 
-                        department = course_key["dept"], 
-                        course_number = course_key["code"], 
+        course = Course(faculty = course_json["faculty"], 
+                        department = course_json["dept"], 
+                        course_number = course_json["code"], 
                         course_code = course_code, 
-                        credits = course_key["credit"], 
+                        credits = course_json["credit"], 
                         course_name = course_json["name"],
                         course_presence = None,
                         prerequisites = course_json["prereq"], 
@@ -61,7 +60,7 @@ def _make_sections(section_jsons: list[dict[str, Any]],
         if (validator.has_no_classes(section_classes)): continue
 
         professor = _get_section_professor(section_json, fixed_classes)
-        score = section_json.get("score")
+        score = section_json.get("RMP_score")
         num_reviews = section_json.get("num_reviews", 0)
         default_score = payload["preferences"]["default RMP score"]
         required_num_reviews = payload["preferences"]["required num reviews"]

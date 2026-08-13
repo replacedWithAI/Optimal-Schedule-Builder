@@ -22,7 +22,7 @@ def get_course_jsons(requested_course_names: list[str],
 def _get_files_folder():
     curr_file_directory = (__file__)
     curr_folder = Path(curr_file_directory).resolve().parent 
-    course_info_folder = curr_folder / "output_courses_json 2026_01_15"
+    course_info_folder = curr_folder / "output_courses_json 2026_08_13"
     return course_info_folder
 
 
@@ -67,9 +67,9 @@ def _download_course_json(department_data: list[dict[str, Any]],
         courses = department.get("courses", "Not found")
 
         for course in courses:
-            key = course.get("key","Not found")
-            code = key.get("code", "Not found")
-            department = key.get("dept", "Not found")
+            # key = course.get("key","Not found")
+            code = course.get("code", "Not found")
+            department = course.get("dept", "Not found")
             if code == course_codes[index] \
             and department == department_codes[index]: # I feel like this is bugged 
                 course_jsons.append(course)
@@ -81,7 +81,7 @@ def _download_course_json(department_data: list[dict[str, Any]],
 
 def _normalise_course_jsons(course_jsons: list[dict]) -> dict:
     return { # what in tarnation is this?
-            f"{course_json["key"]["dept"]} {course_json["key"]["code"]}": {
+            f"{course_json["dept"]} {course_json["code"]}": {
                 **course_json,
                 "schedule": {
 
