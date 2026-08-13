@@ -8,16 +8,25 @@ import "./ToggleFieldList.css";
  * then classes/modules, then sessions
  */
 export default function ToggleFieldList({entries, fields, onAdd, onRemove, 
-                                        onFieldChange, addPlaceholder, nested, 
-                                        path = []}) {
+                                        onFieldChange, addPlaceholder, 
+                                        touched, onTouch, onUntouch, validateAdd,
+                                        nested, path = []}) {
     const [draft, setDraft] = useState("");
     const [openKeys, setOpenKeys] = useState([]);
 
+    const draftId = [...path, "draft"].join(".");
+    const isDraftInvalid = touched[draftId] ;
 
     const submitDraft = () => {
-        if (!draft.trim()) return;
-        onAdd(path, draft);
+        const cleanedDraft = draft.trim().toUpperCase();
+
+        if (cleanedDraft && validateAdd && !validateAdd(cleanedDraft)) {
+            onTouch?.(draftId);
+            return;
+        }
+        onAdd(path, cleanedDraft);
         setDraft("");
+        onUntouch?.(draftId);
     };
 
 
@@ -34,9 +43,13 @@ export default function ToggleFieldList({entries, fields, onAdd, onRemove,
             <div className="toggle-add-row">
                 <input
                     type="text"
+                    className={isDraftInvalid ? "toggle-field-error" : ""}
                     value={draft}
                     placeholder={addPlaceholder}
-                    onChange={(e) => setDraft(e.target.value)}
+                    onChange={(e) => {
+                        setDraft(e.target.value);
+                        onUntouch?.(draftId);
+                    }}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
                             e.preventDefault();
@@ -44,6 +57,12 @@ export default function ToggleFieldList({entries, fields, onAdd, onRemove,
                         }
                     }}
                 />
+
+                {isDraftInvalid && (
+                    <span className="toggle-field-error">
+                        Unexpected format
+                    </span>
+                )}
             </div>
 
             {keys.length === 0 && <p className="toggle-empty">Nothing modified yet</p>}
@@ -51,6 +70,7 @@ export default function ToggleFieldList({entries, fields, onAdd, onRemove,
             {keys.map((key) => {
                 const isOpen = openKeys.includes(key);
                 const isLeaf = fields.length === 0 && !nested;
+
                 return (
                     <div className="toggle-item" key={key}>
                         <div className="toggle-item-header">
@@ -86,7 +106,14 @@ export default function ToggleFieldList({entries, fields, onAdd, onRemove,
 
                         {isOpen && !isLeaf && (
                             <div className="toggle-item-body">
-                                {fields.map((field) => (
+                                {fields.map((field) => {
+
+                                    const fieldId = [...path, key, field.key].join(".");
+                                    const value = entries[key][field.key] ?? "";
+                                    const error = touched[fieldId] && 
+                                        field.validate && !field.validate(value);
+
+                                    return (
                                     <div className="toggle-field-row" key={field.key}>
                                         <label className="toggle-field-label">
                                             {field.label}
@@ -94,13 +121,27 @@ export default function ToggleFieldList({entries, fields, onAdd, onRemove,
 
                                         <input
                                             type="text"
-                                            className="toggle-field-input"
+                                            className={`toggle-field-input
+                                                ${error ? "toggle-field-error" : ""}`}
                                             value={entries[key][field.key] ?? ""}
-                                            onChange={(e) => onFieldChange(path, key, 
-                                                    field.key, e.target.value)}
+                                            onChange={(e) => {
+                                                onFieldChange(path, key, 
+                                                    field.key, e.target.value)
+                                                onUntouch?.(draftId)
+                                            }}
+                                            onBlur={() => onTouch?.(fieldId)}
                                         />
+
+                                        {error && (
+                                            <span className="toggle-field-error">
+                                                {field.errorMessage ? 
+                                                 field.errorMessage : 
+                                                 "Unexpected format"}
+                                            </span>
+                                        )}
                                     </div>
-                                ))}
+                                    );
+                                })}
 
                                 {nested && (
                                     <div className="toggle-nested">
@@ -112,6 +153,10 @@ export default function ToggleFieldList({entries, fields, onAdd, onRemove,
                                             onRemove={nested.onRemove}
                                             onFieldChange={nested.onFieldChange}
                                             addPlaceholder={nested.addPlaceholder}
+                                            touched={touched}
+                                            onTouch={onTouch}
+                                            onUntouch={onUntouch}
+                                            validateAdd={nested.validateAdd}
                                             nested={nested.nested}
                                             path={[...path, key]}
                                         />

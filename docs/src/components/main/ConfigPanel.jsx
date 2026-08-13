@@ -4,29 +4,6 @@ import "./ConfigPanel.css";
 
 const CAMPUSES = ["Keele", "Glendon", "Markham"];
 const OBJECTIVES = ["minimal dead times", "best rated profs"];
-const COURSE_OVERRIDE_FIELDS = [
-        { key: "faculty", label: "Faculty" },
-        { key: "dept", label: "Department" },
-        { key: "code", label: "Course number" },
-        { key: "credit", label: "Credits" },
-        { key: "name", label: "Course name" },
-        { key: "prereq", label: "Prerequisites" }
-    ];
-
-const SECTION_OVERRIDE_FIELDS = [
-	{ key: "term", label: "Term" },
-	{ key: "section", label: "Section letter" },
-	{ key: "professor", label: "Professor" },
-];
-
-const CLASS_OVERRIDE_FIELDS = [{ key: "name", label: "Class name" }];
-
-const SESSION_OVERRIDE_FIELDS = [
-	{ key: "weekday", label: "Weekday (M/T/W/R/F)" },
-	{ key: "time (24:00)", label: "Time" },
-	{ key: "duration", label: "Duration (min)" },
-	{ key: "campus", label: "Campus" }
-];
 
 /** A panel for setting all json strings found in payload_format.md */
 export default function ConfigPanel({functionsAndUseStates}) {
@@ -43,17 +20,60 @@ export default function ConfigPanel({functionsAndUseStates}) {
  
 		objectivePriority, setObjectivePriority,
         commuteTimes, setCommuteTimes,
+		touched, onTouch, onUntouch,
+		scheduleError,
 
+		validInput2, validInput3, validInput5, validInput6,
 		addCourses, removeCourse, 
 
         addModifiedCourseData, removeModifiedCourseData, updateModifiedCourseData,
-        addChangedSection, removeChangedSection, updateSectionField,
-        addChangedClass, removeChangedClass, updateChangedClass,
-        addChangedSession, removeChangedClassSession, updateChangedClassSession,
+        addModifiedSection, removeModifiedSection, updateSectionField,
+        addModifiedClass, removeModifiedClass, updateModifiedClass,
+        addModifiedSession, removeModifiedClassSession, updateModifiedClassSession,
 
         toggleCampus,
-        moveObjective, addObjective, removeObjective
+        moveObjective, addObjective, removeObjective,
 	} = functionsAndUseStates;
+
+	const COURSE_OVERRIDE_FIELDS = [
+        { key: "faculty", label: "Faculty", errorMessage: "Expected like LE, SC",
+			validate: (value) => validInput3(value, /^[A-Z]+$/,2)},
+        { key: "dept", label: "Department", errorMessage: "Expected like MATH, EECS",
+			validate: (value) => validInput3(value, /^[A-Z]+$/, 4)},
+        { key: "code", label: "Course number", errorMessage: "Expected like 1000, 4411",
+			validate: (value) => validInput3(value, /^\d+$/, 4)},
+        { key: "credit", label: "Credits", errorMessage: "Expected like 3.00, 0.50",
+			validate: (value) => validInput5(value, /^\d+$/, 1, 2, ".")},
+        { key: "name", label: "Course name" },
+        { key: "prereq", label: "Prerequisites" }
+    ];
+
+	const SECTION_OVERRIDE_FIELDS = [
+		{ key: "term", label: "Term", errorMessage: "Expected like F or SU1",
+			validate: (value) => (!value && /^[A-Z0-9]+$/.test(value) && 
+			value.length <= 3)},
+		{ key: "section", label: "Section letter", errorMessage: "Expected like A, Z",
+			validate: (value) => validInput3(value, /^[A-Z]+$/, 1)},
+		{ key: "professor", label: "Professor" }
+	];
+
+	const CLASS_OVERRIDE_FIELDS = [{ key: "name", label: "Class name", 
+		errorMessage: "Expected like LECT 01",
+		validate: (value) => validInput6(value, /^[A-Z]+$/, /^\d+$/, 4, 2, " ")
+	 }];
+
+	const SESSION_OVERRIDE_FIELDS = [
+		{ key: "weekday", label: "Weekday (M/T/W/R/F)", errorMessage: "Expected like M, R",
+			validate: (value) => validInput3(value, /^[A-Z]+$/, 1)},
+		{ key: "time (24:00)", label: "Time", errorMessage: "Expected like 13:11",
+			validate: (value) => validInput5(value, /^\d+$/, 2, 2, ":"
+		)},
+		{ key: "duration", label: "Duration (min)", errorMessage: "Expected like 110",
+			validate: (value) => validInput2(value, /^\d+$/
+		) },
+		{ key: "campus", label: "Campus", errorMessage: "Expected like Keele",
+			validate: (value) => validInput2(value, /^[A-Za-z]+$/)}
+	];
 
 	const [isBasicMode, setBasicMode] = useState("Basic Mode");
 	const [possibleCourseDraft, setPossibleCourseDraft] = useState("");
@@ -65,7 +85,7 @@ export default function ConfigPanel({functionsAndUseStates}) {
 
 	return (
 		<div className="config-panel">
-			<div className="config-scroll-panel">
+			<section className="top-bar">
 				<label className="config-complexity-wrapper">
 					<input 
 						className="config-complexity-button"
@@ -81,6 +101,12 @@ export default function ConfigPanel({functionsAndUseStates}) {
 					<span className="round-slider"></span>
 					<span className="toggle-label">{isBasicMode}</span>
 				</label>
+
+				{scheduleError && (
+					<span className="schedule-error-message">{scheduleError}</span>
+				)}
+			</section>
+			<div className="config-scroll-panel">
 
 				<section className="config-section">
 					<p className="config-heading">Courses</p>
@@ -132,37 +158,47 @@ export default function ConfigPanel({functionsAndUseStates}) {
 						onRemove={removeModifiedCourseData}
 						onFieldChange={updateModifiedCourseData}
 						addPlaceholder="Course code, e.g. MATH 1014"
+						touched={touched}
+						onTouch={onTouch}
+						onUntouch={onUntouch}
+						validateAdd={(value) => validInput6(value, /^[A-Z]+$/, 
+															/^\d+$/, 4, 4, " ")}
 						nested={{
 							label: "Schedule (sections)",
-							addPlaceholder: "Section letter, e.g. A",
 							getEntries: (course) => course.schedule,
-							onAdd: addChangedSection,
-							onRemove: removeChangedSection,
+							onAdd: addModifiedSection,
+							onRemove: removeModifiedSection,
 							onFieldChange: updateSectionField,
+							addPlaceholder: "Section letter, e.g. A",
 							fields: SECTION_OVERRIDE_FIELDS,
+							validateAdd: (value) => validInput2(value, /^[A-Z]+$/),
 							nested: {
 								label: "Classes",
-								addPlaceholder: "Class name, e.g. LECT 01",
 								getEntries: (section) => section.classes,
-								onAdd: addChangedClass,
-								onRemove: removeChangedClass,
-								onFieldChange: updateChangedClass,
+								onAdd: addModifiedClass,
+								onRemove: removeModifiedClass,
+								onFieldChange: updateModifiedClass,
+								addPlaceholder: "Class name, e.g. LECT 01",
+								validateAdd: (value) => validInput6(value, /^[A-Z]$/,
+																	/^\d+$/, 4, 2, " "),
 								fields: CLASS_OVERRIDE_FIELDS,
 								nested: {
 									label: "Sessions",
 									addPlaceholder: "Weekday, e.g. M",
 									getEntries: (curClass) => curClass.timeslot,
-									onAdd: addChangedSession,
-									onRemove: removeChangedClassSession,
-									onFieldChange: updateChangedClassSession,
+									onAdd: addModifiedSession,
+									onRemove: removeModifiedClassSession,
+									onFieldChange: updateModifiedClassSession,
 									fields: SESSION_OVERRIDE_FIELDS,
+									validateAdd: (value) => validInput2(value, 
+																		/^[A-Z]$/),
 									nested: null
 								}
 							}
 						}}
-					/>
+				/>
 
-				</section>
+			</section>
 
 				<div className="section-divider"/>
 
@@ -200,6 +236,9 @@ export default function ConfigPanel({functionsAndUseStates}) {
 						onChange={setMaxCoursesPerTerm}
 						min={1}
 						max={8}
+						touched={touched}
+						onTouch={onTouch}
+						onUntouch={onUntouch}
 					/>
 
 					<PreferenceGoalIntegerInput
@@ -210,6 +249,9 @@ export default function ConfigPanel({functionsAndUseStates}) {
 						value={requiredNumReviews}
 						onChange={setRequiredNumReviews}
 						min={0}
+						touched={touched}
+						onTouch={onTouch}
+						onUntouch={onUntouch}
 					/>
 
 					<PreferenceGoalIntegerInput
@@ -222,6 +264,9 @@ export default function ConfigPanel({functionsAndUseStates}) {
 						min={0}
 						max={5}
 						step={0.1}
+						touched={touched}
+						onTouch={onTouch}
+						onUntouch={onUntouch}
 					/>
 				</section>
 
@@ -302,6 +347,9 @@ export default function ConfigPanel({functionsAndUseStates}) {
 						onChange={setCommuteTimes}
 						min={0}
 						max={1440}
+						touched={touched}
+						onTouch={onTouch}
+						onUntouch={onUntouch}
 					/>
 				</section>
 			</div>
@@ -337,7 +385,15 @@ export default function ConfigPanel({functionsAndUseStates}) {
 
 
 const PreferenceGoalIntegerInput = ({id, className, label, type, value, 
-									onChange, min, max, step}) => {
+									onChange, min, max, step, touched, onTouch, 
+									onUntouch}) => {
+	const isInvalid = (min !== undefined && value < min) || 
+					  (max !== undefined && value > max);
+	const handleChange = (e) => {
+		onUntouch(id);
+		onChange(Number(e.target.value));
+	}
+	const error = touched[id] && isInvalid;
 	return (
 		<div>
 			<label className="config-label" htmlFor={id}>{label}</label>
@@ -346,11 +402,14 @@ const PreferenceGoalIntegerInput = ({id, className, label, type, value,
 				className={className}
 				type={type}
 				value={value}
-				onChange={(e) => onChange(Number(e.target.value))}
+				onChange={handleChange}
 				min={min}
 				max={max}
 				step={step}
+				aria-invalid={error}
+				onBlur={() => onTouch(id)}
 			/>
+			{error && max !== undefined && onChange(max)}
 		</div>
 	);
 }
