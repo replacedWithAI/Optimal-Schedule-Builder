@@ -17,7 +17,7 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 		setScheduleError(null);
 		try {
 			console.log(buildPayload())
-			// const apiURL = new URL(`${import.meta.env.VITE_AZUREURL}/calculate`);
+			// const apiURL = new URL(`${import.meta.env.VITE_API_URL}/calculate`);
 			
 			// const response = await fetch(apiURL, {
 			// 	method: "POST",

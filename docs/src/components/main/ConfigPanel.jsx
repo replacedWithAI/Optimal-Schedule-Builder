@@ -24,6 +24,7 @@ export default function ConfigPanel({functionsAndUseStates}) {
 		scheduleError,
 
 		validInput2, validInput3, validInput5, validInput6,
+		validCourse, validSection, validClass, validSession,
 		addCourses, removeCourse, 
 
         addModifiedCourseData, removeModifiedCourseData, updateModifiedCourseData,
@@ -53,18 +54,18 @@ export default function ConfigPanel({functionsAndUseStates}) {
 			validate: (value) => (!value && /^[A-Z0-9]+$/.test(value) && 
 			value.length <= 3)},
 		{ key: "section", label: "Section letter", errorMessage: "Expected like A, Z",
-			validate: (value) => validInput3(value, /^[A-Z]+$/, 1)},
+			validate: (value) => validSection(value)},
 		{ key: "professor", label: "Professor" }
 	];
 
 	const CLASS_OVERRIDE_FIELDS = [{ key: "name", label: "Class name", 
 		errorMessage: "Expected like LECT 01",
-		validate: (value) => validInput6(value, /^[A-Z]+$/, /^\d+$/, 4, 2, " ")
+		validate: (value) => validClass(value)
 	 }];
 
 	const SESSION_OVERRIDE_FIELDS = [
 		{ key: "weekday", label: "Weekday (M/T/W/R/F)", errorMessage: "Expected like M, R",
-			validate: (value) => validInput3(value, /^[A-Z]+$/, 1)},
+			validate: (value) => validSession(value)},
 		{ key: "time (24:00)", label: "Time", errorMessage: "Expected like 13:11",
 			validate: (value) => validInput5(value, /^\d+$/, 2, 2, ":"
 		)},
@@ -243,12 +244,13 @@ export default function ConfigPanel({functionsAndUseStates}) {
 
 					<PreferenceGoalIntegerInput
 						id="required-reviews-input"
-						className="PreferenceGoalIntegerInput"
+						className="config-number"
 						label="Min reviews before trusting a rating"
 						type="number"
 						value={requiredNumReviews}
 						onChange={setRequiredNumReviews}
 						min={0}
+						max={100}
 						touched={touched}
 						onTouch={onTouch}
 						onUntouch={onUntouch}
@@ -256,9 +258,9 @@ export default function ConfigPanel({functionsAndUseStates}) {
 
 					<PreferenceGoalIntegerInput
 						id="default-RMP-input"
-						className="config-slider"
+						className="config-number"
 						label="Default rating for unknown professors"
-						type="range"
+						type="number"
 						value={defaultRMPScore}
 						onChange={setDefaultRMPScore}
 						min={0}
