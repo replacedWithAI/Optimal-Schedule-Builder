@@ -11,8 +11,10 @@ import os
 import httpx 
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
+import secrets
 
-from fastapi import APIRouter, Cookie, HTTPException, Response, Request
+from fastapi import APIRouter, Cookie, Header, HTTPException, Response, Request
+from fastapi import Depends               
 from fastapi.responses import RedirectResponse
 from jose import JWTError, jwt
 from google.oauth2 import id_token
@@ -25,6 +27,7 @@ GOOGLE_CLIENT_ID = os.environ["GOOGLE_CLIENT_ID"]
 GOOGLE_CLIENT_SECRET = os.environ["GOOGLE_CLIENT_SECRET"]
 JWT_SECRET = os.environ["JWT_SECRET"]
 FRONTEND_URL = os.environ["FRONTEND_URL"]
+WORKER_SECRET = os.environ["WORKER_SECRET"]
 
 ALLOWED_DOMAINS = ["my.yorku.ca", "yorku.ca"]
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
@@ -33,7 +36,14 @@ JWT_ALGORITHM = "HS256"
 JWT_EXPIRY_HOURS = 8
 SESSION_COOKIE = "session"
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+
+def require_worker(x_backend_secret: Annotated[str | None, Header()] = None) -> None:
+    """Rejects requests that didn't come through the Cloudflare Worker proxy"""
+    if not x_backend_secret or not secrets.compare_digest(x_backend_secret, WORKER_SECRET):
+        raise HTTPException(status_code=403, detail="Direct access not allowed")
+
+
+router = APIRouter(prefix="/auth", tags=["auth"], dependencies=[Depends(require_worker)])
 
 
 @router.get("/login")
@@ -87,7 +97,7 @@ async def callback(code: str, request: Request, response: Response):
 def logout(response: Response):
     response.delete_cookie(SESSION_COOKIE, path="/")
     return {"status": "logged out"}
-
+    
 
 def require_auth(session: Annotated[str | None, Cookie()] = None) -> dict:
     """Added to FastAPI functions. \n
@@ -108,9 +118,7 @@ def require_auth(session: Annotated[str | None, Cookie()] = None) -> dict:
 
 def _get_redirect_uri(request: Request) -> str:
     """ Builds and reutrns the callback URL """
-
-    base_url = str(request.base.url).rstrip("/")
-    return f"{base_url}/auth/callback"
+    return f"{os.environ["PUBLIC_PROXY_URL"]}/auth/callback"
 
 
 async def _exchange_auth_code_for_id_token(code: str, redirect_uri: str) -> str:
@@ -123,14 +131,14 @@ async def _exchange_auth_code_for_id_token(code: str, redirect_uri: str) -> str:
                 "client_id": GOOGLE_CLIENT_ID,
                 "client_secret": GOOGLE_CLIENT_SECRET,
                 "redirect_uri": redirect_uri,
-                "grant_type": "authorization code"
+                "grant_type": "authorization_code"
             }
         )
 
     if resp.status_code != 200:
         raise HTTPException(
             status_code=502,
-            detail=f"Couldn't get Google token: {resp.text}"
+            detail=f"Couldn't get Google token: {resp.text}. Status: {resp.status_code}"
         )
 
     return resp.json()["id_token"]

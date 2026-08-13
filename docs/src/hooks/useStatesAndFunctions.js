@@ -24,12 +24,48 @@ export default function functionsAndUseStates(){
     const [objectivePriority, setObjectivePriority] = useState([]);
     const [commuteTimes, setCommuteTimes] = useState(0);
 
-    // schedule results---------------------------------------------------------
-    const [scheduleResult, setScheduleResult] = useState(null);
+    // setting errors/results---------------------------------------------------
 	const [scheduleError, setScheduleError] = useState(null);
+    const [touched, setTouched] = useState({});
 
     const sanitizeInput = (input) => input?.trim().toUpperCase() || "";
     
+    const validInput2 = ((string, regex) => 
+        (!string || regex.test(string))
+    );
+
+    const validInput3 = ((string, regex, length) => 
+        (!string || regex.test(string) || string.length === length)
+    );
+    
+    
+    const validInput5 = ((string, regex, firstLength, secondLength, 
+            seperator) => {
+        const seperatorIndex = string.indexOf(seperator);
+        const firstString = string.substring(0, seperatorIndex);
+        const secondString = string.substring(dotIndex + 1);
+
+        const validFirst = regex.test(firstString) && firstString.length === firstLength;
+        const validSecond = regex.test(secondString) && secondString.length === 
+                                                                    secondLength;
+
+        return validFirst && validSecond && dotIndex !== -1;
+    });
+
+
+    const validInput6 = ((string, regex, regex2, firstLength, secondLength, 
+                                       seperator) => {
+        const seperatorIndex = string.indexOf(seperator);
+        const firstString = string.substring(0, seperatorIndex);
+        const secondString = string.substring(seperatorIndex + 1);
+
+        const validFirst = regex.test(firstString) && firstString.length === firstLength;
+        const validSecond = regex2.test(secondString) && secondString.length === 
+                                                                    secondLength;
+
+        return validFirst && validSecond && seperatorIndex !== -1;
+    });
+
     //adding courses in pinnedCourses and possibleCourses in ConfigPanel
 	const addCourses = (course, setCourse, currentInput, setCurrentInput) => {
 		const items = currentInput.toUpperCase().split(/\r?\n/);
@@ -122,7 +158,8 @@ export default function functionsAndUseStates(){
         }));
     };
 
-    // logic for modifying course data----------------------------------------------
+
+    // logic for modifying course data--------------------------------------------
 
     const EMPTY_COURSE_OVERRIDE = {
         faculty: '',
@@ -184,7 +221,7 @@ export default function functionsAndUseStates(){
     };
 
 
-    const addChangedSection = ([code], rawLetter) => {
+    const addModifiedSection = ([code], rawLetter) => {
         const letter = sanitizeInput(rawLetter);
         if (!letter || modifiedCourseData?.[code]?.schedule?.[letter]) return;
         setModifiedCourseData(produce((draft) => {
@@ -193,7 +230,7 @@ export default function functionsAndUseStates(){
     };
 
 
-    const removeChangedSection = ([code], letter) => {
+    const removeModifiedSection = ([code], letter) => {
         setModifiedCourseData(produce((draft) => {
             if (draft[code]?.schedule) delete draft[code].schedule[letter];
         }));
@@ -208,7 +245,7 @@ export default function functionsAndUseStates(){
     };
 
 
-    const addChangedClass = ([code, letter,], rawClassName) => {
+    const addModifiedClass = ([code, letter,], rawClassName) => {
         const className = sanitizeInput(rawClassName);
         if (!className || 
             modifiedCourseData[code]?.schedule?.[letter]?.classes?.[className]) return;
@@ -218,7 +255,7 @@ export default function functionsAndUseStates(){
     };
 
 
-    const removeChangedClass = ([code, letter], className) => {
+    const removeModifiedClass = ([code, letter], className) => {
         setModifiedCourseData(produce((draft) => {
             if (draft[code]?.schedule?.[letter]?.classes) 
                 delete draft[code].schedule[letter].classes[className];
@@ -226,14 +263,14 @@ export default function functionsAndUseStates(){
     };
 
 
-    const updateChangedClass = ([code, letter], className, fieldKey, value) => {
+    const updateModifiedClass = ([code, letter], className, fieldKey, value) => {
         setModifiedCourseData(produce((draft) => {
             draft[code].schedule[letter].classes[className][fieldKey] = value;
         }));
     };
 
 
-    const addChangedSession = ([code, letter, className], rawWeekday) => {
+    const addModifiedSession = ([code, letter, className], rawWeekday) => {
         const weekday = sanitizeInput(rawWeekday);
         const currClass = modifiedCourseData[code]?.schedule?.[letter]?.classes?.[className];
         if (!weekday || currClass?.timeslot?.[weekday]) return;
@@ -244,14 +281,14 @@ export default function functionsAndUseStates(){
     };
 
 
-    const removeChangedClassSession = ([code, letter, className], weekday) => {
+    const removeModifiedClassSession = ([code, letter, className], weekday) => {
         setModifiedCourseData(produce((draft) => {
             delete draft[code].schedule[letter].classes[className].timeslot[weekday];
         }));
     };
 
 
-    const updateChangedClassSession = ([code, letter, className], weekday, 
+    const updateModifiedClassSession = ([code, letter, className], weekday, 
                                         fieldKey, value) => {
         setModifiedCourseData(produce((draft) => {
             draft[code].schedule[letter].classes[className].timeslot[weekday]
@@ -291,6 +328,25 @@ export default function functionsAndUseStates(){
 	const removeObjective = (objective) => {
 		setObjectivePriority((prev) => (prev.filter((o) => o !== objective)));
 	};
+
+    // to render errors when users are done editing-----------------------------
+
+    const onTouch = (fieldId) => {
+        setTouched((prev) => {
+            if (prev[fieldId]) return prev;
+            return { ...prev, [fieldId]: true };
+        });
+    };
+
+
+    const onUntouch = (fieldId) => {
+        setTouched((prev) => {
+            if (!prev[fieldId]) return prev; // Optimization: avoid re-rendering if already untouched
+            const next = { ...prev };
+            delete next[fieldId];
+            return next;
+        });
+    };
 
     // Formatting useState vars to send to backend------------------------------
 
@@ -376,21 +432,22 @@ export default function functionsAndUseStates(){
         objectivePriority, setObjectivePriority,
         commuteTimes, setCommuteTimes,
 
-        scheduleResult, setScheduleResult,
         scheduleError, setScheduleError,
+        touched, setTouched,
 
+        validInput2, validInput3, validInput5, validInput6,
         addCourses, removeCourse,
         addPinnedTerm, addPinnedSectionLetter, addPinnedClassName,
         removePinnedCoursePart,
 
         addModifiedCourseData, removeModifiedCourseData, updateModifiedCourseData,
-        addChangedSection, removeChangedSection, updateSectionField,
-        addChangedClass, removeChangedClass, updateChangedClass,
-        addChangedSession, removeChangedClassSession, updateChangedClassSession,
+        addModifiedSection, removeModifiedSection, updateSectionField,
+        addModifiedClass, removeModifiedClass, updateModifiedClass,
+        addModifiedSession, removeModifiedClassSession, updateModifiedClassSession,
 
         toggleCampus,
         moveObjective, addObjective, removeObjective,
 
-        buildPayload
+        onTouch, onUntouch, buildPayload
     };
 }

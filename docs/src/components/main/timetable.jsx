@@ -5,12 +5,16 @@ import interactionPlugin from '@fullcalendar/interaction';
 import './timetable.css';
 
 export default function FetchSchedule( {functionsAndUseStates} ) {
-	const {setPersonalTimes, onResult, onError, buildPayload} = functionsAndUseStates;
+	const {setPersonalTimes, scheduleError, 
+		setScheduleError, buildPayload} = functionsAndUseStates;
 
 	const [events, setEvents] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
 	const busyTimes = useRef({});
 
 	const plotSchedule = async () => {
+		setIsLoading(true);
+		setScheduleError(null);
 		try {
 			console.log(buildPayload())
 			// const apiURL = new URL(`${import.meta.env.VITE_AZUREURL}/calculate`);
@@ -28,7 +32,7 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 
 			// if (!response.ok) {
 			// 	console.error(`API access error; status ${response.status}`);
-			// 	onError?.(`Request failed; status ${response.status}`)
+			// 	setScheduleError(`Request failed; status ${response.status}`)
 			// 	return;
 			// }
 
@@ -39,7 +43,9 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 			// setEvents((prevEvents) => [...prevEvents, ...newEvents]);
 		} catch (error) {
 			console.log(`Error: ${error}`);
-			onError?.(error.message ?? String(error));
+			setScheduleError(error.message ?? String(error));
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -105,8 +111,7 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 
 		setEvents((prevEvents) => {
 			const updatedEvents = [...prevEvents, newBusyTime];
-			recalculateBusyTimes(updatedEvents, targetDay);
-			return updatedEvents;			
+			return recalculateBusyTimes(updatedEvents, targetDay);
 		});
 
 		cellInfo.view.calendar.unselect(); // try comment out
@@ -127,8 +132,7 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 
 				const targetDay = targetEvent?.resourceId 
 				const updatedEvents = prevEvents.filter((e) => e.id !== targetId);
-				recalculateBusyTimes(updatedEvents, targetDay);
-				return updatedEvents;
+				return recalculateBusyTimes(updatedEvents, targetDay);
 			});
 			console.log("Deleted a busy time");
 		} else {
@@ -138,14 +142,19 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 
 
 	const recalculateBusyTimes = (updatedEvents, targetDay) => {
-		const todayBusys = updatedEvents.filter((e) => 
-												e.extendedProps?.isSelectionBlock
-												&& e.resourceId === targetDay);
+		const otherEvents = updatedEvents.filter(
+			(e) => !(e.extendedProps?.isSelectionBlock && e.resourceId === targetDay)
+		);
+		const todayBusys = updatedEvents.filter(
+			(e) => e.extendedProps?.isSelectionBlock && e.resourceId === targetDay
+		);
+		
 
 		if (todayBusys.length === 0) {
 			delete busyTimes.current[targetDay];
+			setPersonalTimes?.({...busyTimes.current});
 			console.log(`Deleted busy times for day: ${targetDay}`);
-			return;
+			return otherEvents;
 		}
 
 		todayBusys.sort((a, b) => new Date(a.start) - new Date(b.start));
@@ -160,15 +169,18 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 					currBusy.end = nextBusy.end;
 				}
 			} else {
-				mergedBusys.push([toMinutes(currBusy.start), toMinutes(currBusy.end)]);
+				mergedBusys.push(currBusy);
 				currBusy = {...nextBusy};
 			}
 		}
-		mergedBusys.push([toMinutes(currBusy.start), toMinutes(currBusy.end)]);
+		mergedBusys.push(currBusy);
 
-		busyTimes.current[targetDay] = mergedBusys;
-		setPersonalTimes?.({...busyTimes.current});
+		busyTimes.current[targetDay] = mergedBusys.map((busyTime) => 
+			[toMinutes(busyTime.start), toMinutes(busyTime.end)]);
+		
+		setPersonalTimes?.({...busyTimes.current[targetDay]});
 		console.log(`Updated busy times for day ${targetDay}:`, busyTimes.current);
+		return [...otherEvents, ...mergedBusys];
 	};
 	return (
 		<div className="timetable-container">
@@ -206,50 +218,21 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 					]}
 					schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
 				/>
+				<div className="loading-wrapper">
+					<button 
+						id="plot-timetable-button" 
+						onClick={plotSchedule}
+						disabled={isLoading}
+					>
+						{isLoading ? "Loading..." : "Generate schedule"}
+					</button>
 
-				<button id="plot-timetable-btn" onClick={plotSchedule}>
-					Generate schedule
-				</button>
+					{isLoading && 
+					<span className="loading-message">
+						Loading timetable...
+					</span>}
+				</div>
 			</div>
 		</div>
 	);
 }
-
-/*
-const tryMergeBusy = (todayBusys, otherItems) => {
-		todayBusys.sort((a, b) => new Date(a.start) - new Date(b.start));
-
-		const processedBusys = [];
-		let currBusy = {...todayBusys[0]};
-
-		let weekdayNumber = todayBusys[0].resourceId;
-		busyTimes.current[weekdayNumber] = [];
-		
-		for (let i = 1; i < todayBusys.length; i++) {
-			const nextBusy = todayBusys[i];
-			
-			const overlaps = new Date(nextBusy.start) <= new Date(currBusy.end); 
-			if (overlaps) {
-				const isSubset = new Date(nextBusy.end) < new Date(currBusy.end);
-				currBusy.end = isSubset ? currBusy.end : nextBusy.end;
-			} else {
-				processedBusys.push(currBusy);
-				busyTimes.current[weekdayNumber].push([
-														toMinutes(currBusy.start),
-														toMinutes(currBusy.end)
-													  ]);
-
-				currBusy = {...nextBusy};
-			}
-		}
-		processedBusys.push(currBusy);
-		busyTimes.current[weekdayNumber].push([
-										toMinutes(currBusy.start),
-										toMinutes(currBusy.end)
-										]);
-
-		console.log(busyTimes);
-		
-		return [...otherItems, ...processedBusys];
-	}
-		*/
