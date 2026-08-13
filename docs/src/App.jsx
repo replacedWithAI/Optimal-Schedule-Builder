@@ -1,6 +1,6 @@
 import useAuth from "./hooks/auth_context.jsx";
 import AuthProvider from "./hooks/AuthProvider.jsx";
-import LoginPage from "./pages/login_page.jsx"; 
+import LoginPage from "./pages/LoginPage.jsx"; 
 import MainPage from "./pages/MainPage.jsx";
 import "./app.css";
 
