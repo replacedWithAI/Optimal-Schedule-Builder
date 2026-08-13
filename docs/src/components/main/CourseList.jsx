@@ -20,7 +20,9 @@ export default function CourseList({functionsAndUseStates}) {
         possibleCourses, setPossibleCourses,
         pinnedCourses, setPinnedCourses,
         pinnedCourseParts,
+        touched, onTouch, onUntouch,
         
+        validSection, validClass,
         removeCourse, 
         addPinnedTerm, addPinnedSectionLetter, addPinnedClassName,
         removePinnedCoursePart,
@@ -129,6 +131,9 @@ export default function CourseList({functionsAndUseStates}) {
                                                                        ["sections"])}
                                             onFieldChange={() =>{}}
                                             addPlaceholder={"Section letter, e.g. A"}
+                                            touched={touched}
+                                            onTouch={onTouch}
+                                            onUntouch={onUntouch}
                                             nested={{
                                                 label: "Classes",
                                                 addPlaceholder: "Class name, e.g."

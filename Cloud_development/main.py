@@ -1,9 +1,9 @@
 import sys
 from pathlib import Path
 
-parent_dir = str(Path(__file__).resolve().parent.parent)
-if parent_dir not in sys.path:
-    sys.path.insert(0, parent_dir)
+scheduler_dir = str(Path(__file__).resolve().parent.parent)+ "/Scheduler"
+if scheduler_dir not in sys.path:
+    sys.path.append(scheduler_dir)
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,8 +14,8 @@ from slowapi.errors import RateLimitExceeded
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from Scheduler.program import calculate_schedule
-from Cloud_development.authenticate import require_auth, router as auth_router
+from program import calculate_schedule
+from authenticate import require_auth, require_worker, router as auth_router
 
 
 def get_global_key(request: Request) -> str:
@@ -28,7 +28,7 @@ app.add_middleware(SlowAPIMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://replacedwithai.github.io/Optimal-Schedule-Builder/"],
+    allow_origins=["https://replacedwithai.github.io"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -46,14 +46,10 @@ app.add_exception_handler(ValueError, error_handler)
 limiter._error_handler = error_handler
 app.include_router(auth_router)
 
-@app.get("/status")
-@limiter.limit("1/5seconds", key_func=get_remote_address)
-async def connect(request: Request) -> dict:
-    return {"status": "connected"}
-
 
 @app.get("/me")
-async def get_user_info(user: dict = Depends(require_auth)) -> dict:
+async def get_user_info(user: dict = Depends(require_auth), 
+                        _: None = Depends(require_worker)) -> dict:
     """
     Returns logged-in user info.
     Used by frontend to check is session cookie is valid
@@ -66,7 +62,8 @@ async def get_user_info(user: dict = Depends(require_auth)) -> dict:
 @limiter.limit("1/5seconds", key_func=get_remote_address)
 async def call_solver(request: Request, 
                       payload: dict, 
-                      user: dict = Depends(require_auth),) -> dict:
+                      user: dict = Depends(require_auth),
+                      _: None = Depends(require_worker)) -> dict:
     """Calls program.py in Scheduler folder"""
 
     best_courses = calculate_schedule(payload)

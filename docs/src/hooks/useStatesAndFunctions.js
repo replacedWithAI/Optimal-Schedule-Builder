@@ -24,29 +24,120 @@ export default function functionsAndUseStates(){
     const [objectivePriority, setObjectivePriority] = useState([]);
     const [commuteTimes, setCommuteTimes] = useState(0);
 
-    // schedule results---------------------------------------------------------
-    const [scheduleResult, setScheduleResult] = useState(null);
+    // setting errors/results---------------------------------------------------
 	const [scheduleError, setScheduleError] = useState(null);
+    const [touched, setTouched] = useState({});
 
     const sanitizeInput = (input) => input?.trim().toUpperCase() || "";
     
-    //adding courses in pinnedCourses and possibleCourses in ConfigPanel
-	const addCourses = (course, setCourse, currentInput, setCurrentInput) => {
+    const validInput2 = ((string, regex) => 
+        (!string || regex.test(string))
+    );
+
+    const validInput3 = ((string, regex, length) => 
+        (!string || regex.test(string) || string.length === length)
+    );
+    
+    
+    const validInput5 = ((string, regex, firstLength, secondLength, 
+            seperator) => {
+        const seperatorIndex = string.indexOf(seperator);
+        const firstString = string.substring(0, seperatorIndex);
+        const secondString = string.substring(dotIndex + 1);
+
+        const validFirst = regex.test(firstString) && firstString.length === firstLength;
+        const validSecond = regex.test(secondString) && secondString.length === 
+                                                                    secondLength;
+
+        return validFirst && validSecond && dotIndex !== -1;
+    });
+
+
+    const validInput6 = ((string, regex, regex2, firstLength, secondLength, 
+                                       seperator) => {
+        const seperatorIndex = string.indexOf(seperator);
+        const firstString = string.substring(0, seperatorIndex);
+        const secondString = string.substring(seperatorIndex + 1);
+
+        const validFirst = regex.test(firstString) && firstString.length === firstLength;
+        const validSecond = regex2.test(secondString) && secondString.length === 
+                                                                    secondLength;
+
+        return validFirst && validSecond && seperatorIndex !== -1;
+    });
+
+    // definitions of valid courses/sections/classes/sessions-------------------
+
+    const validCourse = (course) => {
+        if (!item || item.length < 8) return;
+
+        const words = item.split(" ");
+        if (words.length < 2) return;
+
+        const department = words[0];
+        const code = words[1];
+        
+        return /^[A-Z]+$/.test(department) &&
+        /^\d+$/.test(code) && !courses.includes(item)
+        && department.length >= 3 && department.length 
+        <= 4 && code.length === 4;
+    };
+
+
+    const validSection = (section) => {
+        validInput3(value, /^[A-Z]+$/, 1);
+    };
+
+
+    const validClass = (currClass) => {
+        validate: (value) => validInput6(value, /^[A-Z]+$/, /^\d+$/, 4, 2, " ");
+    };
+
+
+    const validSession = (validSession) => {
+        validInput3(value, /^[A-Z]+$/, 1);
+    };
+
+    //adding courses in pinnedCourses and possibleCourses in ConfigPanel--------
+	const addCourses = (courses, setCourse, currentInput, setCurrentInput) => {
 		const items = currentInput.toUpperCase().split(/\r?\n/);
-		const currentArray = course;
 
 		const validItems = items.map(item => item.trim())
-								.filter(item => item && item.length >= 9 &&
-										!currentArray.includes(item))
-								.map(item => item.substring(0, 9));
+                                .map(item => {
+                                    const slashIndex = item.indexOf("/");
+                                    return slashIndex !== -1 ? 
+                                    item.substring(slashIndex + 1) : item})
+                                .map(item => {
+                                    const words = item.split(" ");
+
+                                    const department = words[0];
+                                    const code = words[1];
+
+                                    return words.length >= 2 ? 
+                                    `${department} ${code}` : item;
+                                })
+								.filter(item => {
+                                    if (!item || item.length < 8) return;
+
+                                    const words = item.split(" ");
+                                    if (words.length < 2) return;
+
+                                    const department = words[0];
+                                    const code = words[1];
+                                    
+                                    return /^[A-Z]+$/.test(department) &&
+                                    /^\d+$/.test(code) && !courses.includes(item)
+                                    && department.length >= 3 && department.length 
+                                    <= 4 && code.length === 4});
 
 		if (validItems.length === 0) {
+            console.log("No valid courses written");
 			setCurrentInput('');
 			return;
 		}
 		
 		console.log(`Added courses: ${validItems}`);
-		setCourse([...currentArray, ...validItems]);
+		setCourse([...courses, ...validItems]);
 		setCurrentInput('');
 	};
 
@@ -122,7 +213,8 @@ export default function functionsAndUseStates(){
         }));
     };
 
-    // logic for modifying course data----------------------------------------------
+
+    // logic for modifying course data--------------------------------------------
 
     const EMPTY_COURSE_OVERRIDE = {
         faculty: '',
@@ -184,7 +276,7 @@ export default function functionsAndUseStates(){
     };
 
 
-    const addChangedSection = ([code], rawLetter) => {
+    const addModifiedSection = ([code], rawLetter) => {
         const letter = sanitizeInput(rawLetter);
         if (!letter || modifiedCourseData?.[code]?.schedule?.[letter]) return;
         setModifiedCourseData(produce((draft) => {
@@ -193,7 +285,7 @@ export default function functionsAndUseStates(){
     };
 
 
-    const removeChangedSection = ([code], letter) => {
+    const removeModifiedSection = ([code], letter) => {
         setModifiedCourseData(produce((draft) => {
             if (draft[code]?.schedule) delete draft[code].schedule[letter];
         }));
@@ -208,7 +300,7 @@ export default function functionsAndUseStates(){
     };
 
 
-    const addChangedClass = ([code, letter,], rawClassName) => {
+    const addModifiedClass = ([code, letter,], rawClassName) => {
         const className = sanitizeInput(rawClassName);
         if (!className || 
             modifiedCourseData[code]?.schedule?.[letter]?.classes?.[className]) return;
@@ -218,7 +310,7 @@ export default function functionsAndUseStates(){
     };
 
 
-    const removeChangedClass = ([code, letter], className) => {
+    const removeModifiedClass = ([code, letter], className) => {
         setModifiedCourseData(produce((draft) => {
             if (draft[code]?.schedule?.[letter]?.classes) 
                 delete draft[code].schedule[letter].classes[className];
@@ -226,14 +318,14 @@ export default function functionsAndUseStates(){
     };
 
 
-    const updateChangedClass = ([code, letter], className, fieldKey, value) => {
+    const updateModifiedClass = ([code, letter], className, fieldKey, value) => {
         setModifiedCourseData(produce((draft) => {
             draft[code].schedule[letter].classes[className][fieldKey] = value;
         }));
     };
 
 
-    const addChangedSession = ([code, letter, className], rawWeekday) => {
+    const addModifiedSession = ([code, letter, className], rawWeekday) => {
         const weekday = sanitizeInput(rawWeekday);
         const currClass = modifiedCourseData[code]?.schedule?.[letter]?.classes?.[className];
         if (!weekday || currClass?.timeslot?.[weekday]) return;
@@ -244,14 +336,14 @@ export default function functionsAndUseStates(){
     };
 
 
-    const removeChangedClassSession = ([code, letter, className], weekday) => {
+    const removeModifiedClassSession = ([code, letter, className], weekday) => {
         setModifiedCourseData(produce((draft) => {
             delete draft[code].schedule[letter].classes[className].timeslot[weekday];
         }));
     };
 
 
-    const updateChangedClassSession = ([code, letter, className], weekday, 
+    const updateModifiedClassSession = ([code, letter, className], weekday, 
                                         fieldKey, value) => {
         setModifiedCourseData(produce((draft) => {
             draft[code].schedule[letter].classes[className].timeslot[weekday]
@@ -292,21 +384,45 @@ export default function functionsAndUseStates(){
 		setObjectivePriority((prev) => (prev.filter((o) => o !== objective)));
 	};
 
+    // to render errors when users are done editing-----------------------------
+
+    const onTouch = (fieldId) => {
+        setTouched((prev) => {
+            if (prev[fieldId]) return prev;
+            return { ...prev, [fieldId]: true };
+        });
+    };
+
+
+    const onUntouch = (fieldId) => {
+        setTouched((prev) => {
+            if (!prev[fieldId]) return prev; // Optimization: avoid re-rendering if already untouched
+            const next = { ...prev };
+            delete next[fieldId];
+            return next;
+        });
+    };
+
     // Formatting useState vars to send to backend------------------------------
 
     const buildPinnedSectionsClassesTerms = () => {
-        produce(({}, draft) => {
+        return produce({}, draft => {
             for (const [courseCode, data] of Object.entries(pinnedCourseParts)) {
-                if (data.terms.length === 0 && data.sections.length === 0) continue
+                const terms = data.terms || [];
+                const sections = data.sections || {};
+                const sectionEntries = Object.entries(sections);
+
+                if (terms.length === 0 && sectionEntries.length === 0) continue
                 draft[courseCode] = {};
 
-                draft[courseCode]["terms"] = data.terms || [];
+                draft[courseCode]["terms"] = terms || [];
 
-                if (data.sections.length)
-                    for (const [sectionLetter, classObj] of Object.
-                                                    entries(data.sections)) {
-                    draft[courseCode]["section classes"] = Object.keys(classObj) || [];
+                const sectionClasses = {};
+                for (const [sectionLetter, classObj] of sectionEntries) {
+                    sectionClasses[sectionLetter] = Object.keys(classObj || {});
                 }
+
+                draft[courseCode]["section classes"] = sectionClasses;
             }
         });
     };
@@ -331,7 +447,7 @@ export default function functionsAndUseStates(){
                 const nestedCleanedObject = cleanEmptyNodes(value);
                 if (Object.keys(nestedCleanedObject).length > 0)
                     result[key] = nestedCleanedObject
-            } else res[key] = value;
+            } else result[key] = value;
         }
 
         return result;
@@ -341,7 +457,7 @@ export default function functionsAndUseStates(){
     const buildPayload = () => ({
         "courses": {
             "possible courses": possibleCourses,
-            "pinned section classes terms": buildPinnedSectionsClassesTerms,
+            "pinned section classes terms": buildPinnedSectionsClassesTerms(),
             "pinned courses": pinnedCourses,
             "changed course data": cleanEmptyNodes(modifiedCourseData)
 		},
@@ -376,21 +492,23 @@ export default function functionsAndUseStates(){
         objectivePriority, setObjectivePriority,
         commuteTimes, setCommuteTimes,
 
-        scheduleResult, setScheduleResult,
         scheduleError, setScheduleError,
-
+        touched, setTouched,
+        
+        validInput2, validInput3, validInput5, validInput6,
+        validCourse, validSection, validClass, validSession,
         addCourses, removeCourse,
         addPinnedTerm, addPinnedSectionLetter, addPinnedClassName,
         removePinnedCoursePart,
 
         addModifiedCourseData, removeModifiedCourseData, updateModifiedCourseData,
-        addChangedSection, removeChangedSection, updateSectionField,
-        addChangedClass, removeChangedClass, updateChangedClass,
-        addChangedSession, removeChangedClassSession, updateChangedClassSession,
+        addModifiedSection, removeModifiedSection, updateSectionField,
+        addModifiedClass, removeModifiedClass, updateModifiedClass,
+        addModifiedSession, removeModifiedClassSession, updateModifiedClassSession,
 
         toggleCampus,
         moveObjective, addObjective, removeObjective,
 
-        buildPayload
+        onTouch, onUntouch, buildPayload
     };
 }

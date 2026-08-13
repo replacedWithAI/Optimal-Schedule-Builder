@@ -19,6 +19,9 @@ const ConfigPanelTemplate = () => {
         functionsAndUseStates.setDefaultRMPScore(3.0);
         functionsAndUseStates.setObjectivePriority(["minimal dead times"]);
         functionsAndUseStates.setCommuteTimes(15);
+        functionsAndUseStates.setScheduleError(
+            "Reallllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll"
+            +"lllllllllllllllllllllllllllllllllllllllly long testing error");
     }, []);
 
     return (
