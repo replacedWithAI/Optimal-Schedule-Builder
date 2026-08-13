@@ -66,23 +66,78 @@ export default function functionsAndUseStates(){
         return validFirst && validSecond && seperatorIndex !== -1;
     });
 
-    //adding courses in pinnedCourses and possibleCourses in ConfigPanel
-	const addCourses = (course, setCourse, currentInput, setCurrentInput) => {
+    // definitions of valid courses/sections/classes/sessions-------------------
+
+    const validCourse = (course) => {
+        if (!item || item.length < 8) return;
+
+        const words = item.split(" ");
+        if (words.length < 2) return;
+
+        const department = words[0];
+        const code = words[1];
+        
+        return /^[A-Z]+$/.test(department) &&
+        /^\d+$/.test(code) && !courses.includes(item)
+        && department.length >= 3 && department.length 
+        <= 4 && code.length === 4;
+    };
+
+
+    const validSection = (section) => {
+        validInput3(value, /^[A-Z]+$/, 1);
+    };
+
+
+    const validClass = (currClass) => {
+        validate: (value) => validInput6(value, /^[A-Z]+$/, /^\d+$/, 4, 2, " ");
+    };
+
+
+    const validSession = (validSession) => {
+        validInput3(value, /^[A-Z]+$/, 1);
+    };
+
+    //adding courses in pinnedCourses and possibleCourses in ConfigPanel--------
+	const addCourses = (courses, setCourse, currentInput, setCurrentInput) => {
 		const items = currentInput.toUpperCase().split(/\r?\n/);
-		const currentArray = course;
 
 		const validItems = items.map(item => item.trim())
-								.filter(item => item && item.length >= 9 &&
-										!currentArray.includes(item))
-								.map(item => item.substring(0, 9));
+                                .map(item => {
+                                    const slashIndex = item.indexOf("/");
+                                    return slashIndex !== -1 ? 
+                                    item.substring(slashIndex + 1) : item})
+                                .map(item => {
+                                    const words = item.split(" ");
+
+                                    const department = words[0];
+                                    const code = words[1];
+
+                                    return words.length >= 2 ? 
+                                    `${department} ${code}` : item;
+                                })
+								.filter(item => {
+                                    if (!item || item.length < 8) return;
+
+                                    const words = item.split(" ");
+                                    if (words.length < 2) return;
+
+                                    const department = words[0];
+                                    const code = words[1];
+                                    
+                                    return /^[A-Z]+$/.test(department) &&
+                                    /^\d+$/.test(code) && !courses.includes(item)
+                                    && department.length >= 3 && department.length 
+                                    <= 4 && code.length === 4});
 
 		if (validItems.length === 0) {
+            console.log("No valid courses written");
 			setCurrentInput('');
 			return;
 		}
 		
 		console.log(`Added courses: ${validItems}`);
-		setCourse([...currentArray, ...validItems]);
+		setCourse([...courses, ...validItems]);
 		setCurrentInput('');
 	};
 
@@ -351,18 +406,23 @@ export default function functionsAndUseStates(){
     // Formatting useState vars to send to backend------------------------------
 
     const buildPinnedSectionsClassesTerms = () => {
-        produce(({}, draft) => {
+        return produce({}, draft => {
             for (const [courseCode, data] of Object.entries(pinnedCourseParts)) {
-                if (data.terms.length === 0 && data.sections.length === 0) continue
+                const terms = data.terms || [];
+                const sections = data.sections || {};
+                const sectionEntries = Object.entries(sections);
+
+                if (terms.length === 0 && sectionEntries.length === 0) continue
                 draft[courseCode] = {};
 
-                draft[courseCode]["terms"] = data.terms || [];
+                draft[courseCode]["terms"] = terms || [];
 
-                if (data.sections.length)
-                    for (const [sectionLetter, classObj] of Object.
-                                                    entries(data.sections)) {
-                    draft[courseCode]["section classes"] = Object.keys(classObj) || [];
+                const sectionClasses = {};
+                for (const [sectionLetter, classObj] of sectionEntries) {
+                    sectionClasses[sectionLetter] = Object.keys(classObj || {});
                 }
+
+                draft[courseCode]["section classes"] = sectionClasses;
             }
         });
     };
@@ -387,7 +447,7 @@ export default function functionsAndUseStates(){
                 const nestedCleanedObject = cleanEmptyNodes(value);
                 if (Object.keys(nestedCleanedObject).length > 0)
                     result[key] = nestedCleanedObject
-            } else res[key] = value;
+            } else result[key] = value;
         }
 
         return result;
@@ -397,7 +457,7 @@ export default function functionsAndUseStates(){
     const buildPayload = () => ({
         "courses": {
             "possible courses": possibleCourses,
-            "pinned section classes terms": buildPinnedSectionsClassesTerms,
+            "pinned section classes terms": buildPinnedSectionsClassesTerms(),
             "pinned courses": pinnedCourses,
             "changed course data": cleanEmptyNodes(modifiedCourseData)
 		},
@@ -434,8 +494,9 @@ export default function functionsAndUseStates(){
 
         scheduleError, setScheduleError,
         touched, setTouched,
-
+        
         validInput2, validInput3, validInput5, validInput6,
+        validCourse, validSection, validClass, validSession,
         addCourses, removeCourse,
         addPinnedTerm, addPinnedSectionLetter, addPinnedClassName,
         removePinnedCoursePart,

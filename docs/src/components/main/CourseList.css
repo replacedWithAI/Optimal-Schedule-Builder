@@ -96,6 +96,7 @@
 
 .course-list-code {
 	flex: 1;
+	margin-right: auto;
 	font-size: 0.85rem;
 	color: #0056b3;
 }

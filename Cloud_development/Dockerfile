@@ -4,7 +4,7 @@ FROM python:3.12.3
 WORKDIR /app
 
 COPY Documentation/container_requirements.txt ./Documentation/
-RUN pip install -r Documentation/requirements.txt
+RUN pip install --no-cache-dir -r Documentation/container_requirements.txt
 
 COPY . .
 

@@ -8,3 +8,5 @@ __pycache__/
 tests/
 Website/
 Discontinued_CPP_version/
+docs/
+worker.js

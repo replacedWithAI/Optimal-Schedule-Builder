@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AuthContext } from "./auth_context.jsx";
 
-const API_URL = import.meta.env.VITE_AZUREURL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 /**
  * Used to wrap App.jsx in main.jsx, such that all components are authenticated

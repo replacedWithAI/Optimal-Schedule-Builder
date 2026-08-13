@@ -6,7 +6,7 @@
 import "./login_page.css";
 import googleLogo from "../assets/google_icon.svg";
 
-const API_URL = import.meta.env.VITE_AZUREURL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function LoginPage() {
     const handleLogin = () => {
