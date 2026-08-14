@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { authHeader } from '../../api/authToken.js';
 import './timetable.css';
 
 export default function FetchSchedule( {functionsAndUseStates} ) {
@@ -10,44 +11,26 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 
 	const [events, setEvents] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
-	const [token, setToken] = useState(null);
 	const busyTimes = useRef({});
 
-	useEffect(() => {
-		window.onCloudflareToken = (cloudflareToken) => setToken(cloudflareToken);
-
-		const script = document.createElement("script");
-		script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
-		script.async = true;
-		document.body.appendChild(script);
-
-		return () => {
-			delete window.onCloudflareToken;
-			document.body.removeChild(script);
-		};
-	}, []);
-
 	const plotSchedule = async () => {
-		if (!token) {
-			setScheduleError("Please complete the verification challenge first");
-			return;
-		}
 		
 		setIsLoading(true);
 		setScheduleError(null);
 		try {
-			console.log(buildPayload())
+
+			payload = buildPayload()
+			console.log(payload)
 			const apiURL = new URL(`${import.meta.env.VITE_API_URL}/calculate`);
-			
+
 			const response = await fetch(apiURL, {
 				method: "POST",
-				credentials: "include",
 				headers: {
 					"Accept": "application/json",
 					"Content-Type": "application/json",
-					"X-Turnstile-Token": token
+					...authHeader()
 				},
-				body: JSON.stringify( buildPayload() )	
+				body: JSON.stringify( payload )	
 			});
 
 			if (!response.ok) {
@@ -57,8 +40,6 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 			}
 
 			const content = await response.json();
-			console.log(`API output: ${JSON.stringify(content)}`);
-
 			const newEvents = processCourseTimes(content) || [];
 			setEvents((prevEvents) => [...prevEvents, ...newEvents]);
 		} catch (error) {

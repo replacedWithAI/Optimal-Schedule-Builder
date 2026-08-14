@@ -4,7 +4,7 @@
  */
 
 import "./login_page.css";
-import g-logo from "../assets/g-logo.png";
+import glogo from "../assets/glogo.png";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -17,11 +17,14 @@ export default function LoginPage() {
         <div className="login-root">
             <div className="login-card">
                 <h1 className="login-title">Schedule Calculator</h1>
-                <button className="login-button" onClick={handleLogin} 
-                data-tooltip="Sign in with Google">
-                    <img className="logo" 
-                    src="g-logo" 
-                    alt="Sign in with google" />
+                <button 
+                    className="login-button" 
+                    onClick={handleLogin} 
+                    data-tooltip="Sign in with Google"
+                >
+                        <img className="logo" 
+                        src="glogo" 
+                        alt="Sign in with google" />
                 </button>
 
                 <p className="login-notice">

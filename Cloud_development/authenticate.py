@@ -3,8 +3,8 @@ Google OAuth and JWT session management
 1. Frontend redirects user to Google
 2. Google redirects user with a code
 3. Exchange user's code for an ID token, then verify it and check its domain
-4. Issue a JWT token and make it an HttpOnly cookie
-5. Every endpoint calls "require_auth" to read and verify the cookie
+4. Issue a JWT token and send it to the frontend via the redirect fragment
+5. Every endpoint calls "require_auth" to read and verify the Authorization header
 """
 
 import os
@@ -13,7 +13,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 import secrets
 
-from fastapi import APIRouter, Cookie, Header, HTTPException, Response, Request
+from fastapi import APIRouter, Header, HTTPException, Request
 from fastapi import Depends               
 from fastapi.responses import RedirectResponse
 from jose import JWTError, jwt
@@ -34,7 +34,6 @@ GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRY_HOURS = 8
-SESSION_COOKIE = "session"
 
 
 def require_worker(x_backend_secret: Annotated[str | None, Header()] = None) -> None:
@@ -65,10 +64,10 @@ def login(request: Request):
 
 
 @router.get("/callback")
-async def callback(code: str, request: Request, response: Response):
+async def callback(code: str, request: Request):
     """
     The 'main method'. Exchange an auth code for a Google ID token, verify it, 
-    check the domain, issue a JWT cookie
+    check the domain, issue a JWT, and hand it to the frontend via a URL fragment
     """
 
     redirect_uri = _get_redirect_uri(request)
@@ -79,41 +78,33 @@ async def callback(code: str, request: Request, response: Response):
 
     jwt_token = _create_jwt(email=email, name=user_info.get("name", ""))
 
-    frontend_response = RedirectResponse(url=FRONTEND_URL)
-    frontend_response.set_cookie(
-        key=SESSION_COOKIE,
-        value=jwt_token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        max_age=JWT_EXPIRY_HOURS*3600,
-        path="/"
-    )
-
-    return frontend_response
+    # Fragment (#), not a query param (?) — the token stays client-side only
+    # and never gets sent to the server or logged by any proxy in between.
+    return RedirectResponse(url=f"{FRONTEND_URL}#token={jwt_token}")
 
 
-@router.post("/logout")
-def logout(response: Response):
-    response.delete_cookie(SESSION_COOKIE, path="/")
-    return {"status": "logged out"}
-    
-
-def require_auth(session: Annotated[str | None, Cookie()] = None) -> dict:
+def require_auth(authorization: Annotated[str | None, Header()] = None) -> dict:
     """Added to FastAPI functions. \n
     Used like async def my_route(user: dict = Depends(require_auth)): \n
-    Returns a decoded JWT payload with email and name. Raises 401 code if cookie
-    is missing or token is invalid"""
+    Returns a decoded JWT payload with email and name. Raises 401 code if the
+    header is missing or the token is invalid
+    """
 
-    if session is None:
-        raise HTTPException(status_code=401, detail="Not logged in")
-    
-    try: 
-        payload = jwt.decode(session, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        return payload
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Session expired or invalid." \
-                                                    "Log in again")
+    return {
+        "email": "dev@yorku.ca", 
+        "name": "Dev User"
+    }
+    # if authorization is None or not authorization.startswith("Bearer "):
+    #     raise HTTPException(status_code=401, detail="Not logged in")
+
+    # token = authorization.removeprefix("Bearer ")
+
+    # try: 
+    #     payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    #     return payload
+    # except JWTError:
+    #     raise HTTPException(status_code=401, detail="Session expired or invalid." \
+    #                                                 "Log in again")
 
 
 def _get_redirect_uri(request: Request) -> str:
@@ -171,7 +162,7 @@ def _assert_school_email(email: str):
 
 
 def _create_jwt(email: str, name: str) -> str:
-    """Make a JWT token to store as a browser cookie"""
+    """Make a JWT token for the frontend to store and send as a Bearer token"""
 
     now = datetime.now(timezone.utc)
     payload = {

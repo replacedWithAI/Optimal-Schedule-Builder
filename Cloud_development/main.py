@@ -1,9 +1,12 @@
 import sys
 from pathlib import Path
 
-scheduler_dir = str(Path(__file__).resolve().parent.parent)+ "/Scheduler"
-if scheduler_dir not in sys.path:
-    sys.path.append(scheduler_dir)
+cloud_dev_dir = str(Path(__file__).resolve().parent)
+scheduler_dir = str(Path(__file__).resolve().parent.parent) + "/Scheduler"
+
+for path in (cloud_dev_dir, scheduler_dir):
+    if path not in sys.path:
+        sys.path.append(path)
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
