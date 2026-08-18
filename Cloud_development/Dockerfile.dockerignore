@@ -6,7 +6,7 @@ __pycache__/
 .git/
 .gitignore
 tests/
-Website/
+docs/
 Discontinued_CPP_version/
 docs/
 worker.js

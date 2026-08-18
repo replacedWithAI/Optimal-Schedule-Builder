@@ -172,7 +172,7 @@ export default function ConfigPanel({functionsAndUseStates}) {
 							onFieldChange: updateSectionField,
 							addPlaceholder: "Section letter, e.g. A",
 							fields: SECTION_OVERRIDE_FIELDS,
-							validateAdd: (value) => validInput2(value, /^[A-Z]+$/),
+							validateAdd: (value) => validInput3(value, /^[A-Z]+$/, 1),
 							nested: {
 								label: "Classes",
 								getEntries: (section) => section.classes,
@@ -191,8 +191,9 @@ export default function ConfigPanel({functionsAndUseStates}) {
 									onRemove: removeModifiedClassSession,
 									onFieldChange: updateModifiedClassSession,
 									fields: SESSION_OVERRIDE_FIELDS,
-									validateAdd: (value) => validInput2(value, 
-																		/^[A-Z]$/),
+									validateAdd: (value) => validInput3(value, 
+																		/^[A-Z]$/,
+																		1),
 									nested: null
 								}
 							}

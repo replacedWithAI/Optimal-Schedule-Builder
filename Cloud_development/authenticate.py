@@ -67,7 +67,9 @@ def login(request: Request):
 async def callback(code: str, request: Request):
     """
     The 'main method'. Exchange an auth code for a Google ID token, verify it, 
-    check the domain, issue a JWT, and hand it to the frontend via a URL fragment
+    check the domain, issue a JWT, and hand it to the frontend via a URL fragment \n
+    Once users are verified by Google, Google will redirect to cloudflare, which will
+    call this function
     """
 
     redirect_uri = _get_redirect_uri(request)
@@ -78,33 +80,34 @@ async def callback(code: str, request: Request):
 
     jwt_token = _create_jwt(email=email, name=user_info.get("name", ""))
 
-    # Fragment (#), not a query param (?) — the token stays client-side only
-    # and never gets sent to the server or logged by any proxy in between.
+
     return RedirectResponse(url=f"{FRONTEND_URL}#token={jwt_token}")
 
 
 def require_auth(authorization: Annotated[str | None, Header()] = None) -> dict:
-    """Added to FastAPI functions. \n
+    """
+    Added to FastAPI functions. \n
     Used like async def my_route(user: dict = Depends(require_auth)): \n
     Returns a decoded JWT payload with email and name. Raises 401 code if the
     header is missing or the token is invalid
     """
 
-    return {
-        "email": "dev@yorku.ca", 
-        "name": "Dev User"
-    }
-    # if authorization is None or not authorization.startswith("Bearer "):
-    #     raise HTTPException(status_code=401, detail="Not logged in")
+    if authorization is None or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Not logged in")
 
-    # token = authorization.removeprefix("Bearer ")
+    token = authorization.removeprefix("Bearer ").strip()
 
-    # try: 
-    #     payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-    #     return payload
-    # except JWTError:
-    #     raise HTTPException(status_code=401, detail="Session expired or invalid." \
-    #                                                 "Log in again")
+    try: 
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Session expired or invalid." \
+                                                    +"Log in again")
+
+
+@router.post("logout")
+def logout():
+    return {"status": "logged out"}
 
 
 def _get_redirect_uri(request: Request) -> str:

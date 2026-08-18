@@ -9,4 +9,5 @@ default_case.payload["courses"]["pinned sections classes terms"] = {
     }
 }
 
-default_case.calculate_schedule(default_case.payload)
+all_best_courses = default_case.calculate_schedule(default_case.payload)
+default_case.Plotter(all_best_courses)

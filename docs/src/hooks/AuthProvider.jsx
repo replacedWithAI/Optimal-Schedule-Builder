@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { AuthContext } from "./auth_context.jsx";
-import { getAuthToken, setAuthToken, clearAuthToken, authHeader } from "../api/authToken.js";
 
 const API_URL = import.meta.env.VITE_API_URL;
+const TOKEN_KEY = "token_key";
 
 /**
  * Used to wrap App.jsx in main.jsx, such that all components are authenticated
@@ -20,9 +20,9 @@ export default function AuthProvider({children}) {
             return;
         }
 
-        const token = new URLSearchParams(window.location.hash.slice(1)).get("token");
-        if (token) {
-            setAuthToken(token);
+        const hash = window.location.hash;
+        if (hash.startsWith("#token=")) {
+            sessionStorage.setItem(TOKEN_KEY, hash.slice("#token=".length));
             window.history.replaceState(
                 null,
                 "",
@@ -30,8 +30,8 @@ export default function AuthProvider({children}) {
             );
         }
 
-        const token = getAuthToken();
-        if (!token) {
+        const tokenKey = sessionStorage.getItem(TOKEN_KEY);
+        if (!tokenKey) {
             setUser(null);
             setLoading(false);
             return;
@@ -41,12 +41,12 @@ export default function AuthProvider({children}) {
         const timeout = setTimeout(() => controller.abort(), 1000*30);
 
         fetch(`${API_URL}/me`, {
-            headers: authHeader(),
+            headers: { "Authorization": `Bearer ${tokenKey}` },
             signal: controller.signal
         })
             .then((result) => (result.ok ? result.json() : null))
             .then((data) => {
-                if (!data) clearAuthToken();
+                if (!data) sessionStorage.removeItem(TOKEN_KEY);
                 setUser(data);
                 setLoading(false);
             })
@@ -57,9 +57,16 @@ export default function AuthProvider({children}) {
             .finally(() => clearTimeout(timeout));
     }, []);
 
-    const logout = () => {
-        clearAuthToken();
+    const logout = async () => {
+        const token = sessionStorage.getItem(TOKEN_KEY);
+        sessionStorage.removeItem(TOKEN_KEY);
         setUser(null);
+        if (token) {
+            await fetch(`${API_URL}/auth/logout`, {
+                method: "POST",
+                headers: {"Authorization": `Bearer ${token}`}
+            }).catch(() => {});
+        }
     };
 
     return (
