@@ -10,37 +10,57 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 
 	const [events, setEvents] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
+	const [token, setToken] = useState(null);
 	const busyTimes = useRef({});
 
+	useEffect(() => {
+		window.onCloudflareToken = (cloudflareToken) => setToken(cloudflareToken);
+
+		const script = document.createElement("script");
+		script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+		script.async = true;
+		document.body.appendChild(script);
+
+		return () => {
+			delete window.onCloudflareToken;
+			document.body.removeChild(script);
+		};
+	}, []);
+
 	const plotSchedule = async () => {
+		if (!token) {
+			setScheduleError("Please complete the verification challenge first");
+			return;
+		}
+		
 		setIsLoading(true);
 		setScheduleError(null);
 		try {
 			console.log(buildPayload())
-			// const apiURL = new URL(`${import.meta.env.VITE_API_URL}/calculate`);
+			const apiURL = new URL(`${import.meta.env.VITE_API_URL}/calculate`);
 			
-			// const response = await fetch(apiURL, {
-			// 	method: "POST",
-			// 	credentials: "include",
-			// 	headers: {
-			// 		"Accept": "application/json",
-			// 		"Content-Type": "application/json"
-			// 		//"Authorization": Not done yet
-			// 	},
-			// 	body: JSON.stringify( buildPayload() )	
-			// });
+			const response = await fetch(apiURL, {
+				method: "POST",
+				credentials: "include",
+				headers: {
+					"Accept": "application/json",
+					"Content-Type": "application/json",
+					"X-Turnstile-Token": token
+				},
+				body: JSON.stringify( buildPayload() )	
+			});
 
-			// if (!response.ok) {
-			// 	console.error(`API access error; status ${response.status}`);
-			// 	setScheduleError(`Request failed; status ${response.status}`)
-			// 	return;
-			// }
+			if (!response.ok) {
+				console.error(`API access error; status ${response.status}`);
+				setScheduleError(`Request failed; status ${response.status}`)
+				return;
+			}
 
-			// const content = await response.json();
-			// console.log(`API output: ${JSON.stringify(content)}`);
+			const content = await response.json();
+			console.log(`API output: ${JSON.stringify(content)}`);
 
-			// const newEvents = processCourseTimes(content) || [];
-			// setEvents((prevEvents) => [...prevEvents, ...newEvents]);
+			const newEvents = processCourseTimes(content) || [];
+			setEvents((prevEvents) => [...prevEvents, ...newEvents]);
 		} catch (error) {
 			console.log(`Error: ${error}`);
 			setScheduleError(error.message ?? String(error));
