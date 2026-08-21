@@ -21,7 +21,7 @@ export default {
     }
 
     const needsTurnstileToken = (url.pathname === "/calculate" && request.method === "POST");
-    const needsTurnstileHeader = url.pathname === "auth/login";
+    const needsTurnstileHeader = url.pathname === "/auth/login";
 
     if (needsTurnstileToken || needsTurnstileHeader) {
       const token = needsTurnstileToken ? 
@@ -53,7 +53,7 @@ export default {
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
-      if (needsTurnstileQuery) url.searchParams.delete("cf_turnstile_token");
+      if (needsTurnstileHeader) url.searchParams.delete("cf_turnstile_token");
     }
 
     const targetUrl = `${env.AZURE_BACKEND_URL}${url.pathname}${url.search}`;

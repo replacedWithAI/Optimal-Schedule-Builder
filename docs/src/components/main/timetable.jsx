@@ -2,12 +2,13 @@ import React, { useState, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { authHeader } from '../../api/authToken.js';
+import useTurnstile from "../../hooks/useTurnstile.js";
 import './timetable.css';
 
 export default function FetchSchedule( {functionsAndUseStates} ) {
 	const {setPersonalTimes, scheduleError, 
 		setScheduleError, buildPayload} = functionsAndUseStates;
+	const {containerRef, getToken} = useTurnstile();
 
 	const [events, setEvents] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +19,7 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 		setIsLoading(true);
 		setScheduleError(null);
 		try {
-
+			const turnstileToken = await getToken();
 			payload = buildPayload()
 			console.log(payload)
 			const apiURL = new URL(`${import.meta.env.VITE_API_URL}/calculate`);
@@ -28,7 +29,7 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 				headers: {
 					"Accept": "application/json",
 					"Content-Type": "application/json",
-					...authHeader()
+					"X-Turnstile-Token": turnstileToken
 				},
 				body: JSON.stringify( payload )	
 			});
@@ -257,6 +258,7 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 					<span className="loading-message">
 						Loading timetable...
 					</span>}
+					<div ref={containerRef} style={{ display: "none" }} />
 				</div>
 			</div>
 		</div>
