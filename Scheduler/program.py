@@ -13,9 +13,12 @@ def calculate_schedule(payload: dict[str, dict]) -> dict:
     del course_jsons
     # print(courses)
 
-    all_best_courses = find_best_options(courses, payload)
+    all_best_courses, logs_string = find_best_options(courses, payload)
 
-    return all_best_courses
+    return {
+        "courses": all_best_courses, 
+        "logs": logs_string
+    }
 
 if __name__ == "__main__":
     calculate_schedule()

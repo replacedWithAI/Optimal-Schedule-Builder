@@ -22,7 +22,7 @@ def get_course_jsons(requested_course_names: list[str],
 def _get_files_folder():
     curr_file_directory = (__file__)
     curr_folder = Path(curr_file_directory).resolve().parent 
-    course_info_folder = curr_folder / "output_courses_json 2026_08_13"
+    course_info_folder = curr_folder / "output_courses_json_2026_08_13"
     return course_info_folder
 
 

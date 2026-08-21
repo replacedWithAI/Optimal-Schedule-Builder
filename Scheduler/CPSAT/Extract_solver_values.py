@@ -13,17 +13,19 @@ def get_best_classes(courses: list[Course],
                      model: cp_model, 
                      solver: cp_model):
     
-    _get_solver_status(status, model, solver)
+    status = _get_solver_status(status, model, solver)
+    if status == 1:
+        return []
     del status
     return _get_chosen_courses(courses, interval_variables, solver)
 
 
-def _get_solver_status(status: int, model: cp_model, solver: cp_model): 
+def _get_solver_status(status: int, model: cp_model, solver: cp_model) -> int: 
     if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-        return
+        return 0
     else: 
         print("No possible solution")
-        exit()
+        return 1
 
 
 def _get_chosen_courses(courses: list[Course], 

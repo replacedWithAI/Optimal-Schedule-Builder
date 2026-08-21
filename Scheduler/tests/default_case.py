@@ -50,7 +50,8 @@ payload = {
 }
 
 if __name__ == "__main__":
-    all_best_courses = calculate_schedule(payload)
+    result = calculate_schedule(payload)
+    all_best_courses = result["courses"]
     print(all_best_courses)
 
     Plotter_obj = Plotter(all_best_courses)

@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import CourseList from "../components/main/CourseList.jsx";
-import useStatesAndFunctions from "../hooks/useStatesAndFunctions.js";
+import useStatesAndFunctions from "../hooks/useLib.js";
 
 export default {
     title: "components/CourseList",

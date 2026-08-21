@@ -6,24 +6,27 @@ export default {
 	  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
 	  "Access-Control-Allow-Credentials": "true",
 	  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Authorization, Content-Type, X-Turnstile-Token",
-    };
-
-    const url = new URL(request.url);
-    const hasBearerToken = request.headers.get("Authorization")?.startsWith("Bearer ") ?? false;
-    console.log("Proxy request", {
-      method: request.method,
-      path: url.pathname,
-      hasBearerToken,
-    });
+	  "Access-Control-Allow-Headers": "Content-Type, X-Turnstile-Token, Authorization",
+	};
 
     if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-    const needsTurnstile = url.pathname === "/calculate" && request.method === "POST";
+    const url = new URL(request.url);
+    const isApiRoute = url.pathname.startsWith("/auth/") || 
+                       url.pathname === "/calculate" || url.pathname === "/me";
 
-    if (needsTurnstile) {
-      const token = request.headers.get("X-Turnstile-Token");
-      const ip = request.headers.get("CF-Connecting-IP");
+    if (!isApiRoute) {
+      const githubUrl = `https://replacedwithai.github.io${url.pathname}${url.search}`;
+      return fetch(githubUrl, {cf: {cacheTtl: 300, cacheEverything: true} });
+    }
+
+    const needsTurnstileToken = (url.pathname === "/calculate" && request.method === "POST");
+    const needsTurnstileHeader = url.pathname === "auth/login";
+
+    if (needsTurnstileToken || needsTurnstileHeader) {
+      const token = needsTurnstileToken ? 
+                    request.headers.get("X-Turnstile-Token") :
+                    url.searchParams.get("cf_turnstile_token");
       if (!token) {
         return new Response(JSON.stringify({ error: "Missing Turnstile token" }),
           { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -32,6 +35,8 @@ export default {
       const formData = new FormData();
       formData.append("secret", env.TURNSTILE_SECRET);
       formData.append("response", token);
+
+      const ip = request.headers.get("CF-Connecting-IP");
       if (ip) formData.append("remoteip", ip);
 
       let outcome;
@@ -47,6 +52,8 @@ export default {
         return new Response(JSON.stringify({ error: "Invalid token" }),
           { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
+
+      if (needsTurnstileQuery) url.searchParams.delete("cf_turnstile_token");
     }
 
     const targetUrl = `${env.AZURE_BACKEND_URL}${url.pathname}${url.search}`;
@@ -62,25 +69,15 @@ export default {
     redirect: "manual",
   });
 
-  // Handle redirects separately — Set-Cookie/Location don't survive
-  // the normal Headers() passthrough on manual-redirect responses
   if (azureResp.status === 0 || (azureResp.status >= 300 && azureResp.status < 400)) {
     const redirectHeaders = new Headers();
 
     const location = azureResp.headers.get("location");
     if (location) redirectHeaders.set("Location", location);
 
-    const setCookies = azureResp.headers.getSetCookie();
-    for (const cookie of setCookies) {
+    for (const cookie of azureResp.headers.getSetCookie()) {
       redirectHeaders.append("Set-Cookie", cookie);
     }
-
-    console.log("Proxy redirect", {
-      path: url.pathname,
-      status: azureResp.status,
-      hasLocation: Boolean(location),
-      setCookieCount: setCookies.length,
-    });
 
     Object.entries(corsHeaders).forEach(([k, v]) => redirectHeaders.set(k, v));
 
@@ -90,10 +87,8 @@ export default {
     });
   }
 
-// existing pass-through path, unchanged — only reached for non-redirects
   const respHeaders = new Headers(azureResp.headers);
   Object.entries(corsHeaders).forEach(([k, v]) => respHeaders.set(k, v));
-    console.log("Proxy response", { path: url.pathname, status: azureResp.status });
     return new Response(azureResp.body, {
       status: azureResp.status,
       statusText: azureResp.statusText,
