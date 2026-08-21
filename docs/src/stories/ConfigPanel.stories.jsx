@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ConfigPanel from "../components/main/ConfigPanel.jsx";
-import useStatesAndFunctions from "../hooks/useStatesAndFunctions.js";
+import useStatesAndFunctions from "../hooks/useLib.js";
 
 export default {
     title: "components/ConfigPanel",

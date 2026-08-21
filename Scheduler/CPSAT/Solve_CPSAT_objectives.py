@@ -28,27 +28,39 @@ def _objective_priority(courses: list[Course],
                                                 model)
 
     solver = cp_model.CpSolver()
+    solver.parameters.log_search_progress = True
+
+    logs = []
+    solver.log_callback = lambda message: logs.append(message)
 
     for i, (objective, direction) in enumerate(objectives):
+        logs.append(f"Starting objective {i+1}")
+
         if (direction == "minimise"):
             model.minimize(objective)
         elif (direction == "maximise"):
             model.maximize(objective)
         else:
-            print(f"Error with direction: {direction} for objective {objective}")
+            logs.append(f"Error with direction: {direction} for objective {objective}")
             continue
 
+        solver.parameters.max_time_in_seconds = 300
         status = solver.solve(model)
         if status != cp_model.OPTIMAL and status != cp_model.FEASIBLE:
-            print(f"Solver couldn't solve {objective}; status: {status}")
-            continue
+            logs.append(f"Solver couldn't solve {objective}; status: {status}")
+            break
 
         not_last_objective = i < len(objectives) - 1
         if not_last_objective:
             best_value = solver.value(objective)
             model.add(objective == best_value)
 
-    return status, solver
+            model.clear_hints()
+            for presence_variable in course_presences:
+                model.add_hint(presence_variable, solver.value(presence_variable))
+
+    logs_string = "\n".join(logs)
+    return status, solver, logs_string
 
 
 def _propagate_objective_todo_list(courses: list[Course],

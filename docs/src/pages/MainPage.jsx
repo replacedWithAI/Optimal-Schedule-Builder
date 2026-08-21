@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ConfigPanel from "../components/main/ConfigPanel";
 import CourseList from "../components/main/CourseList.jsx";
-import useStatesAndFunctions from "../hooks/useStatesAndFunctions.js";
+import useStatesAndFunctions from "../hooks/useLib.js";
 import FetchSchedule from "../components/main/timetable.jsx";
 import "./MainPage.css";
 

@@ -7,15 +7,19 @@ from CPSAT import find_best_options
 def calculate_schedule(payload: dict[str, dict]) -> dict:
     requested_course_names = payload["courses"]["possible"]
     course_jsons = get_course_jsons(requested_course_names, payload)
-    # print(course_jsons)
+    print(course_jsons)
     
     courses = make_courses(course_jsons, payload)
     del course_jsons
     # print(courses)
 
-    all_best_courses = find_best_options(courses, payload)
+    all_best_courses, logs_string = find_best_options(courses, payload)
 
-    return all_best_courses
+    return {
+        "courses": all_best_courses, 
+        "logs": logs_string
+    }
 
 if __name__ == "__main__":
     calculate_schedule()
+    

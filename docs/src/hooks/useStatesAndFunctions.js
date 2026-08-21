@@ -43,13 +43,13 @@ export default function functionsAndUseStates(){
             seperator) => {
         const seperatorIndex = string.indexOf(seperator);
         const firstString = string.substring(0, seperatorIndex);
-        const secondString = string.substring(dotIndex + 1);
+        const secondString = string.substring(seperator);
 
         const validFirst = regex.test(firstString) && firstString.length === firstLength;
         const validSecond = regex.test(secondString) && secondString.length === 
                                                                     secondLength;
 
-        return validFirst && validSecond && dotIndex !== -1;
+        return validFirst && validSecond && seperator !== -1;
     });
 
 

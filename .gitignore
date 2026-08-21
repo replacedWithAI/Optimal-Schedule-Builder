@@ -11,7 +11,6 @@ node_modules
 dist
 dist-ssr
 *.local
-worker.js
 
 # Editor directories and files
 .vscode/*
@@ -31,3 +30,4 @@ __pycache__/
 
 *storybook.log
 storybook-static
+replacements.txt

@@ -2,52 +2,36 @@ import React, { useState, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import useTurnstile from "../../hooks/useTurnstile.js";
 import './timetable.css';
 
 export default function FetchSchedule( {functionsAndUseStates} ) {
 	const {setPersonalTimes, scheduleError, 
 		setScheduleError, buildPayload} = functionsAndUseStates;
+	const {containerRef, getToken} = useTurnstile();
 
 	const [events, setEvents] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
-	const [token, setToken] = useState(null);
 	const busyTimes = useRef({});
 
-	useEffect(() => {
-		window.onCloudflareToken = (cloudflareToken) => setToken(cloudflareToken);
-
-		const script = document.createElement("script");
-		script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
-		script.async = true;
-		document.body.appendChild(script);
-
-		return () => {
-			delete window.onCloudflareToken;
-			document.body.removeChild(script);
-		};
-	}, []);
-
 	const plotSchedule = async () => {
-		if (!token) {
-			setScheduleError("Please complete the verification challenge first");
-			return;
-		}
 		
 		setIsLoading(true);
 		setScheduleError(null);
 		try {
-			console.log(buildPayload())
+			const turnstileToken = await getToken();
+			payload = buildPayload()
+			console.log(payload)
 			const apiURL = new URL(`${import.meta.env.VITE_API_URL}/calculate`);
-			
+
 			const response = await fetch(apiURL, {
 				method: "POST",
-				credentials: "include",
 				headers: {
 					"Accept": "application/json",
 					"Content-Type": "application/json",
-					"X-Turnstile-Token": token
+					"X-Turnstile-Token": turnstileToken
 				},
-				body: JSON.stringify( buildPayload() )	
+				body: JSON.stringify( payload )	
 			});
 
 			if (!response.ok) {
@@ -56,11 +40,12 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 				return;
 			}
 
-			const content = await response.json();
-			console.log(`API output: ${JSON.stringify(content)}`);
-
-			const newEvents = processCourseTimes(content) || [];
+			const {courses, logs} = await response.json();
+			const newEvents = processCourseTimes(courses) || [];
+			console.log(logs);
 			setEvents((prevEvents) => [...prevEvents, ...newEvents]);
+
+			if (newEvents === []) setScheduleError("Couldn't make a possible schedule");
 		} catch (error) {
 			console.log(`Error: ${error}`);
 			setScheduleError(error.message ?? String(error));
@@ -72,7 +57,13 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 	const processCourseTimes = (content) => {
 		const processedCourseTimes = [];
 		const baseDate = "2018-01-11";
-		const courses = content["courses"]
+		const courses = content["courses"];
+		const COLOURS = ["#E27D7D", "#E2957D", "#E2AD7D", "#E2C57D",
+						 "#D8E27D", "#C0E27D", "#A8E27D", "#7DE29D",
+						 "#7DE2E2", "#7DC0E2", "#7DA8E2", "#8C7DE2",
+						 "#A87DE2", "#C07DE2", "#D87DE2", "#E27DC0"
+		];
+		let colourIndex = 0;
 
 		courses.forEach((course) => {
 			const [courseCode, classes] = Object.entries(course)[0]; // size 1 array
@@ -106,8 +97,11 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 						resourceId: `${day}`,
 						start: `${baseDate}T${startTimeDayHour}:${startTimeDayMins}:00`,
 						end: `${baseDate}T${endTimeDayHour}:${endTimeDayMins}:00`,
-						title: `${courseCode} ${className}`
+						title: `${courseCode} ${className}`,
+						backgroundColor: `${COLOURS[colourIndex++]}`
 					});
+
+					if (colourIndex === 15) colourIndex = 0;
 				}
 			});
 		});
@@ -122,7 +116,7 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 			start: cellInfo.startStr,
 			end: cellInfo.endStr,
 			resourceId: targetDay,
-			backgroundColor: '#888888',
+			backgroundColor: "#888888",
 			title: "Busy",
 			extendedProps: {
 				isSelectionBlock: true
@@ -202,6 +196,14 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 		console.log(`Updated busy times for day ${targetDay}:`, busyTimes.current);
 		return [...otherEvents, ...mergedBusys];
 	};
+
+	const syncWidth = () => {
+		const axis = document.querySelector(".fc-timegrid-axis");
+		if (axis) {
+			const width = axis.getBoundingClientRect().width;
+			document.documentElement.style.setProperty("--time-axis-width", `${width}px`);
+		}
+	};
 	return (
 		<div className="timetable-container">
 			<div className="term-rows">
@@ -215,10 +217,15 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 					plugins={[resourceTimeGridPlugin, interactionPlugin]} //downloaded features
 					initialView="resourceTimeGridDay" //timetable design/format
 					headerToolbar={false}
+					allDaySlot={false}
+					slotMinTime="07:00:00"
+					slotMaxTime="23:00:00"
 					initialDate="2018-01-11" // fix timetable to one day
 					selectable={true} // enables blocking off times
 					selectMirror={true} // let user see blocked off times
 					slotDuration="00:30:00" // divide table into 30 minute cells
+					datesSet={syncWidth}
+					height="auto"
 					
 					select={handleSelectClick}
 					eventClick={handleEventClick}
@@ -251,6 +258,7 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 					<span className="loading-message">
 						Loading timetable...
 					</span>}
+					<div ref={containerRef} style={{ display: "none" }} />
 				</div>
 			</div>
 		</div>

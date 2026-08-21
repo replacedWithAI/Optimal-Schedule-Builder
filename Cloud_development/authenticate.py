@@ -85,7 +85,7 @@ async def callback(code: str, request: Request, response: Response):
         value=jwt_token,
         httponly=True,
         secure=True,
-        samesite="none",
+        samesite="strict",
         max_age=JWT_EXPIRY_HOURS*3600,
         path="/"
     )

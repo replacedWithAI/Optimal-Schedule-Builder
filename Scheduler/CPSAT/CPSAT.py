@@ -17,14 +17,14 @@ def find_best_options(courses: list[Course], payload: dict):
     course_presences = enforcer.course_presences
     del enforcer
 
-    status, solver = solve_scheduling_goals(courses, intervals_by_day, 
+    status, solver, logs_string = solve_scheduling_goals(courses, intervals_by_day, 
                                             course_presences, payload, model)
 
     del intervals_by_day
     
     all_best_courses = get_best_classes(courses, status, interval_variables,
-                                        model, solver)
+                                                     model, solver)
     del interval_variables
 
-    return all_best_courses
+    return all_best_courses, logs_string
 

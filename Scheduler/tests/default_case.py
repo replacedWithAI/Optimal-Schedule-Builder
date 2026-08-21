@@ -6,6 +6,9 @@ if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
 from program import calculate_schedule
+import matplotlib
+from lib.Plotter import Plotter
+
 
 
 payload = {
@@ -17,7 +20,7 @@ payload = {
         "pinned sections classes terms": {
             "EECS 1021": {
                 "sections classes": {
-                    "Y": ["LAB 05"]
+                    
                 },
                 "terms": []
             }
@@ -47,7 +50,8 @@ payload = {
 }
 
 if __name__ == "__main__":
-    all_best_courses = calculate_schedule(payload)
+    result = calculate_schedule(payload)
+    all_best_courses = result["courses"]
     print(all_best_courses)
 
-    # Plotter_obj = Plotter(all_best_courses)
+    Plotter_obj = Plotter(all_best_courses)
