@@ -484,15 +484,15 @@ export default function functionsAndUseStates(){
 
     const buildPayload = () => ({
         "courses": {
-            "possible courses": possibleCourses,
-            "pinned section classes terms": buildPinnedSectionsClassesTerms(),
+            "possible": possibleCourses,
+            "pinned sections classes terms": buildPinnedSectionsClassesTerms(),
             "pinned courses": pinnedCourses,
             "changed course data": cleanEmptyNodes(modifiedCourseData)
 		},
 
 		preferences: {
 			"personal times": personalTimes,
-			"pin campus": pinnedCampuses,
+			"pinned campuses": pinnedCampuses,
 			"max courses per term": maxCoursesPerTerm,
 			"required num reviews": requiredNumReviews,
 			"default RMP score": defaultRMPScore
