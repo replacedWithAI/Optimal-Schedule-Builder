@@ -20,10 +20,11 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 		setScheduleError(null);
 		try {
 			const turnstileToken = await getToken();
-			payload = buildPayload()
-			console.log(payload)
-			const apiURL = new URL(`${import.meta.env.VITE_API_URL}/calculate`);
 
+			const payload = buildPayload()
+			console.log(payload)
+
+			const apiURL = new URL(`${import.meta.env.VITE_API_URL}/calculate`);
 			const response = await fetch(apiURL, {
 				method: "POST",
 				headers: {
@@ -258,7 +259,7 @@ export default function FetchSchedule( {functionsAndUseStates} ) {
 					<span className="loading-message">
 						Loading timetable...
 					</span>}
-					<div ref={containerRef} style={{ display: "none" }} />
+					<div ref={containerRef} />
 				</div>
 			</div>
 		</div>
